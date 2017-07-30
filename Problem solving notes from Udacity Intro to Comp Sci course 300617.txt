@@ -1,0 +1,74 @@
+
+# Notes from Udacity intro to comp sci course (Unit 3: Solving Problems) 30.06.2017
+
+##### Procedure for solving problems in Python / any programming #####
+
+Problems have expected inputs and desired outputs, and a required relationship between them.
+
+E.g.	inputs: birth date, current date
+	relationship: number of days between birth date and current date
+	outputs: number of days
+
+### 0) Don't panic. 
+	- Break the problem down to ensure you understand it before starting to code.
+
+### 1) What are the inputs?
+	- Including, what is the range of possible inputs:
+	- In code, check the inputs follow the expected format, e.g. that the current date is after the birth date, and that the date format follows the right calendar structure 
+	(a valid year, month and day in the Gregorian calendar, which replaced the Julian calendar (which contained too many days) in 1582).
+	- Allow for the different possible dates - leap years etc.
+
+
+### 2) What are the outputs?
+	- E.g. a single number that represents the 'number of days between birth date and current date'.
+
+
+### 3) Work through some examples by hand
+	- To understand the relationship between the inputs and outputs, as just
+	understanding the inputs and outputs on their own is not enough.
+	- Examples give you some test cases to use for testing program once it's coded.
+
+
+### 4) Work out a SIMPLE mechanical solution (that we'll be able to put into code)
+SIMPLICITY is key - the simpler the solution, the more likely you are to be able to program it correctly.
+Pick the simplest aspect of the problem first and deal with the details later, e.g. program how to calculate
+number of days between two dates roughly, assuming all months are the same length, and then LATER deal with 
+the issues of different month lengths and leap years.
+
+	- First think about how you would solve the problem as a human.
+		- e.g. by counting days in a calendar: to calculate days between 20/02/17 and 25/06/17
+		- You'd count the N days remaining in Feb (8),
+		- Add this to the total N days in March, April and May, and finally add this to the 25 days in June. 
+	
+	- Then create some pseudocode (rough/hand written) for a possible solution / algorithm. 
+		- This will highlight some special cases or possible issues with the code, and make it obvious if the code is becoming too complicated.
+		- An average processor can process ~ 1 billion instructions/second = 1 nanosecond per instruction
+		- So complex code with many statements and loops will take more processing time.
+
+		- BUT: don't optimise the pseudocode prematurely
+			- optimising = making it faster or more complex
+			- don't do it unless you have to: 
+			- don't spend time making it a fraction of a second faster unless it's necessary.
+
+
+### 5) Then develop the simple solution in small steps to test as we go. 
+
+# Programmers make progress by writing small bits of code, testing them and knowing what they do.
+# Then combine them together into one big function at the very end.
+# WRITE A BIT - TEST IT INDEPENDENTLY - THEN COMBINE ONCE CONFIDENT EACH COMPONENT WORKS.
+
+# Could start by writing a STUB - an empty/functionless function.
+E.g.
+
+def daysInMonth(year, month):
+	return 30
+
+# which can later be modified to:
+
+def daysInMonth(year, month):
+	if month in (1,3,5,7,8,10,12):
+		return 31
+	if month == 2:
+		return 28
+	else:
+		return 30

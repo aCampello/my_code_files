@@ -1,0 +1,8 @@
+OUTLINE OF UDACITY COURSE
+
+### supervised learning:                
+    # discrete: naive bayes, SVMs, decision trees, k-nearest neighbour
+    # continuous: regression (outliers, r-squared)
+
+### unsupervised learning:
+    # k-means clustering

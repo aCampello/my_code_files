@@ -1,0 +1,18 @@
+### Conda: the package manager for Python in Anaconda 
+# NB: 'pip' is the package manager for Python if you don't have Anaconda installed
+# If you have Anaconda installed, using pip can break your Python installation.
+# Use conda (and pip) commands on the cmd line!
+
+# To install a new package:
+conda install PACKAGENAME		# enter this on the command line, not in Spyder/Anaconda.
+
+# If it says 'invalid syntax' or the command is not recognised then conda needs updating.
+
+# Conda must be updated via the cmd line using:
+>>> conda update conda
+
+# If this command is not recognised: 
+# Go to the ControlPanel\System\Advanced system settings\Environment Variables\Path 
+#   Then hit edit and add <C:\Users\User\Anaconda3\Scripts> to the end (this changes the filepath associated with 'Path' in the cmd line).
+#   Then restart the cmd line. 
+# I found these instructions on https://stackoverflow.com/questions/44515769/conda-is-not-recognized-as-internal-or-external-command.

@@ -1,0 +1,26 @@
+#============================#
+#    To unzip a .tgz file    #
+#============================#
+
+# Instructions from: https://askubuntu.com/questions/499807/how-to-unzip-tgz-file-using-the-terminal
+
+# 1. Go to cmd line
+
+# 2. cd to directory where .tgz file is:
+cd "Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\"
+
+# 3. tar -xvzf /path/to/yourfile.tgz
+e.g. $ tar -xvzf enron_mail_20150507.tgz
+# where:
+	x for extract
+	v for verbose
+	z for gnuzip
+	f for file, should come at last just before file name.
+
+# NOTE: if get error like "file not in gzip format" then the file was probably tar-compressed and then zipped, so don't need to gnuzip command:
+$ tar -xvf enron_mail_20150507.tgz
+
+
+
+# Alternatively, can extract a .tgz file in different directory using -C:
+$ tar -xvzf /path/to/yourfile.tgz -C /path/where/to/extract/

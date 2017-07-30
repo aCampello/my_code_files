@@ -1,0 +1,240 @@
+#--------------------------------------------------------------
+### SQL (Structured Query Language)
+#--------------------------------------------------------------
+### Notes from Codecademy course 23/06/17
+
+
+#--------------------------------------------------------------
+##### STATEMENTS
+#--------------------------------------------------------------
+# Statements are SQL commands and always end in ;. They can be on one line or across multiple lines if easier to read.
+
+# Some common commands used in statements:
+
+CREATE TABLE creates a new table.
+INSERT INTO adds a new row to a table.
+SELECT queries data from a table.
+UPDATE edits a row in a table.
+ALTER TABLE changes an existing table.
+DELETE FROM deletes rows from a table.
+
+
+# Example of a full statement: 
+
+CREATE TABLE table_name (
+    column_1 data_type, 
+    column_2 data_type
+  );
+
+# CREATE TABLE is a clause. All clauses are written in capital letters. Clauses can also be referred to as commands.
+# table_name is name of table that command applies to.
+# column_1 data type is a parameter: a list of columns/values/data types passed into a clause/argument.
+
+
+#--------------------------------------------------------------
+### 'CREATE TABLE' STATEMENTS: TO CREATE A NEW TABLE FROM SCRATCH
+#--------------------------------------------------------------
+# E.g.
+CREATE TABLE celebs (id INTEGER, name TEXT, age INTEGER);
+
+# Tables in relational databases require a PRIMARY KEY - a unique row identifier used to link tables. 
+CREATE TABLE artists(id INTEGER PRIMARY KEY, name TEXT);	# creates table called 'artists' with a column called 'id' that is data type 'integer primary key' - automatically assigns each new row with a unique integer starting from 1. 
+
+# SQL ensures that no value in Primary Key column is NULL and that each value is unique.
+# Tables can't have >1 Primary Key column.
+# Tables can contain FOREIGN KEYS, which are columns that contain the value of another table's Primary Key: used to identify a particular row in the referenced table. 
+# Foreign Keys can be NULL and do not need to be unique, unlike Primary Keys. 
+
+
+#--------------------------------------------------------------
+##### 'INSERT INTO' STATEMENTS: TO ADD DATA INTO A TABLE
+#--------------------------------------------------------------
+INSERT INTO celebs (id, name, age) VALUES (1, 'Justin Bieber', 21);
+
+
+#--------------------------------------------------------------
+##### 'ALTER TABLE' STATEMENTS: TO ADD A NEW COLUMN TO TABLE
+#--------------------------------------------------------------
+# E.g. column for twitter handle (text).
+ALTER TABLE celebs ADD COLUMN twitter_handle TEXT;
+
+
+#--------------------------------------------------------------
+##### 'UPDATE' STATEMENTS: TO EDIT DATA IN TABLES
+#--------------------------------------------------------------
+# E.g. to change the age of id1 to 22:
+UPDATE celebs
+SET age = 22
+WHERE id = 1;
+
+# UPDATE statement means 'edit'
+# celebs is name of table to edit
+# SET indicates the column to edit
+# age is column to edit
+# WHERE indicates which rows to edit.
+
+#--------------------------------------------------------------
+##### 'DELETE FROM' STATEMENTS: TO DELETE ROWS FROM TABLES
+#--------------------------------------------------------------
+# E.g. delete rows without a twitter handle:
+DELETE FROM celebs WHERE twitter_handle IS NULL;
+
+#--------------------------------------------------------------
+##### 'SELECT' STATEMENTS (QUERIES) FETCH DATA FROM A DATABASE
+#--------------------------------------------------------------
+# Summary of SQL commands used in SELECT statements: 
+SELECT is the clause you use every time you want to query information from a database: SELECT returns a new table called a 'result set'
+WHERE is a popular command that lets you filter the results of the query based on conditions that you specify.
+LIKE and BETWEEN are special operators that can be used in a WHERE clause
+AND and OR are special operators that you can use with WHERE to filter the query on two or more conditions.
+ORDER BY lets you sort the results of the query in either ascending or descending order.
+LIMIT lets you specify the maximum number of rows that the query will return. This is especially important in large tables that have thousands or even millions of rows.
+
+# More detail on SELECT statements:
+
+# View all fields/columns using * :
+SELECT * FROM celebs;
+
+# View just the name column:
+SELECT name FROM celebs;
+
+# View the name and age columns:
+SELECT name, age FROM celebs;
+
+# View unique values in the result set, e.g. just one row per value:
+SELECT DISTINCT genre FROM movies;	# shows one instance of each genre, though multiple movies share the same genres
+
+# Filter query results using WHERE clauses
+SELECT * FROM movies WHERE imdb_rating >8;	# = != > < >= <= are operators often used with WHERE clauses - they create a condition that can be True/False.
+
+## LIKE and BETWEEN operators can be used in WHERE clauses:
+
+# Use LIKE to select similar values (LIKE is not case-sensitive).
+SELECT * from movies WHERE name LIKE 'Se_en';	# _ is a wildcard character that can be anything - so this statement will return both 'Seven' and 'Se7en'
+SELECT * from movies WHERE name LIKE 'a%';	# selects all movies that start with 'A' 
+SELECT * from movies WHERE name LIKE '%a';	# selects all movies that end with 'A'
+SELECT * from movies WHERE name LIKE '%man%';	# selects all movies with names including 'man' anywhere within, e.g. it'll return 'Man of Steel', 'Spiderman' and 'Dead Man's Chest'.
+
+# Use BETWEEN to select values within a specific range. Can be number/text/date.
+SELECT * FROM movies WHERE name BETWEEN 'A' AND 'J';	# selects movie names starting with letters 'A' up to but not including 'J'.
+SELECT * FROM movies WHERE year BETWEEN 1990 AND 1995;	# selects movies with years between 1990 up to AND INCLUDING 1995.
+
+## SELECT queries can include multiple WHERE clauses.
+# using the AND operator:
+SELECT * FROM movies WHERE year BETWEEN 1990 AND 1995 AND genre = 'comedy';	
+
+# using the OR operator (on separate lines for clarity - ';' indicates the end of the statement):
+SELECT * FROM movies 
+WHERE year BETWEEN 1990 AND 1995 
+OR genre = 'comedy';
+
+# ORDER BY to sort result sets:
+SELECT * FROM movies 
+ORDER BY imbd_rating DESC;	# DESC = descending, i.e. Z-A / high-low. ASC = ascending.
+
+# LIMIT the number of rows in the result set - useful when filtering large databases or testing queries.
+# E.g. to only show the 3 lowest rated movies:
+SELECT * FROM movies
+ORDER BY imdb_rating ASC	# ASC = ascending order
+LIMIT 3;			# only returns the 3 lowest rated movies
+
+
+#--------------------------------------------------------------
+##### AGGREGATE FUNCTIONS: TO RUN CALCULATIONS ON DATASETS
+#--------------------------------------------------------------
+
+### COUNT() aggregate function
+# Takes a column name as an argument and counts no. rows where column is not NULL. Pass * as an argument to count every row.
+
+# E.g.
+# Count number of rows in a table called fake_apps
+SELECT COUNT(*) FROM fake_apps;
+
+# Count number of rows when price = 0 (i.e. no. free apps in the fake_apps table):
+SELECT COUNT(*) FROM fake_apps WHERE price = 0;
+
+# Count the number of apps at each price:
+SELECT price, COUNT(*) FROM fake_apps	
+WHERE downloads > 20000			# (optional) WHERE statement to filter the result set further.
+GROUP BY price;				# we pass 'price' as an argument to GROUP BY within the aggregate function COUNT.
+					# It is usually helpful to also SELECT (in the SELECT statement) the column you pass as an argument to GROUP BY.
+
+### GROUP BY clause
+# Only used within aggregate functions, in collaboration with the SELECT statement, to arrange identical data into groups.
+
+### SUM() aggregate function
+SELECT SUM(downloads) FROM fake_apps;			# calculate total no. downloads of all apps in the table fake_apps.
+SELECT category, SUM(downloads) FROM fake_apps;		# calculate total no. downloads of apps in each category.
+
+### MAX() aggregate function
+SELECT name, category, MAX(downloads) FROM fake_apps	# select only the most downloaded app in each category
+GROUP BY category;					# group by returns a row for each category rather than just one for whole table.
+
+### MIN() aggregate function
+SELECT name, category, MAX(downloads) FROM fake_apps	# select the least downloaded app in each category
+GROUP BY category;
+
+### AVG() aggregate function
+SELECT price, AVG(downloads) FROM fake_apps		# show average number of downloads at each price.
+GROUP BY price;
+
+### ROUND()
+# Takes a column name and an integer as arguments:
+ROUND(column, integer)	# default integer is 0, i.e. rounds to zero decimal places
+
+# E.g.
+# Round no. downloads to nearest integer (zero decimal places):
+ROUND(AVG(downloads))
+
+# Round to 2 decimal places:
+ROUND(AVG(downloads), 2)
+
+
+#--------------------------------------------------------------
+##### JOINS: TO SELECT DATA FROM MULTIPLE LINKED TABLES
+#--------------------------------------------------------------
+
+### CROSS JOIN: will combine all rows from each specified table regardless of if it makes sense - not very useful!
+
+# E.g.
+SELECT albums.name, albums.year, artists.name		# <- SELECT specifies the column names to be shown in the result set.
+FROM albums, artists;					# <- The cross join: multiple table names separated by a comma
+
+# But cross joins aren't always useful: the query above combines every artist with every album, e.g. shows Yellow Submarine next to both The Beatles AND Elvis, even though Elvis didn't write it. 
+Yellow Submarine	1968	The Beatles
+Yellow Submarine	1968	Elvis Presley
+
+
+### INNER JOIN: will combine rows from different tables if the join condition is true.
+# Inner joins require the join condition to be met for a row to be returned
+
+# syntax:
+SELECT *						# <- the column names to be shown in the result set (taken from both/all tables specified).
+FROM table_1						# <- name of the first table we are querying.
+JOIN table_2 ON 					# <- the inner join: uses JOIN and ON clauses. Plus the name of the second table. 
+table_1.primarykey = table_2.primarykey;		# <- the join condition that describes how the two tables are related to each other. Doesn't have to be a primary key field - could be year, genre but using a primary key will match just one row from the table it originates from. 
+
+# E.g.
+SELECT * FROM albums					
+JOIN artists ON 					
+albums.artist_id = artists.id;				# As artist.id is the primary key in the artists table, this query will only match one row in the artists table with one or more rows in the albums table (as artist_id is a foreign key in the albums table). 
+
+
+### LEFT OUTER JOIN: will return every row in the left table, and adds information to these rows from the right table IF the join condition is met, or otherwise fills these spaces with NULL values.
+# Unlike inner joins, left/outer joins don't require the join condition to be met for rows to be returned (from the left table). 
+# Instead, every row in the left (first) table is returned in the result set, and if the join condition is not met, then NULL values are used to fill in the columns from the right (second) table.
+
+# E.g.	
+SELECT *
+FROM albums			# albums is the LEFT table (the first table in the statement, i.e. table 1), so the result set will include every row in albums
+LEFT JOIN artists ON		# artists is the RIGHT table (the second table that appears in the statement)
+albums.artist_id = artists.id;	# the albums listed in the result set will include info from the artists table only when the artist_id in albums table matches the artist_id in the artists table.
+				# Otherwise the cells are filled with NULL values, i.e. for albums with no artist assigned to it). 
+
+
+### The AS keyword for tidy queries
+# AS allows you to rename a column/table in the result set using an alias, to make the result set easier to understand.
+
+# E.g.
+SELECT albums.name AS 'Album' FROM albums...;	# (partial query) this will label the albums.name column as 'Album' in the resulting table. 
+

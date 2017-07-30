@@ -1,0 +1,45 @@
+Udacity intro to machine learning lesson 7: my regression notes.
+
+##### REGRESSION maths!
+
+# The result of a supervised learner = a line = an equation
+output (target variable) = slope * input + intercept
+y = mx+b	# where y=output, m=slope, x=input, b=intercept (a constant).
+e.g. net worth = 6.25*age + 0	# +0 means ensures line passes through origin, as net worth at age zero is zero.
+
+
+### In multivariate regression we have more than one x-variable, i.e. y = m1*x1 + m2*x2 + m3*x3... + b.
+
+# Calculating y for multivariate regression by hand:
+
+# Imagine this is a graph, where:
+- the x-axis represents house_size (variable x1)
+- y-axis represents house_age (variable x2)
+- The values in the graph space represent house_price (=y, the target/predicted value)
+  
+x2:   
+40-|600  1100  1600
+20-|800  1300  1800
+0 -|1000 1500  2000
+    ----------------
+    500  1000  1500    <- x1
+
+Regression equation: 
+y = __*x1 + __*x2 + constant
+
+To work out __ and the constant:
+
+# y increases by 500 every time x1 increases by 500 = 500/500 = 1 (a 1:1 ratio of increase in y for every 1 increase in x1)
+y = 1*x1 + __*x2 + constant
+
+# y increases by -200 every time 2 increases by 20 = -200/20 = -10 (a 1:-10 ratio of increase in y for every 1 increase in x2)
+y = 1*x1 + -10*x2 + constant
+
+# for x1=500 and x2=0, [y = 1*500 + -10*0] = 500, but the y-value is 1000 so we must add 500.
+y = 1*x1 + -10*x2 + 500.
+
+# a quick check with x1=500 and x2=20:
+[y = 1*500 + -10*20] = [500+-200] = 300. The y-value is 800 so must add 500. The equation is correct!
+
+### NOTE: in regression, y-values may not be directly related to just the x1 and x2 values. sklearn algorithms sometimes
+consider all the data collectively rather than individual data points to get a more accurate prediction of y. Including an error term...?

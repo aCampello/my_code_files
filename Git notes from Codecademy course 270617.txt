@@ -1,0 +1,191 @@
+
+### GIT: Codecademy course notes - 270617
+
+# Use this in Git Bash 
+
+pwd	# print working directory (defaults to C: drive User/ etc)
+ls	# lists all folders in the working directory
+
+# To set working directory
+cd Documents/R/RFiles/	# easier to type in first letter and press tab for autocomplete (press tab-tab to list all subfolders in that folder)
+			# case sensitive and needs forward slashes (as is based on Linux).
+
+-- 	# This is a global flag, so when you use --command it means it will apply to all git projects and not just this one (e.g. colour display settings).
+
+#--------------------------------------------------
+### Fundamental Git workflow
+#--------------------------------------------------
+### Git projects have 3 parts: 
+1. A working directory, where files are created/edited/deleted/organised.
+2. A staging area, where changes to the working directory are listed.
+3. A repository, where changes are saved with a COMMIT and stored permanently inside the repository.
+
+
+##### Git commands to help keep track of changes made to a project:
+
+git init		# creates a new Git repository (project)
+
+git status		# inspects the contents of the working directory and staging area
+			# If output reads "Untracked files: filename", this means Git sees the file but has not started tracking changes yet, e.g. a newly created file that's never been 
+			# staged. Add the file to the staging area using 'git add filename' to start tracking changes. Then the output of 'git status' should read "Changes to be 
+			# committed: new file: filename" etc.
+
+git add	filename	# adds files from the working directory to the staging area, e.g. git add scene.txt.
+git add filename_1 filename_2	# to add multiple files to staging area (No comma required between file names)
+
+git diff filename	# shows the difference between file versions in the working directory and in the staging area (i.e. committed changes and not-yet-committed changes)
+			# to view additions(+ green)/deletions(- red) to file contents, e.g. git diff scene.txt.
+
+git diff filename1 filename2  
+
+git diff commitnum1 commitnum2	# Running git diff followed by two commit IDs will compare the two versions of the code in those commits.
+				# Can enter the first 4+ characters of the commit ID rather than pasting the entire ID.
+
+git commit -m "Complete first line of dialogue"		# permanently stores file changes from the staging area in the repository
+							# label/msg describes how project has changed since last commit
+							# msg should be present tense & <=50 characters.
+
+git log		# print the commit history, to view a chronological list of all previous commits (=previous versions of a project).
+		# at top of output is a 40-character SHA (unique commit identifier) in orange.
+		# use 'q' to quit the log and go from : at the start of each line back to $.
+		
+git log | grep billy 	# to search for 'billy' within the log and display all lines containing that word.
+git log | grep -b5 -a5 billy	# filter search results to show the 5 lines before (b) and after (a) lines where 'billy' appears.
+
+git show HEAD # View the most recently made commit (and the changes made in that commit).
+
+#------
+
+#####  3 ways to backtrack in Git: 
+
+1. git checkout HEAD filename	# Discards changes in the working directory.
+				# restore the file in your working directory to look exactly as it did when you made the most recent commit, i.e. to discard all changes you just made in the working directory. 
+				# Can check it worked using 'git status' - if it says there's nothing to commit then the original file has been restored.
+
+   git reset HEAD --hard	# Discards changes to all files in the working directory without having to name them all.
+
+
+2. git reset HEAD filename	# HEAD means the last commit (in this context).
+				# Unstages file changes in the staging area for a particular file
+
+   git reset HEAD~		# Tilde means 'parent of' the last commit (HEAD)
+				# Unstages changes in all files (but keeps them in the working directory).
+
+				# These commands doesn't discard changes made in the working directory, just removes them from the staging area. 
+
+3. git reset SHA		# Can be used to reset to a previous commit in your commit history (or un-add / un-stage a file).
+				# SHA is the unique 40-character code assigned to each commit, shown in orange in the 'git log'. 
+				# Git reset SHA requires the first 7 characters of the SHA, e.g. git reset 96f1625, and will rewind the current project to the given SHA (commit), which can be >1 commit earlier. 
+				# Check it worked using 'git log'- it should no longer show commits made after the SHA you just specified in git reset.
+
+#---------------------------------------------------------
+
+##### Delete files
+
+git rm filename		# deletes file from repository AND stops Git from tracking it (deleting it manually doesn't stop Git from trying to track it). 
+
+#---------------------------------------------------------
+
+##### Git branches
+
+# We create branches to work on a new project feature without making changes to the master branch.
+# The end goal is to merge the new feature into the master branch, after which the new branch can be deleted.
+
+git branch				# Lists all a Git project's branches. The current branch is indicated by an asterisk. If none listed the master branch is the only one.
+
+git branch new_branchname		# Create a new branch called branch_name. Branch names can't contain whitespaces, e.g. 'happy_ending' not 'happy ending'
+
+git checkout branchname			# Switch from one branch to another (the default branch is the master branch).
+
+git checkout -b	new_branchname		# create new branch AND switch to it.
+
+# Stage and commit changes made in branches the same way as is done for the master branch:
+git add filename		# tell Git to start tracking a file
+git add -r foldername		# tell Git to start tracking contents of folder
+git add --all			# start tracking all files in the repository's base location (where .git is)
+
+git status			# show status of files in the branch and any changes to be committed
+
+git stage filename		# add changes to the staging area (required before a commit) (can also use git add for this)
+
+git commit -m "Note or label"	# commit changes
+
+git log				# the git log will show that the latest commit was only saved for the current branch and not the master. 
+				# If commits are made to the master the branch name is not shown as it's just the default master branch.
+q				# = 'quit' to stop viewing git log output.
+
+# Merge branches, i.e. update master branch (the 'receiver branch') with the happy_ending branch (the 'giver branch' that provides the changes):
+git checkout master	# first switch back to the master branch
+git merge branch_name	# Used to join file changes from one branch to another.
+			# This is simple if no changes had been made to the master branch (= a 'fast-forward merge', where the master content is simply fast-forwarded to match the most recent commit on the giver branch). 
+			# BUT: merge conflicts arise when changes have been made to the same line in both the receiver and giver branch, as Git doesn't know which changes to keep.
+			# So when you type git merge happy_ending you'll get the following output:
+				<<<<<<< HEAD
+				Here it shows the version of the line in the master branch.
+				=======
+				Here it shows the version of the line in the secondary branch.
+				>>>>>>> fencing
+				# HEAD indicates the text in the master (receiver) branch and === indicates the text in the giver branch. 
+			# To solve this, delete the version you don't want, along with all the Git annotations (==, <<, >>, # HEAD etc.), re-stage the file (git add filename) 
+			# and commit it using an appropriate message/label.
+
+# Delete a branch after it's served its purpose (to store changes until they're ready to be merged with the master branch):
+git branch -d branch_name		# Deletes the branch specified.
+
+
+#----------------------------------------------------------------
+
+##### Remotes: shared Git repositories
+
+# A remote is a Git repository that lives outside your Git project folder. Remotes can live on the web (github.com), on a shared network or even in a separate folder on your local computer.
+# Remotes allows multiple collaborators to work on the same Git project from different locations, independently, and merge changes together when they are ready to do so.
+
+# After a remote is created, collaborators must first create (clone) their own local COPY of it.
+# The cloned repository includes current AND previous versions of files - so the whole respository's history.
+git clone remotelocation clonename	# Creates a local copy of a remote.
+					# remotelocation: tells Git where to find the remote, e.g. a filepath or URL.
+					# clonename, e.g. my_quizzes: the name you give to the directory in which Git will clone the repository (i.e. name of your local copy of the remote, such as my_quizzes).
+					# Changes you commit to your local copy of the remote are not available/known to other collaborators until you PUSH them.
+					# Git names the address of the original remote you cloned 'origin' so it can be referred to more easily.
+
+### Copy a whole respository from github.com (in udacity Git course)
+git clone <url>			# NOTE this will be cloned into a new folder in the current working directory, with the same name as the original repo.
+git clone <url> MondayClone	# This names the cloned repo 'MondayClone'
+e.g.
+git clone https://github.com/udacity/ud120-projects.git		# creates new folder/directory called 'ud120-projects' that contains the cloned repo.
+# After the repo is cloned, cd into it to change the working directory to within that repo.
+
+
+git remote -v		# Lists a Git project's remotes, including 'origin' and their filepaths/addresses. Two copies of 'origin' are shown, one called Fetch and one called Push.
+
+cd my_quizzes		# to change directories (cd) to your local copy of a remote, e.g. from the original directory called 'science-quizzes' to the local copy 'my_quizzes'.
+
+git fetch		# Fetches work from the remote into the local copy of the project, saving them on to a remote branch called 'origin/master', rather than merging them into 
+			# your local repository. You can't view the changes while they're on the origin/master branch: to view them you must merge them with your local copy of the
+			# project using 'git merge origin/master':
+git merge origin/master 	# merges changes made to the remote origin/master branch into your local branch. Merge accepts one argument: the branch
+
+git pull origin master 	# fetch and merge in one; origin=remote repo; master=master branch in the remote repo
+git merge --abort	# revert the most recent merge. Can only abort a merge if Git has found an actual conflict and throws an error.
+
+git push origin localbranchname	# push changes made in local branch to the origin (remote / destination). Be sure to set the local directory, i.e. 'cd my_quizzes', before pushing. 
+				# After you push changes the moderator of the remote master branch will review your changes before they are accepted and merged onto the remote's master branch.
+
+### The Git Collaborative Workflow typically follows this order:
+
+1. Fetch and merge changes from the remote (git fetch and git merge; to safeguard against merge conflicts).
+2. Create a branch to work on a new project feature (git branch newbranchname; git checkout newbranchname).
+3. Develop the feature on your branch and commit your work (git add filename; git commit -m "Message/note").
+4. Fetch and merge from the remote again (git fetch and git merge; in case new commits were made while you were working).
+5. Push your branch up to the remote for review (git push destination localbranchname).
+
+
+
+
+
+
+
+
+
+
+

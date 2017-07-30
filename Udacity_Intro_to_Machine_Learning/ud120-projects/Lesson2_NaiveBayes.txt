@@ -1,0 +1,87 @@
+### SUPERVISED CLASSIFICATION/LEARNING ALGORITHMS ###
+
+# ALGORITHM 1) NAIVE BAYES
+  A good algorithm for working with text classification, e.g. classifying texts by author / style. 
+  It's called Naive because it calculates probabilities from word frequencies without considering word ORDER.
+  Usually this is OK but sometimes the order that words appear in changes their meaning.
+
+
+### Bayes Rule: Prior probability X Evidence = Posterior probability
+
+# Prior probability = some known info, e.g. chance of cancer, 1%
+
+# Evidence = test data, e.g. a positive or negative diagnosis, dC+ or dC-
+
+# Posterior = probability that the test result is correct,
+	    calculated as the prior * test sensitivity.
+
+# Example: calculate probability that a positive cancer diagnosis is a true positive.
+
+Test sensitivity: % of times when you are C+ and are diagnosed C+   (so if diagnosed C- it's a false negative).
+Test specificity: % of times when you are C- and are diagnosed C-   (so if diagnosed C+ it's a false positive).
+
+For this example, the posterior is calculated from the priors as follows.
+
+PRIORS:
+	- There is a 1% chance you have cancer (C+)
+	- test sensitivity and specificity, i.e. when tested you have:
+		- a 90% chance of being C+ and dC+ = 10% chance of being C+ but dC- (false neg)
+			- so test sensitivity = 0.9
+		- a 90% chance of being C- and dC- = 10% chance of being C- but dC+ (false pos)
+			- so test specificity = 0.1
+
+# To calculate probability that a positive diagnosis is a true positive.
+
+POSTERIOR 1 - the JOINT probability of two (opposite) events - positive/negative, yes/no - should add up to 1.
+	- chance of true pos if C+  : 0.01 chance of cancer    X  0.9 chance of being C+ and dC+ = 0.009  (0.9%)
+	- chance of false pos if C+ : 0.99 chance of no cancer X  0.1 chance of being C- but dC+ = 0.099  (9.9%)
+
+NORMALISER
+	- this means all possibilities, i.e. all positive dC+ tests
+	- the normaliser ensures both elements of the JOINT (above) have the same weight.
+	= (chance of being C+ and dC+   +   chance of being C- but dC+)
+	= (0.009 + 0.099)
+	= 0.108  (this is actually the probability that the test was what it was, i.e. pos if it was pos, neg if it was neg)
+
+POSTERIOR 2
+	- Posterior probability = desired event / normaliser
+	= chance of being C+ and dC+  /  normaliser
+		= 0.009 / 0.108
+		= 0.083  (8.3% = probability of true positive)
+
+	- chance of being C- but dC+  /  normaliser
+		= 0.099 / 0.108
+		= 0.9167 (91.67% = probability of false positive)
+
+Both cases should add up to 1 (0.083 + 0.9167 = 0.999999999)
+
+
+### Udacity example of emails sent by Chris vs Sara depending on words used.
+
+# Frequency of words used by each person:
+Chris: Love 0.1, Deal 0.8, Life 0.1
+Sara: Love 0.5, Deal 0.2, Life 0.3
+
+# Probability they sent any email:
+P(Chris) = 0.5
+P(Sara) = 0.5
+
+# To calculate a prior (?) probability for who sent an email saying 'LIFE DEAL'
+prob = word freq * word freq * probability they sent any email
+So the prob it was from Chris = 0.1 * 0.8 * 0.5 = 0.04
+		   from Sara  = 0.0.3 * 0.2 * 0.5 = 0.03
+	NOTE: these are not posteriors as they don't add up to 1
+
+# To calculate the POSTERIOR PROBABILITY (they are normalised, so add up to 1) for who sent an 
+# email saying 'LIFE DEAL'
+for Chris = 0.04 / (0.04 + 0.03) = 0.57
+for Sara  = 0.03 / (0.04 + 0.03) = 0.43
+
+# POSTERIOR PROBABILITY for who sent an email saying 'LOVE DEAL' 
+Chris prior = 0.1 * 0.8 * 0.5 = 0.04
+Sara prior = 0.5 * 0.2 * 0.5 = 0.05
+normaliser = 0.04 + 0.05 = 0.09
+Chris posterior = 0.04/0.09 = 0.44
+Sara posterior =  0.05/0.09 = 0.55
+
+

@@ -1,0 +1,77 @@
+### SUPERVISED CLASSIFICATION/LEARNING ALGORITHMS ###
+
+# ALGORITHM 2) SVM - SUPPORT VECTOR MACHINES  (v. popular algorithm)
+
+# SVMs are powerful when you have clear margin of separated between classes.
+# Can be VERY SLOW for training/predicting, especially large datasets with lots of features (e.g. text datasets).
+# Less powerful when classes overlap / there's a lot of noise as SVMs can be prone to overfitting.
+# For noisy/large datasets Naive Bayes classifiers perform better than SVMs.
+# So test the algorithm on the testing set to see how it performs.
+
+### Udacity's tip for choosing the right algorithm for your dataset
+# Try a few different algorithms for each problem. 
+# Tuning the parameters can be a lot of work, but GridCV is a great sklearn tool that can find an optimal parameter 
+  tune almost automatically (will learn this tool later on).
+
+
+
+###  How SVM works
+
+# Creates a decision boundary (line) to classify data, where the line is positioned where it maximises the MARGIN 
+#	Margin = distance to nearest (training data~) point in each data class.
+#	= So SVM finds the "maximum margin separator".
+
+# But: 	SVM puts the correct classification first and THEN maximises the margins, subject to that constraint. 
+	Maximising the margins maximises the robustness to classification error.
+	Depending on the distribution/spread of training data points, SVM algorithm may not maximise every margin.
+
+# OUTLIERS: SVMs is robust to outliers
+	# Can still produce a decision surface that maximises the margins to each class, while ignoring the outlier/s.
+	# Trades off attempting to find the maximum margin separator with ignoring outliers.
+	# SVM parameters determine tolerance to outliers.
+
+
+#### PARAMETERS 
+
+# THESE INFLUENCE THE DECISION BOUNDARY that your algorithm arrives at.
+
+### KERNEL PARAMETER
+# Decision boundaries can be linear or non-linear. 
+# Kernel functions are used to define non-linear boundaries 
+# (i.e. we can use a 'kernel trick' to transition from a linear to a non-linear decision surface).
+
+# Kernel functions are an extra argument passed to the SVM algorithm in addition to X (features) and y (labels)
+# E.g. |x| (absolute x, so converting negative values to positive), x2 + y2 (creates a new dimension Z that measures
+# the distance from the origin: Udacity lesson 3 video 16) or other more complex expressions.
+
+# Kernels work by re-plotting the data into a format that allows linear separation, creating the linear decision 
+# surface and then converting that back to the original data layout, when the linear surface will become non-linear.
+# E.g. using x2+y2 might produce a circular decision surface around the origin; |x| might produce a v-shaped decision surface.
+
+# sklearn includes some common kernel functions or you can write your own. 
+
+# you code in the kernel when creating the classifier:
+clf = SVC()			# creates a standard classifier using default settings (so decision boundary might be non-linear).
+clf = SVC(kernel = "linear")    # creates a classifier that will produce a linear decision boundary.
+
+
+
+### GAMMA PARAMETER
+# Ranges from 1 to 1000+
+# Defines how much influence a single traiing example has (sensitivity to outiers).
+# High gamma = each point (training example) only has a close reach, so the position of the decision boundary 
+		# is only dependent on the points closest to it.
+# Low gamma = each point has a far reach: even the far away points are considered when defining the boundary.
+		# So low gamma is less influenced by close points (= smoother, more linear boundary)
+		# With high gamma close points have more weight/influence on the boundary (=more wiggly, as 
+		# the close points can pull the boundary over/around them).
+
+
+### C PARAMETER
+# C = SVM regularization parameter. Default=1. Reduce for noisy data.
+# Controls the tradeoff between misclassification of training examples and the simplicity/smoothness of the decision surface.
+# Low C makes decision surface smooth.
+# High C aims to classify all training examples correctly, leading to more complex surface.
+
+# Proper choice of C and gamma is critical to the SVM’s performance. 
+# One is advised to use sklearn.model_selection.GridSearchCV with C and gamma spaced exponentially far apart to choose good values.

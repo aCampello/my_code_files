@@ -1,0 +1,48 @@
+### Choose your own algorithm
+
+#==========================#
+###  K Nearest Neighbour
+#==========================#
+
+### Attributes
+# Widely used classification technique
+# (Can also be used for regression).
+# Easy to interpret output, reasonable predictive power and low calculation time (compared to e.g. random forest).
+
+### How it works
+# Assigns a query point to the class most common among it's k-nearest neighbours in the feature space.
+# So the class is based on a 'majority vote' among the nearest neighbours.
+
+
+### The choice of the parameter K is crucial in this algorithm.
+
+# K = the number of neighbours we wish to consider when classifying a datapoint.
+# E.g. if K=3 we consider the class of the 3 closest points to the datapoint you wish to classify.
+# in sklearn, the default k = 5
+# Might be better if k=odd, as with an even no. neighbours we risk having no majority and so classification failure??
+
+# The optimal value of k is highly data-dependent: 
+# In general a larger k suppresses the effects of noise (smoother decision boundaries),
+#   but makes the classification boundaries less distinct (lower accuracy).
+
+
+##### The 1-nearest neighbour classifier (i.e. K=1)
+
+# The most intuitive nearest neighbour type classifier
+# Assigns a datapoint to the class of its single closest neighbour
+# The closest point to any training datapoint it itself, so the error rate at K=1 is always zero for the training dataset.
+# So predictions are always accurate with K=1
+# But at K=1 you risk overfitting the decision boundary (high validation error rate) as it's very sensitive to noise 
+#   - cue very complex decision boundary.
+
+
+
+##### The weighted nearest neighbour classifier 
+
+# The basic KNN classifier uses uniform weights: weights = 'uniform'.
+# Sometimes it's better to allow nearer neighbours to have a greater influence on the classification.
+
+# The weighted KNN assigns the k nearest neighbours a weight 1/k, and assigns all other neighbours a weight 0.
+# Weight is a tunable parameter: 
+# weights = 'distance'  assigns weights proportional to the inverse of the distance from the query point.
+# Alternatively, a user-defined function of the distance can be supplied which is used to compute the weights.

@@ -1,0 +1,265 @@
+
+##### Codecademy Command Line course notes 27/06/17 #####
+
+# Most of these commands don't work in the command prompt on my Lenovo Z50 (Windows 10)
+# Use Git Bash instead. They all work in that.
+
+#------------------------------
+
+##### Basic notes
+
+$ = a shell prompt that shows when the terminal is ready to accept a command.
+
+filesystem 	= the tree-structure in which saved files and folders are organised.
+		The first (topmost) folder is the 'root directory' and the 'parent' of all other directories and files in the filesystem.
+		Each parent directory can contain more 'child' directories and files. Nested files have a parent-child relationship.
+
+#------------------------------
+
+##### Basic commands to navigate the filesystem
+
+pwd	# print the current working directory (folder).
+
+ls	# lists all files and folders (directories) in the working directory. 
+	# NOTE: 'ls' doesn't work in the command prompt on my Lenovo Windows 10. Need to use 'dir' instead. * ls does work in Git Bash.
+
+cd foldername	# switches the working directory to foldername. 
+		# can also use filepaths to navigate to the new directory, e.g. cd parentfolder/childfolder/ 
+		# type 'cd' and double-tap tab to list all folders/directories within the curent working directory (in Git Bash).
+
+cd ..		# cd <space> .. means 'move up one' so changes the working directory to the parent folder of the current working directory.
+
+cd ../feb/	# if the current working directory was user/month/jan/ this moves up one from 'jan' to 'month' and down one again to 'feb'
+
+mkdir newfoldername # makes a new directory called newfoldername inside the working directory.
+
+touch filename	# creates a new file called filename inside the working directory.
+
+#------------------------------
+
+##### Modifying commands using OPTIONS
+
+# NOTE: these don't work for my Lenovo Windows 10.
+
+ls -a	# the -a is an 'option'
+	# this lists all files and folders in the working directory INCLUDING hidden files, which all start with a dot (.)
+ 	# hidden files are not shown by the standard ls command.
+
+ls -l	# lists all contents of a directory in long format - a table with 7 columns, which are from left to right:
+	# Access rights: actions permitted on a file or directory.
+	# No. hard links: no. child directories and files, including the parent directory link (..) and the current directory link (.).
+	# Username of file owner.
+	# Name of group that owns the file.
+	# File size in bytes.
+	# Date & time when file was last modified.
+	# Name of file or directory.
+
+ls -t	# orders files and directories by the time they were last modified.
+
+# Multiple options can be used together in a single command line, e.g.:
+ls -alt	# combines ls -a, ls -l and ls -t to show hidden files in an ordered table.
+ls -al	# shows hidden files in a table.
+
+#------------------------------
+
+##### Copying files (cp)
+
+cp filename_1 filename_2	# cp copies files/directories, e.g. here it copies the contents of filename_1 into filename_2 WITHIN THE SAME DIRECTORY.
+
+cp biopic/cleopatra.txt historical/			# copies the file 'cleopatra.txt' from the 'biopic' folder into the 'historical' folder.
+cp biopic/cleopatra.txt biopic/ray.txt historical/	# copies both cleopatra.txt and ray.txt from biopic into historical folder.
+
+cp * satire		# * is a wildcard and selects all files/folders in the working directory, and in this case copies them to the folder called 'satire'
+
+cp m*.txt scifi		# m*.txt selects all files in working directory that start with 'm' and end with '.txt' and copies them into the folder called 'scifi'
+
+
+#------------------------------
+
+##### Moving files (mv)
+
+mv filename destfoldername			# move a file from the working directory (wd) to a different folder.
+mv superman.txt superhero			# moves the file 'superman.txt.' from the wd to the superhero directory (folder).
+
+mv filename1 filename2 destfoldername		# move multiple files at once.
+e.g. mv superman.txt wonderwoman.txt superhero	# moves both superman.txt and wonderwoman.txt from the wd to superhero directory.
+
+mv filename newfilename				# re-name a file (=moves the old file into a new file with a new name).
+e.g. mv batman.txt spiderman.txt		# renames the file 'batman.txt' as 'spiderman.txt'.
+
+
+#------------------------------
+
+##### Delete files and directories PERMANENTLY - be careful as there isn't an 'undelete' command! (rm)
+
+rm filename		# delete file from working directory
+
+rm -r foldername	# delete folder and all it's child directories/files ('r' stands for 'recursive')
+
+
+#------------------------------
+
+##### Input and output (I/O) redirection
+
+# To redirect input/output to/from programs and files outside of the command line.
+
+# stdin = standard input, info inputed to terminal through the keyboard/input device.
+# stout = standard output, info outputted after a process is run.
+# sterr = standard error, error message outputted by a failed process.
+
+# Use the '>' command to send output (e.g. the string "Hello" to an external file (called 'Hello.txt'). 
+E.g.
+echo "Hello" > hello.txt	# echo command repeats the stdin back as stout, i.e. here it returns 'Hello'.
+
+cat hello.txt			# the cat command outputs the contents of a file to the terminal
+				# not advisable for long files (limited display length)
+
+less hello.txt			# display file contents but press 'q' to exit so you can still view command history.
+				# navigate via pgup pgdown
+				# /word to search/highlight all instances of the word 'word'
+				# press 'h' to list all commands in the program 'less'
+
+wc hello.txt			# wc command outputs the number of lines, words, and characters in the file.
+
+sort hello.txt			# lists contents of the file in alphabetical order.
+
+
+### Moving content from left to right:
+
+cat filename_1 > filename_2		# '>' redirects stout of a command to a file, OVERWRITING previous content.
+
+cat filename_1 >> filename_2		# '>>' redirects stout of a command to a file, APPENDING new content to old content.
+
+### Moving content from right to left:
+
+cat < lakes.txt				# redirects stdin to a command.
+					# e.g. inputs the file on the right in to the program on the left.
+					# in this case the program is 'cat' so the output of lakes.txt appears in the terminal.
+
+# Pipes '|'				# '|' redirects the stout of a command (on the left) to another command (on the right)
+					# = command-to-command redirection.
+E.g.
+cat volcanoes.txt | wc			# redirects the contents of volcanoes.txt to the wc command, which counts and prints the no. 
+					# lines, words and characters in the file.
+
+# You can chain multiple pipes together:
+cat volcanoes.txt | wc | cat > islands.txt	# pipes the stdout of cat volcanoes.txt to wc, which is then piped to cat,
+						# which is then redirected to islands.txt.
+
+cat lakes.txt | sort > sorted-lakes.txt		# takes the stout (standard output) of cat lakes.txt and pipes it to sort, which 
+						# sorts it A-Z and then redirects the sorted output to sorted-lakes.txt.
+
+uniq lakes.txt			# the command uniq filters out adjacent, duplicate lines in a file 
+				# (doesn't just remove duplicates - they have to be adjacent duplicates)...
+sort uniq lakes.txt | uniq	# ... so it's more efficient to alphabetize the file first using SORT, and then pipe the stdout to UNIQ.
+
+sort uniq lakes.txt | uniq > uniq-deserts.txt	# this does the same as above but redirects the output to an external file rather than the terminal.
+
+grep	# = "global regular expression print" - searches files for lines that match a pattern and returns the results. Case sensitive. 
+
+E.g.
+grep Mount mountains.txt	# shows only the lines in mountains.txt that contain 'Mount' (i.e. shows 'Mount Kilimanjaro'
+				# and removes 'The Himalayas', but also removes 'Scandinavian mountains' as it's case sensitive).
+
+grep -i Mount mountains.txt	# '-i' allows grep to be case insensitive, so will not remove 'Scandinavian mountains'.
+
+# Can combine grep options, e.g. 
+grep -i -R Mount mountains.txt	# shows all mountain ranges that contain 'Mount' or 'mount' anywhere in their name.
+
+# grep can also be used to search within directories (file paths)
+
+grep -R		# '-R' = 'recursive', so searches all files in a directory and outputs filenames and lines containing matched results.
+E.g.
+grep -R Arctic /home/ccuser/workspace/geography		# <- this command searches for the word 'Arctic' within the given directory
+							# and lists the files and lines within files that contain 'Arctic'.
+
+grep -Rl	# (lowercase L): searches all files in a directory and only outputs filenames containing matched results, not lines.
+		# again, 'R' stands for recursive, and 'l' stands for 'files with matches'
+
+
+sed 's/snow/rain/' forests.txt	# sed stands for "stream editor" and is similar to 'Find & Replace'
+				# Takes a stdin and modifies it based on an expression, before displaying it as output data.
+				# In s/snow/rain/ s=substitution, snow=search string (text to find), rain=replacement sting (text to add in place).
+				# sed searches forests.txt for the word "snow" and replaces it with "rain."
+	# sed 's/snow/rain/' only replaces THE FIRST INSTANCE of snow on each line !!!
+	# sed 's/snow/rain/g' means 'global' and replaces ALL INSTANCES of snow on each line.
+
+
+#-------------------------------------
+
+##### The python 2to3 command to translate python 2 code to python 3
+# Use the 2to3 command in the cmd line
+# Help page: https://docs.python.org/release/3.0.1/library/2to3.html
+
+# The 2to3 script is located in C:\Users\User\Anaconda3\Scripts  (I have set this as the Path for the cmd line already, via the Control Panel: See my notes in "Using conda to manage packages in Python.txt" / Change the path via: ControlPanel\System\Advanced system settings\Environment Variables\Path-edit)
+
+# Can either translate code entered directly into the command line, or code saved in a file (file can be .txt or .py; haven't tried any other file types).
+
+# Change the working directory in the cmd line to the location of the file containing the code to be translated.
+2to3 FILENAME.py	# this outputs changes that need to be made to convert each line from Python2 to Python3 into the console.
+2to3 -w FILENAME.py	# this makes any necessary changes directly to the source file (and makes a backup copy of the original file version called FILENAME.py.bak).
+2to3 -w -n FILENAME.py	# this makes any necessary changes directly to the source file (WITHOUT making a backup of the original). 
+
+#-------------------------------------
+
+##### bash_profiles
+
+# profiles store settings and aliases and are stored as hidden files in the working directory. 
+
+~/.bash_profile is where environment settings are stored. You can edit this file with the nano editor (='nano').
+
+# Nano is a command line text editor used to configure the environment.
+# To open a profile in nano:
+nano /.bash_profile	# '~' means current directory, '.' means the file is hidden.
+
+## Basic profile changes
+echo "Welcome to the profile"	# this is a welcome message that will show in the terminal every time the profile is loaded/opened.
+
+alias "pw"="pwd"	# sets pw to be an alias for pwd, so both commands perform the same job.
+
+
+## Changing environmental variables
+# The environment = the preferences/settings of the current user.
+# Enviro variables can be used across commands and programs and hold info about the enviro.
+
+export USER="Jane"	# USER is the name of the current user
+			# export saves USER as a given name, so when you type 'echo $USER' in the terminal it returns "Jane" (the value of USER).
+			# Note '$' is always used when returning a variable's value.
+			# export makes the variable available to all child sessions initiated from the session you're in - makes the variable persist across programs.
+
+export PS1=">> "	# the PS1 variable defines the makeup & style of the command prompt (the shell at the start of each command line)
+			# so this code changes it from the default '$' to '>>' 
+
+echo $HOME		# displays the path of the home directory (C:/User/User or something)
+			# The home diretory is not usually customised.
+
+echo $PATH		# PATH returns a colon-separated list of file paths that contain command line scripts. 
+			# e.g. the command pwd is stored in the /bin directory and /bin/pwd is the script executed whenou type the pwd command.
+			# PATH is customised in advanced cases.
+
+env			# returns a list of environment variables for the current user, e.g. PATH, PWD, HOME
+
+env | grep PATH		# the stout of 'env' is piped to the grep command: grep searches for the value of PATH and outputs it to the terminal.
+			# so this command displays the value of ONE environment variable (in this case 'PATH').
+
+
+## To save changes to a bash_profile use the shortcuts at the bottom of the screen. '^' means the Ctrl Key, so '^O' means Ctrl+O 
+	^O to save
+THEN:
+	^X to exit
+THEN type 'clear' into the terminal to clear it - this saves the profile (I think).
+
+# Use 'source' to activate the bash profile for the current shell session.
+source ~/.bash_profile
+
+
+### Launch a Notepad file via the command line
+notepad		# will say 'do you want to create a new file?'
+notepad myfile.txt	# will launch the existing file called myfile.txt
+
+### Compare two files
+diff file1.txt file2.txt	# will return which text is different between the two files.
+
+### PASTING in Git Bash
+# The shortcut is <CtrlShift/Insert> # i.e. including the forward-slash.
+NOTE: put a < before typing the paste shortcut or else the pasted item will appear several spaces before where the cursor is (why?!).

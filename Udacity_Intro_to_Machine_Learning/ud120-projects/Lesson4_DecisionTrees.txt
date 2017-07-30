@@ -1,0 +1,57 @@
+### SUPERVISED CLASSIFICATION/LEARNING ALGORITHMS ###
+
+# ALGORITHM 3) DECISION TREES
+
+# Allow you to ask multiple linear questions one after another.
+# Easy to use
+# Easier to interpret visually than SVMs
+# You can build bigger classifiers out of decision trees using ENSEMBLE METHODS.
+
+# Prone to overfitting (especially for datasets with many features)
+# Tune parameters to avoid overfitting, e.g. using min_samples_split: if nodes end up with just one 
+	# datapoint you've almost always overfit.
+# Important to measure how well you're doing and stop the tree at the appropriate time.
+# Also play with the variance-bias tradeoff and the split criterion (entropy, gini...)
+
+### ENTROPY AND IMPURITY
+
+# Entropy controls how a decision tree decides where to split the data.
+# It is a measure of impurity in set of examples (training data).
+
+# E.g. when you can drive either fast/slow depending on the terrain (gradient and bumpiness) the scatterplot
+has a sloping boundary between fast at low gradient/low bumpiness and slow at high gradient/high bumpiness...
+
+... But if there is a speed limit you can only drive slow regardless of the terrain (=splits the graph in two 
+halves for yes/no speed limit, and the no-speed-limit half will contain a sloping boundary for speed vs terrain.
+
+# Decision trees make decisions by finding variables, and split points along those variables, that create
+subsets of the data that are as PURE as possible (i.e. contain only one class / not 'contaminated' by points 
+from other classes). 
+
+# Entropy formula: SUM[-Pi * log2(Pi)]
+# Pi = fraction of examples in class i 
+# So if there are 4 examples and 2 are slow, then Pslow = 2/4 = 0.5; Pfast = 2/4 = 0.5. 
+# Then to calculate Entropy you sum over all the classes that are available, e.g. for the Pslow/Pfast example:
+Entropy = [-0.5 * log2(0.5)] + [-0.5 * log2(0.5)] = 0.5 + 0.5 = 1.
+# If Pslow was 0.25 and Pfast was 0,75:
+Entropy = [-0.25 * log2(0.25)] + [-0.75 * log2(0.75)] = 0.5 + 0.311 = 1.
+
+# So entropy measures the distribution of examples between classes = impurity (the opposite of purity).
+
+# If Entropy = 0    ---  all examples are of the SAME CLASS = PURE (i.e. the least IMPURE sample possible) - i.e. if Pi=1 then entropy=[-1 * log2(1)] = [-1*0] = 0.
+# If Entropy = 1.0  ---  all examples are evenly split between all the available classes = the most IMPURE sample possible.
+
+
+### INFORMATION GAIN (ranges from 0 to 1)
+# Defined as the entropy of the parent minus the weighted average of the entropy if you split that parent (into children):
+# So:
+Information gain = entropy(parent) - [weighted average]entropy(children)
+
+# The decision tree algorithm will maximise information gain:
+# this is how it chooses which feature/variable to make a split on, and how to make the splits.
+
+### Bias-variance tradeoff
+# High bias machine learning algorithms: practically ignore the data / almost no capacity to learn anything.
+# High variance machine learning algorithms: highly perceptive to data / only knows how to respond to situations it has seen before / struggles to generalise to new information.
+
+# 
