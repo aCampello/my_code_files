@@ -1499,9 +1499,16 @@ import math             # Imports the math module
 everything = dir(math)  # Sets everything to a list of things from math
 print(everything)        # Prints the names of all the functions.
 
-# Download only the packages you want with the conda command (in git bash?)
+# Download only the packages you want with the conda command (in Git Bash, not Spyder)
 conda install PACKAGENAME
+# e.g. conda install pyflux
 
+# can use pip instead of conda, but not recommended for Anaconda users 
+pip install PACKAGENAME
+
+# View module version
+import numpy as np
+np.__version__
 
 
 # =============================================================================

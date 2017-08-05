@@ -1,3 +1,4 @@
+
 ### Conda: the package manager for Python in Anaconda 
 # NB: 'pip' is the package manager for Python if you don't have Anaconda installed
 # If you have Anaconda installed, using pip can break your Python installation.
@@ -5,6 +6,7 @@
 
 # To install a new package:
 conda install PACKAGENAME		# enter this on the command line, not in Spyder/Anaconda.
+e.g. conda install pyflux
 
 # If it says 'invalid syntax' or the command is not recognised then conda needs updating.
 
