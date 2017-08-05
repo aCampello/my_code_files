@@ -50,8 +50,7 @@ Information gain = entropy(parent) - [weighted average]entropy(children)
 # The decision tree algorithm will maximise information gain:
 # this is how it chooses which feature/variable to make a split on, and how to make the splits.
 
-### Bias-variance tradeoff
-# High bias machine learning algorithms: practically ignore the data / almost no capacity to learn anything.
-# High variance machine learning algorithms: highly perceptive to data / only knows how to respond to situations it has seen before / struggles to generalise to new information.
 
-# 
+### Bias-variance tradeoff
+# Might need to limit number of branches on the tree by having a minimum number of samples in each bucket, to avoid overfitting.
+# See <...Machine_Learning/ud120-projects/Bias-variance tradeoff.txt>

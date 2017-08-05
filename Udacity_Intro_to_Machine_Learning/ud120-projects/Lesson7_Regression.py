@@ -15,14 +15,27 @@ C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_
 
 from sklearn.linear_model import LinearRegression
 reg = LinearRegression()
-reg.fit(ages_train, net_worths_train)
+reg.fit(features_train, labels_train)
 
 # or as a function:
-def studentReg(ages_train, net_worths_train):
+def regfun(features_train, labels_train):
     from sklearn.linear_model import LinearRegression
     reg = LinearRegression()
-    reg.fit(ages_train, net_worths_train)
+    reg.fit(features_train, labels_train)
     return reg
-reg = studentReg(ages_train, net_worths_train)
+reg = regfun(features_train, labels_train) 
 
-""""""
+# predictions
+preds = reg.predict(features_test)  # where features_test is an array of shape = (n_samples, n_features)
+
+# e.g. to predict the y-value for a new point [2, 4] (i.e. value for feature_1 = 2 and value for feature_2 = 4)
+reg.predict([[2,4]])         # list of lists (one per point, despite there being only one point in this example)
+# e.g. to predict the y-value for two new points
+reg.predict([[2,4], [2,7]])  
+
+
+# access the coefficients and intercept
+print reg.coef_
+print reg.intercept_
+
+###############################################################################

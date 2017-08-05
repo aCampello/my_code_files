@@ -1,10 +1,14 @@
 #!/usr/bin/python
 
+cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\final_project
+
 import sys
 import pickle
-sys.path.append("../tools/")
 
+sys.path.append("./tools/")
 from feature_format import featureFormat, targetFeatureSplit
+
+sys.path.append("./final_project/")
 from tester import dump_classifier_and_data
 
 ### Task 1: Select what features you'll use.
@@ -14,7 +18,7 @@ features_list = ['poi','salary'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
-    data_dict = pickle.load(data_file)
+    data_dict = pickle.load(data_file) 
 
 ### Task 2: Remove outliers
 ### Task 3: Create new feature(s)

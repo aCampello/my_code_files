@@ -1,0 +1,14 @@
+
+### Bias-variance tradeoff in machine learning algorithms/models
+# Tradeoff between goodness (VARIANCE) and the simplicity (BIAS) of the fit. 
+# Sweet spot = balance between FEW FEATURES and HIGH R-Sq/low SSE.
+
+# High bias algorithms: 
+- OVERSIMPLIFIED: they practically ignore the data / have almost no capacity to learn anything.
+- Give high error on training set (low R-Sq, large sum of sq errors)
+- e.g. when you use too few features (variables)
+
+# High variance: (variance = the willingness/flexibility of an algorithm to learn)
+- OVERFIT: they are highly perceptive to data and basically just memorise the training examples, so struggle to generalise to new data/examples.
+- Good fit to training set but high error on test set.
+- e.g. when you use too many features and too carefully optimised performance to training data.

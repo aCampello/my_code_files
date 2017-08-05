@@ -2,7 +2,7 @@
 """
 Created on Sat Jul 29 17:29:06 2017
 
-Udacity intro to machine learning lesson 11: Text Processing
+Udacity intro to machine learning lesson 11: TEXT PROCESSING
 
     How to pre-process / prepare text data before you pass it into a machine 
     learning algorithm.
@@ -106,9 +106,9 @@ print vectorizer.vocabulary_.get("hello")    # returns the word number of "hello
 
 ###############################################################################
 
-### TfIdf representation
+### The TfIdf representation
 
-# Two-step process: 
+# Two-step process (I think)
     # first weights words within docs using Tf
     # then uses Idf to weight words within the corpus, based on the results of Tf.
 
@@ -138,8 +138,27 @@ print "Num words:", len(vectorizer.get_feature_names())   # Num words: 3078
 # What is word number 34597 in the vectorizer:
 vectorizer.get_feature_names()[34597]    # = 'stephaniethank'
 
+# list all words in the vectorizer
+vectorizer.get_feature_names()
+
 ###############################################################################
 
+# Can do Feature Selection when making a TfIdf vectorizer, using max_df
+
+""" 
+max_df: float in range [0.0, 1.0] or int, default=1.0
+
+    # Specifies that when building the vocabulary ignore terms that have a 
+      document frequency strictly higher than the given threshold 
+      (corpus-specific stop words). 
+    # If float, the parameter represents a proportion of documents
+    # If integer, absolute counts. 
+    # This parameter is ignored if vocabulary is not None. """
+
+# e.g...
+vectorizer = TfIdfVectorizer(max_df=0.5)  # 0.5 = ignore words that occur in > 50% of the documents
+
+###############################################################################
 
 ### STOPWORDS
 

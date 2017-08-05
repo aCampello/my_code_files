@@ -38,7 +38,7 @@ word_data = []
 ### can take a long time
 ### temp_counter helps you only look at the first 200 emails in the list so you
 ### can iterate your modifications quicker
-temp_counter = 0
+# temp_counter = 0
 
 
 for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
@@ -61,7 +61,7 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             
             ### use str.replace() to remove any instances of the words
             ### ["sara", "shackleton", "chris", "germani"]
-            blacklist = ["sara", "shackleton", "chris", "germani"]
+            blacklist = ["sara", "shackleton", "chris", "germani", "sshacklensf", "cgermannsf"]  # NOTE added "sshacklensf" and "cgermannsf" for Lesson 12 Quiz 29+30.
             for word in blacklist:
                 stemmed_text = stemmed_text.replace(word, "")
                 
@@ -69,7 +69,7 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             word_data.append(stemmed_text)
             
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-            if name == "Sara":
+            if name == "sara":
                 from_data.append(0)
             else:
                 from_data.append(1)

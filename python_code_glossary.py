@@ -348,7 +348,7 @@ eval()
     
     Rescaling is only useful for some algorithms: 
     It will affect the results of algorithms like SVMs with rbf (non-linear)
-    kernels, and k=means clustering, work in multiple dimensions (trade-off 
+    kernels, and k-means clustering, work in multiple dimensions (trade-off 
     one dimension against the other).
     
     Scaling won't affect the results of decision trees, that use vertical/
@@ -357,10 +357,11 @@ eval()
     for each variable that are unrelated to each other).
 """
 
-# Can rescale feature data in sklearn using MinMaxRescaler:
+# Can rescale feature data in sklearn using MinMaxRescaler or StandardScaler:
 #       http://scikit-learn.org/stable/modules/preprocessing.html
 # the input data should be a NUMPY ARRAY of FLOATs.
 
+# MinMaxScaler
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
 rescaled_data = scaler.fit_transform(data) 
@@ -376,7 +377,12 @@ salaries = numpy.array([[477.],[1111258.], [200000.]])  # example
 scaler = MinMaxScaler()
 scaler.fit_transform(salaries)  # 200,000 is rescaled to 0.179                                               
                                                                      
-
+# StandardScaler
+# to standardize features by removing the mean and scaling to unit variance.
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler().fit(data)
+    
+    
 # ============================================================================
 ### """ FILE INPUT/OUTPUT (I/O) """
 # ============================================================================
@@ -667,9 +673,43 @@ result  # returns ['', 0]
 result[0], result[1] = 'a', 90  # to update the result from within the function
 result  # returns ['a', 90]
 
-### List comprehension - a way to make lists
+
+### List comprehension
+
+# list comprehension to create lists
 my_list = [x ** 2 for x in range(1, 11)]  # makes a list of squared numbers (x**2) from 1 to 10 (range 1,11). Here, the list should be: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100].
 my_list[::-1]  # negative strides print the list backwards / traverses from right to left.
+
+# list comprehension to compare two lists (3 examples)
+
+""" Print all items in list_a that do not appear in list_b. """
+print [item for item in list_a if item not in list_b]  # list comprehension
+# the line above is equivalent to: (just puts the print statement at the start instead)
+for item in list_a:
+    if item not in list_b:
+        print item
+
+""" To compare two ordered lists of equal length, e.g. labels_test vs pred
+    in machine learning """          
+len([1 for i, j in zip(list_a, list_b) if i == j]) # makes a new list with a 1 for each instance when items in list_a & list_b (at the same index position) match.
+# the list comprehension above is equivalent to:     
+counter = 0
+for i, j in zip(list_a, list_b):
+    if i == j:
+        counter += 1
+print counter  # print the total
+
+""" list comprehension with 2 if statements """
+len([1 for i, j in zip(list_a, list_b) if i == 1.0 if i == j]) 
+# long-hand equivalent:
+counter = 0
+for i, j in zip(list_a, list_b):
+    if i == 1.0:   # only look at values in list_a that are equal to 1.0.
+        if i == j:
+            counter += 1
+print counter  # print the total.
+
+
 
 # length of list
 len(list)   # returns number of elements in the list (only counts outer elements, so in a list of two lists len = 2)
@@ -698,7 +738,9 @@ new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list 
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 
 ### List mutation: change/add/delete
-# lists are mutable (can be changed/appended) unlike strings, e.g. can't change letters in strings using string[0]='s' will cause an error; but can change values in lists or add new values.
+""" lists are mutable (can be changed/appended) unlike strings, e.g. can't 
+    change letters in strings using string[0]='s' will cause an error; but can 
+    change values in lists or add new values."""
 
 # Change values in lists
 square_list[1] = 70  # changes the item at index #1 to 70.
@@ -761,6 +803,9 @@ a.index([6])
 # sklearn is the key module for machine learning in Python.
 
 ### Data structure for sklearn
+# sklearn requires all inputs to be numeric (no text)
+# and arranged in a NumPy array (it won't accept dictionaries)
+
 """ A python dictionary can’t be read directly into an sklearn classification
     or regression algorithm; instead, it needs a NUMPY ARRAY or a LIST OF 
     LISTS (where each element of the list (itself a list) is a data point, and the 
@@ -779,22 +824,25 @@ a.index([6])
     
     If a feature doesn't have a value (e.g. no email available) the functions
     replace the NaN with 0. """
-    
+
+
 
 ### SUPERVISED MACHINE LEARNING
 
 # HOW IT WORKS
-""" You train the algorithm using a small training dataset and then use it to 
-    make predictions from new data.
+""" You subset your dataset into training and testing data, fit (train) the 
+    algorithm using the training data, and test it by using it to make 
+    predictions about the testing data.
 
-    # The training set comprises features and labels:    
+    # The training set comprises FEATURES and LABELS (unsupervised learning has only FEATURES):    
     # Features = datapoints with measurements of one or more variable, e.g. height
-    #     (can have multiple columns, e.g. gradient, bumpiness and speed limit)
-    # Labels = the result/value/target/class associated with each datapoint, e.g. tall/short, fast/slow.
+        (can have multiple columns, e.g. gradient, bumpiness and speed limit)
+    # Labels = the response/output/result/value/target/class associated with 
+        each datapoint, e.g. tall/short, fast/slow.
     
     # You test the algorithm by giving it a set of features (heights) to predict 
-    # the labels for, when you already know the answers, e.g. tall/short; the 
-    # accuracy score = how many predictions are correct.
+      the labels for, when you already know the answers, e.g. tall/short; and 
+      then calculate the accuracy score to show how many preds are correct.
     
     # More training data generally gives you a better result (higher accuracy) than
     # a fine-tuned algorithm (Udacity Lesson 6 video 3).
@@ -802,18 +850,9 @@ a.index([6])
     # Being able to use more data will almost always improve algorithm performance.
 """
 
-# Training set size
-""" If you have too few training examples the accuracy could be too low to be useful.
-    
-    The only way to know if you have enough data is to try the algorithm.
-    
-    If the accuracy is too low you could collect more data, e.g. do more training 
-    sessions in the self-driving car. 
-    
-    Sometimes it's not possible to collect more data, e.g. the Enron dataset.
-"""
+# For train/test split see validation section below
 
-## Classification vs Regression
+### Classification vs Regression
  """ Supervised learning is divided into two main categories: 
     
 # Supervised classification: 
@@ -829,7 +868,7 @@ a.index([6])
     # evaluate using the SSE or R-SQUARED
 """
 
-### Common Supervised Classification algorithms (discrete)
+### Common Supervised Classification algorithms (produce discrete outputs)
 
 ### (1) NAIVE BAYES
 """ Good for text datasets, doesnt account for word order """
@@ -840,7 +879,8 @@ a.index([6])
     Can produce non-linear decision boundaries
     Can be optimised using parameters including: kernels, gamma, and C
     Slow, especially for large, noisy datasets with many features (e.g. text)
-    Speed up optimisation by using smaller training datasets """
+    Speed up optimisation by using smaller training datasets.
+    ## SVMs are called SVC in sklearn - support vector classifier """
     
 # To take a subset of 1% of a training dataset: 
 features_train = features_train[:len(features_train)/100] 
@@ -853,7 +893,8 @@ labels_train = labels_train[:len(labels_train)/100]
     - Easier to interpret visually than SVMs
     - You can build bigger classifiers out of decision trees using ENSEMBLE METHODS.
 
-    - Prone to overfitting (especially for datasets with many features)
+    - Prone to overfitting, especially when using many features and/or small training sets.
+    - Overfit decision trees would give high accuracy on training set and low on the test set.
     - Tune parameters to avoid overfitting, e.g. using min_samples_split: if nodes end up with just one 
         datapoint you've almost always overfit.
         
@@ -872,7 +913,7 @@ labels_train = labels_train[:len(labels_train)/100]
     neighbours in the feature space.
 """
 
-### sklearn syntax for classifier algorithms
+### sklearn syntax for clasfrom sklearn import treesifier algorithms
     
 # 1) Import the algorithm / function
         from sklearn.naive_bayes import GaussianNB    # for naive Bayes
@@ -882,7 +923,7 @@ labels_train = labels_train[:len(labels_train)/100]
         
 # 2) Create the classifier
         clf = GaussianNB()      # for naive Bayes
-        clf = svm.SVC()         # for SVM
+        clf = svm.SVC()         # for SVM (svms are called SVC in sklearn)
         clf = tree.DecisionTreeClassifier()     # for decision trees
         clf = KNeighborsClassifier(n_neighbors=5, weights="uniform")   # for KNN
         
@@ -898,7 +939,7 @@ from sklearn.metrics import accuracy_score    # import the accuracy function
 accuracy_score(pred, labels_test)    # output is a % accuracy score (proportion
                                      # of predictions that matched the test
                                      # labels (=known/correct labels).
-
+print clf.score(features_test, labels_test)  # another way to get the accuracy
 
 # Can also create and train classifiers/regressions using a function
 def classify(features_train, labels_train):
@@ -908,6 +949,22 @@ def classify(features_train, labels_train):
     return clf
 clf = classify(features_train, labels_train)
 
+
+# For feature selection: list the relative importance of each feature
+# (used this command on a decision tree in C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\feature_selection\find_signature.py
+clf.feature_importances_    # returns a list of importance scores for each feature
+
+
+## To check for outliers / features with unusually high importance:
+# Loop through the features and print only the features with importance > 0.1.
+# Use a counter to get the feature number.
+counter = -1
+for importance in clf.feature_importances_:
+    counter += 1
+    if importance > 0.2:
+        print "Feature number:", counter, "Importance:", importance
+        
+        
 
 ### A note about classification datasets
 """ When generating / augmenting a dataset, be VERY careful if your data are
@@ -927,7 +984,7 @@ clf = classify(features_train, labels_train)
     features that vary with source, e.g. wind. """
 
 
-### Regression / continuous machine learning
+### REGRESSION (produce continuous outputs)
 
 # Output = slope * input + intercept    (y=mx+b)
 # intercept=0 if line passes through the origin.
@@ -935,10 +992,17 @@ clf = classify(features_train, labels_train)
 # fit and train regression
 from sklearn.linear_model import LinearRegression
 reg = LinearRegression()
-reg.fit(ages_train, net_worths_train)
+reg.fit(features_train, labels_train)
 
-# preds
-pred = reg.predict([27])    # predict net worth for someone aged 27
+# predictions
+preds = reg.predict(features_test)  # where features_test is an array of shape = (n_samples, n_features)
+
+# e.g. to predict the label of a new point [2, 4] (i.e. value for feature_1 = 2 and value for feature_2 = 4)
+reg.predict([[2,4]])         # list of lists (one per point, despite there being only one point in this example)
+# e.g. to predict the label of two new points
+reg.predict([[2,4], [2,7]])  
+# e.g. to predict the label of a new point when the regression has only one feature, e.g. age
+pred = reg.predict([[27]])  
 # NOTE: for regressions values to predict for must be in a list, even if there's only one value:
 pred = reg.predict(27)  # won't work as 27 is not in a list.
 
@@ -1017,12 +1081,11 @@ print "TRAIN SET r-sq:", reg.score(ages_train, net_worths_train)  # for the trai
 print "slope:", reg.coef_            # show the slope  (as an array, shape (n_features, ) or (n_targets, n_features))
 print "intercept:", reg.intercept_   # show the intercept (as an array, shape (n_targets,) or (1,) or empty)
 
-####################################################
+#####################################
+### UNSUPERVISED MACHINE LEARNING 
 
-### UN-SUPERVISED MACHINE LEARNING 
-
-# To find strucure in data without labels
-# (i.e. without flags that tell you the correct answer)
+# The training set has only FEATURES and no LABELS
+# So you have to find strucure in data without labels
 
 # Unsupervised learning techniques are CLUSTERING and DIMENSIONALITY REDUCTION.
 
@@ -1098,8 +1161,301 @@ kmeans.fit_predict(features) # equivalent to calling fit(X) followed by predict(
 
 
 
+### PCA
+""" Useful for dimension reduction (feature transformation to condense many features
+    into fewer 'latent' features) as a form of unsupervised learning, to prepare
+    data for input into an algorithm such as an SVM.
+        
+    For details see file lesson13_pca.py in:
+    C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects
+"""
+# can use PCA as preprocessing for a SVM:
+from sklearn.decomposition import PCA
+
+# training phase
+pca.fit(features_train, labels_train)   # finds the principal components
+features_train_pca = pca.transform(features_train, labels_train)   # transforms the training set into a new representation where the principal components are the new features.
+svc.fit(features_train_pca, labels_train)   # fit the classifier
+
+# testing phase
+features_test_pca = pca.transform(features_test)   # transform testing set using same PCs identified in the training data.
+pred = svc.predict(features_test_pca)  # use these to predict labels for
+
+    
+
+### FEATURE SELECTION FOR MACHINE LEARNING
+""" Good algorithms employ the minimum number of features required to get as much info as possible.
+      (quality not quantity)
+      
+    ### Bias-variance tradeoff
+    = goodness (VARIANCE, high N features) vs simplicity (BIAS, low N features) of the fit.
+    - See <...Machine_Learning/ud120-projects/Bias-variance tradeoff.txt>
+
+    ### Recommended Process for Feature Selection:        
+    1. Use your human intuition to choose a potential feature of interest
+    2. Code it up
+    3. Visualise the result (can use colour coding, e.g. colour the POIs red if you
+       are trying to discriminate them from non-POIs. Look for clustering/patterns and
+       decide whether the feature gives you discriminating power in the classification 
+       problem you are trying to solve. If yes, keep it.
+    4. Repeat this process a few times to zero in on what you think will be the most 
+       helpful new feature for you.
+
+    ### Reasons to exclude a feature from a model:
+    - it's noisy
+    - it causes overfitting
+    - it's strongly correlated with another feature in the model
+    - it adds complexity that slows the training/testing process (keep things simple!)
+
+See: Udacity Intro to Mach Learning. Lesson 12: Feature Selection
+and: find_signature.py in ..Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\feature_selection
+"""
+
+### sklearn (univariate) feature selection tools:
+    
+## 1. SelectKBest
+""" Selects the K most powerful features, e.g. if you want to condense the
+    features down to a specific number, and perhaps have an idea that there
+    are 2 key ones driving most of the variation in the data. 
+    (no example here) """
+
+## 2. SelectPercentile
+""" Selects the X% most powerful features (e.g. words that best discriminate
+      email authors). Example below:  """
+
+#   import, create the selector and fit it
+from sklearn.feature_selection import SelectPercentile, f_classif
+selector = SelectPercentile(f_classif, percentile = 10) # select best 10% features
+selector.fit(features_train, labels_train)
+
+#   transform and save the results as new arrays
+features_train_selected = selector.transform(features_train).toarray()
+features_test_selected = selector.transform(features_test).toarray()
+
+""""""
+### max_df in TfIdf vectorizer also does feature selection
+# see ud120-projects/lesson11_text_learning.py
+vectorizer = TfIdfVectorizer(max_df=1.0)
+""""""
+
+### Regularisation / Lasso Regression
+""" (Udacity intro to machine learning lesson 12 video 15-16)
+    - regularization AUTOMATICALLY finds the best features to include in a model. 
+    - works by penalising extra features to balance goodness of fit with simplicity.
+    - helps stop models overfitting the training data
+    
+    # Lasso Regression: uses regularization to find the best fit 
+    - adds a penalty to each feature f (Pf)
+    - seeks to minimise <SSE + Pf*Cf>	# Cf = coefficient of feature f
+    - so adding a new feature may reduce the SSE but not enough to offset the penalty of 
+      increasing the model's complexity
+    - this identifies the features with the most important effect on the regression.
+    - and sets the coefficients for all other features to zero (so they become irrelevant to the fit).
+"""
+# http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
+
+from sklearn.linear_model import Lasso
+lasso_reg = Lasso()
+lasso_reg.fit(features, labels)
+lasso_reg.predict(features_test)  # e.g. .predict([[2,2,4,5,6]])
+
+# access the coefficients
+""" this command lists the coefficients for each feature. Features with 
+    larger coefficients are more important. Features with zero coefficients
+    are not being used in the regression so can be disregarded. """
+print lasso_reg.coef_   
+
+# access the intercepts (if wanted)
+print lasso_reg.intercept_
+
+
+
+### VALIDATING & EVALUATING ALGORITHMS
+""" Use either train/test split or cross validation """
+
+### Train/Test split in sklearn
+
+# Training set size
+""" # If you have too few training examples the accuracy could be too low to be useful. 
+    # The only way to know if you have enough data is to try the algorithm.
+    # If the accuracy is too low you could collect more data, e.g. do more training 
+      sessions in the self-driving car. 
+    # Sometimes it's not possible to collect more data, e.g. the Enron dataset.
+"""
+
+# To split a dataset (array or matrix) into random training and testing subsets
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+X, y = features, labels
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)  
+# returns a list containing train-test split of inputs: list length = 2*len(arrays)
+""" default test_size = 0.25 (25% of data set). But can specify the test_size 
+    as an integer or float (= number or proportion of samples to put in the test set).
+    
+    The optional random_state parameter is a pseudo-random number generator 
+    state used for random sampling, e.g. random_state=42. """
+
+# & see validation & evaluation section for K-Fold cross validation when choosing
+# training and testing set sizes
+
+
+### K-Fold cross validation
+""" Training and testing on single datasets is prone to error if you have a 
+    limited training set or a limited test set.
+    K-Fold Cross Validation 'folds' (splits) the data into training and testing
+    sets K times, producing K different training/testing sets, which you can 
+    fit separate algorithms to and take an average of the output.
+    This increases training time but gives a more accurate result. 
+"""
+from sklearn.model_selection import KFold
+kf = KFold(samples, k)   # samples = N items in whole dataset; k = N folds
+kf = KFold(len(authors), 2)  # add parameter shuffle=True if datapoints are ordered,
+""" # shuffle=true randomises the datapoints before splitting them up into folds, 
+      rather than splitting the data based on index value (simply half way through
+      all the datapoints if you choose 2 folds). If ordered, certain labels might
+      be more common in one half of the dataset, leading to different labels in
+      the training and testing sets and low accuracy scores.
+
+    # output kf is 2 lists of indices ('random' numbers between 1 and len(authors)), 
+      that specify which datapoints should go in the training or testing sets. 
+    # can use these indices to refer to features and labels by their index number
+      and assign them to the training or testing sets. """
+
+
+### GridSearchCV
+""" GridSearchCV is a way of systematically working through multiple 
+    combinations of parameter tunes (values), cross-validating as it goes to determine 
+    which tune gives the best algorithm performance. This saves you tuning the parameters
+    yourself by trying and testing your best guesses (which takes ages). """
+    
+# http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV
+
+from sklearn.model_selection import GridSearchCV
+from sklearn import svm, datasets
+
+iris = datasets.load_iris()   # get the data
+
+svr = svm.SVC()  # specify which type of algorithm to use (here it's SVM)
+parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}  # dictionary of parameters and possible values, e.g. here they are choosing between linear & rbf kernel, and diff values of C.
+
+# create the classifier, which for GridSearchCV is the algorithm PLUS a grid of parameters to try
+clf = GridSearchCV(svr, parameters)  # the parameter grid contains all possible combinations of values for each parameter, i.e. ('linear', 1),('linear',10),('rbf',1),('rbf',10)
+
+# train it
+clf.fit(iris.data, iris.target) # fit() tries each parameter combo, assesses the performance and returns the fitted classifier with the optimal parameter combo.
+
+# access the parameter values
+clf.best_params_
+
+
+### Accuracy Score
+""" accuracy = [N items (datapoints) in a class that are labelled correctly / 
+                     N items in that class]
+
+    Accuracy is less reliable for skewed data, i.e. with imbalanced classes 
+    like the Enron dataset (many more non-POIs than POIs), as you can just 
+    guess the more common class label for every point AND STILL GET PRETTY 
+    GOOD ACCURACY!
+    
+    Accuracy is also less reliable if you want to err on the side of caution 
+    of a yes/no answer, e.g. cancer tests - prefer a false positive than a false neg. 
+"""
+from sklearn.metrics import accuracy_score
+accuracy_score(pred, labels_test)
+clf.score(features_test, labels_test)
+
+
+## Confusion matrix
+""" shows N datapoints predicted to be in each class and whether the prediction
+    was correct (+ve) or incorrect (-ve), as a matrix. 
+    So 2x2 matrix if there are 2 classes (+ve/-ve for points predicted in class 1; 
+    +ve/-ve for points predicted in class 2) - see Udacity Mach Learn Less 15 Vid 6-9.
+"""
+from sklearn.metrics import confusion_matrix
+y_pred = clf.predict(X_test)  # X = features, y = labels
+
+print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N unique labels/classes, e.g 7 people (see lesson13_pca.py code)
+
+""" e.g. confusion matrix
+         Ariel  [13  4   1]
+         George [0  10   6]
+         Donald [0   7  19]
+
+    true/real labels are on LHS and predicted labels on RHS, in the same order.
+    
+    rows = the true positive (tp) and any false negatives (fn)
+    cols = the true positive (tp) and any false positives (fp)
+
+    # interpretation:
+        - 13 photos of Ariel were correctly identified as Ariel, but 4 were mistaken for George
+        - 10 photos of George were correctly identified, but 6 were mistaken for Donald.
+        - there were 18 photos of Ariel (sum of first row)
+        - 21 photos were predicted to be George (sum of 2nd column) """
+   
+   
+### Precision & Recall
+
+#  calculated from the confusion matrix above
+
+""" Should both be at least 0.3 (udacity https://review.udacity.com/#!/rubrics/27/view)
+
+    tp=true positives, fp=false positives, fn = false negatives.
+
+    # PRECISION rate = tp / (tp + fp) = 10/21 (21 is the col sum), 
+        i.e. probability that a photo *identified as* George is actually George.
+        
+    # RECALL rate = tp / (tp + fn) = 10/16 (16 is the row sum), 
+        i.e. probability that a photo *of* George is identified as George, or
+             the ability of the classifier to find all the positive samples.
+
+    # High recall/low precision = high true positives, but risk of false positives.
+        e.g. "Nearly every time a POI shows up in my test set, I am able to 
+        identify him or her. The cost of this is that I sometimes get some 
+        false positives, where non-POIs get flagged."
+    
+    # High precision/low recall = low false positives, risk of false negatives. 
+        e.g. "Whenever a POI gets flagged in my test set, I know with a lot of 
+        confidence that it’s very likely to be a real POI and not a false alarm. 
+        On the other hand, the price I pay for this is that I sometimes miss 
+        real POIs, since I’m effectively reluctant to pull the trigger on edge cases.”
+        
+    # Depends on project aims as to whether you want high precision or high recall.
+      For Enron we want high recall/low precision as don't want to miss any POIs (false negs).
+        
+    # A high F1-score represents a good balance between recall and precision,
+        so fp and fn are low and predictions are accurate.
+"""
+from sklearn.metrics import precision_score
+precision = precision_score(y_true, y_pred)  # y=labels
+
+from sklearn.metrics import recall_score
+recall = recall_score(y_true, y_pred)
+    
+
+## The F1-score (0-1)
+""" # the balance between (weighted average of) RECALL and PRECISION
+
+    # a measure of the classifier's performance: higher is better. 
+    
+    # can be used to monitor how changing/tuning parameters affect the 
+      accuracy / performance of an algorithm.
+      
+    # https://en.wikipedia.org/wiki/F1_score
+""" 
+
+# view the F1-score in the classification report:
+
+## Classification report
+""" shows precision, recall, F1-score snd support for each classification """
+from sklearn.metrics import classification_report
+y_pred = clf.predict(X_test)  # X = features, y = labels
+print classification_report(y_test, y_pred, target_names=target_names)  
+
+
 # =============================================================================
-### """ Measure the time taken to run code """
+### """ MEASURE TIME TAKEN TO RUN CODE """
 # =============================================================================
 
 # E.g. to make predictions with a machine learning classifier
@@ -1108,16 +1464,25 @@ t0 = time()              # show current clock time
 pred = clf.predict(features_test)       # run your code of interest
 print "prediction time:", round(time()-t0, 3), "s"   # use current clock time to calculate time elapsed
 
+# Display progress logs on stdout
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
 # =============================================================================
-###  """ Modules (like R packages) """
+###  """ MODULES """
 # =============================================================================
 
-#  Modules are like specialised dictionaries that store Python code accessed
-#  with the . operator
+""" A module is a .py file containing Python definitions and statements. 
+    use import module to access functions in that file, e.g. to import two
+    functions called featureFormat and targetFeatureSplit from a file called
+    feature_format.py, use this command:
+        
+    from feature_format import featureFormat, targetFeatureSplit
+    
+    Then you can use those functions in the current file.
+"""
 
-# "import module (package), e.g. 'math'
+# can also import an entire module
 import math
 # then have to type math.function to specify where the function is from, e.g.:
 math.sqrt() # to run the square root function in the math module
@@ -1134,8 +1499,8 @@ import math             # Imports the math module
 everything = dir(math)  # Sets everything to a list of things from math
 print(everything)        # Prints the names of all the functions.
 
-# Download only the packages you want with the conda command,
-"conda install PACKAGENAME"
+# Download only the packages you want with the conda command (in git bash?)
+conda install PACKAGENAME
 
 
 
@@ -1158,36 +1523,6 @@ numpy.reshape(a, newshape)  # reshape an array into a new shape without changing
                             # will be a 1D array of that length.
                 
                                
-                
-# =============================================================================
-### """ Pickle files """
-# =============================================================================
-
-""" The Pickle module implements an algorithm for serializing and 
-    de-serializing a Python object structure (list, dict, etc.) so it can be 
-    saved on disk. 
-    Serializing means it converts the object into a character stream containing
-    all the info necessary to reconstruct the object in the same layout/format
-    in another python script.
-    
-    Python pickle files are byte streams, so should be opened in binary mode:
-       use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
-"""
-# official user guide https://docs.python.org/2/library/pickle.html
-# simpler quick ref guide https://wiki.python.org/moin/UsingPickle
- 
-## EXAMPLE:
-    
-import pickle
-
-# Save a dictionary into a pickle file.
-fave_col = {"lion": "yellow", "kitty": "red"}   # create dictionary
-pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "save.p"
-                                                # "wb" = write in binary mode
-# Load the dictionary back from the pickle file.  
-fave_col_p = pickle.load(open("save.p", "rb"))    
-        # 'rb' = opens the file for reading in binary mode.
-
 
 # =============================================================================
 ### """ OUTLIERS """
@@ -1220,6 +1555,45 @@ fave_col_p = pickle.load(open("save.p", "rb"))
         file outlier_removal_regression.py in:
         C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
 """    
+
+            
+
+# =============================================================================
+### """ PICKLE FILES """
+# =============================================================================
+
+""" The Pickle module implements an algorithm for serializing and 
+    de-serializing a Python object structure (list, dict, etc.) so it can be 
+    saved on disk. 
+    Serializing means it converts the object into a character stream containing
+    all the info necessary to reconstruct the object in the same layout/format
+    in another python script.
+    
+    Python pickle files are byte streams, so should be opened in binary mode:
+       use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
+"""
+# official user guide https://docs.python.org/2/library/pickle.html
+# simpler quick ref guide https://wiki.python.org/moin/UsingPickle
+ 
+## EXAMPLE:
+    
+import pickle
+
+# Save a dictionary into a pickle file.
+fave_col = {"lion": "yellow", "kitty": "red"}   # create dictionary
+pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "save.p"
+                                                # "wb" = write in binary mode
+# Load the dictionary back from the pickle file.  
+fave_col_p = pickle.load(open("save.p", "rb"))    
+        # 'rb' = opens the file for reading in binary mode.
+
+
+
+# =============================================================================
+### """ PLOTTING """
+# =============================================================================
+""" See 'python_code_plotting.py' in Online_course_notes. """
+
 
 
 
@@ -1407,6 +1781,22 @@ ord(<string>)  # converts a one-letter string to a number ('a' = 97, 'b' = 98, '
 
 chr(<number>)  # converts a number to a one-letter string
 # ord and chr are interchangeable, e.g. chr(ord('a')) = 'a' and ord(chr(1)) = 1
+
+
+
+
+# =============================================================================
+###  """  TEXT PROCESSING """
+# =============================================================================
+
+# Bag of Words (sklearn CountVectorizer) and Tf-idf (sklearn TfdfVectorizer) representations
+# Filtering out stopwords
+# Stemming
+
+# For details see lesson11_text_learning.py in:
+# C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects
+# (and ..\ud120-projects\text_learning\vectorize_text.py for some text processing functions).
+
 
 
 # =============================================================================

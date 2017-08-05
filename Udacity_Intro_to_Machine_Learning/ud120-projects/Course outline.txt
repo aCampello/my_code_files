@@ -6,3 +6,10 @@ OUTLINE OF UDACITY COURSE
 
 ### unsupervised learning:
     # k-means clustering
+    # PCA
+
+### data preparation:
+    # text processing (text learning)
+    # feature scaling (not necessary for decision trees or regression)
+    # feature selection
+    # PCA to condense many features / identify structure in data

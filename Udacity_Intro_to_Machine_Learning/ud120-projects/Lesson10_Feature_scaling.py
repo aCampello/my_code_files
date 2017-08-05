@@ -2,7 +2,8 @@
 """
 Created on Fri Jul 28 14:39:51 2017
 
-@author: User
+Udacity intro to machine learning: Lesson 10 Feature Scaling
+
 """
 
 # Feature scaling formula
@@ -44,7 +45,7 @@ data = [115, 140, 175]
 data = [100, 100, 100]
 featureScaling(data)
 
-# Note sklearn has a function to do this...
+# Note sklearn has a function to do this... :
 
 ###########
 

@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Aug 02 12:43:26 2017
+
+NOTE from Udacity intro to mach learning lesson 15: evaluation metrics Quiz 27:
+
+     From Python 3.3 forward, a change to the order in which dictionary keys 
+     are processed was made such that the orders are randomized each time the 
+     code is run. 
+     
+     This will cause some compatibility problems with the graders 
+     and project code, which were run under Python 2.7. 
+     
+     To correct for this, add the following argument to the featureFormat 
+     call on line 25 of evaluate_poi_identifier.py:
+
+         sort_keys = '../tools/python2_lesson14_keys.pkl'
+
+    This will open up a file in the tools folder with the Python 2 key order.
+
+"""
