@@ -1,8 +1,13 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
                     ## -------------------------------- ##
                     """ Python - useful bits of code """
                     ## -------------------------------- ##
+
+# Make copy of new df
+new_dataframe = dataframe # sometimes this won't work in functions so can use <.copy()>:
+new_dataframe = dataframe.copy()
+
 
 
 # =============================================================================
@@ -24,6 +29,45 @@ x ** 3  # x cubed (x times x times x), e.g. 2 ** 3 = 8
 2 ** 4  # 2 X 2 X 2 X 2 = 16
 
 
+
+# =============================================================================
+###  """  Google BigQuery """
+# =============================================================================
+
+# TABLE_DATE_RANGE
+
+# Error message: "Error: Can't parse table: DestinationTables"
+# - This means you have entered an incorrect table prefix - it should be the table name 
+# up to the start of the timestamp, e.g. the prefix for "times_data_20170101" is "times_data_"
+
+query = """ 
+    SELECT
+        activity_date
+        views
+    FROM
+        TABLE_DATE_RANGE([newsuk-datatech-s2ds-2017-2:project_data.times_data_],
+                         TIMESTAMP('{}'),
+                         TIMESTAMP('{}')),
+    GROUP BY
+        activity_date """
+        
+
+## Format function
+# syntax: "TIMESTAMP('{}')".format()
+# NOTE queries are entered as strings but .format() is not part of the string.
+# e.g. syntax to select rows between a specified start_date and end_date
+query = """ 
+    SELECT * FROM [table_name] ...... 
+        TIMESTAMP('{}'),
+        TIMESTAMP('{}'))
+        GROUP BY activity_date """.format(start_date, end_date)
+# and see S2DS codes
+
+
+# Can't group by timestamp() functions so give them an alias:
+SELECT HOUR(datetime) AS hour 
+FROM tablename
+GROUP BY hour          
 
 # =============================================================================
 ###  """ CLASSES """
@@ -130,7 +174,13 @@ Ctrl + # increases font size in the editor
 
     Useful on computers without Python or Spyder installed on the hard drive.
 
-    Open Jupyter Notebook via the start menu or from Git Bash
+    Open Jupyter Notebook via the start menu or from Git Bash, but if you have 
+    set up different environments in Anaconda it's best to open it via Anaconda
+    Navigator: right click the PLAY button on the environment and open Jupyter
+    Notebook from there.
+    
+    # best practice is not to have multiple jupyter notebook terminals open/running
+    at the same time as can cause problems.
     
     This opens http://localhost:8888/tree in the web browser and lists all my
     local files.
@@ -157,12 +207,54 @@ Ctrl + # increases font size in the editor
 """
 
 
+
+
+
+
 # =============================================================================
-###  """ CSV FILES """
+### """ DATES & TIMES """
 # =============================================================================
-# read in data from a csv file
 import pandas as pd
-data = pd.read_csv('AirPassengers.csv')
+
+# Convert a string date to a date in a pandas dataframe
+df["activity_date"] = pd.to_datetime(df["activity_date"])
+
+# Can now sort by date
+df.sort_values(by="activity_date", inplace=True)
+
+# Antonio's function to combine date, hour and minute columns into a timestamp (rounded to the nearest minute)
+def extract_date_time(d0):
+    return datetime.datetime.strptime(d0['date']+' '+str(d0['hour'])+' '+str(d0['minute']),'%Y-%m-%d %H %M')
+# update the dataframe - first create a new column filled with zeros, then update it with the datetime stamp
+views_sun_by_section['date_time'] = 0
+views_sun_by_section['date_time']= views_sun_by_section[['date','hour','minute']].apply(extract_date_time,axis=1)
+
+
+# Add new column for end time
+from datetime import datetime, timedelta
+
+def extract_date_time(dataframe):
+    """
+    :param dataframe: 
+    """
+    return datetime.strptime(dataframe['date']+' '+str(dataframe['hour'])+' '+str(dataframe['minute']),'%Y-%m-%d %H %M') + timedelta(minutes = dataframe['width'])
+
+
+def insert_end_date_time_columns(input_data_frame):
+    """
+    Inserts columns with date times. 
+    Assumes that time is in minutes.
+    
+    :param input_data_frame: pandas dataframe with day, hour and minute columns.
+    :return: input_data_frame with new column containing datetime rounded to minutes.
+    
+    """
+
+    input_data_frame['end_date_time'] = 0
+    input_data_frame['end_date_time'] = input_data_frame[['date', 'hour', 'minute', 'width']].apply(extract_date_time, axis=1) 
+    
+    return input_data_frame
+
 
 
 
@@ -313,6 +405,21 @@ def findmin(data_dict, feature):
                 result[1] = data_dict[person][feature]
     return result
 findmin(data_dict, "exercised_stock_options")  # ['BELFER ROBERT', 3285]
+
+
+### Ordered dictionaries
+
+# see: https://docs.python.org/2/library/collections.html# (python 2) / https://docs.python.org/3/library/collections.html (python 3)
+
+from collections import OrderedDict
+
+d = {'banana': 3, 'apple': 4, 'pear': 1, 'orange': 2}
+print[i for i in d]  # does not print in (same) order
+
+e = OrderedDict(sorted(d.items(), key=lambda t: t[0]))
+print[i for i in d]  # prints in order
+
+
 
 # =============================================================================
 ###  """ ERRORS & BUGS """
@@ -481,6 +588,12 @@ def total_enrollment(uni_list):
 ###  """ FUNCTIONS """
 # =============================================================================
 
+# If you update a function in a .py file use reload() in the imp module to 
+# refresh the function in a notebook that calls that function
+from imp import reload   
+reload(time_series)   # reloads time_series.py without having to reload the kernel.
+
+
 ###  basic in-built functions, e.g. len()
 
 len()    # length
@@ -584,6 +697,21 @@ from email_preprocess import preprocess   # imports the function preprocess from
     need to restart the kernel (and reload in all the data/modules) for the
     changes to be recognised. Otherwise Python will work from the cache. """
 
+
+# =============================================================================
+###  """ HTML & BeautifulSoup
+# =============================================================================
+
+# encode a string as utf-8
+views_df['content'] = views_df['content'].str.encode('utf-8')
+
+# loops through rows in dataframe column called headline
+# converts to a soup object using the lxml parser
+# extracts the text and removes the html tags (supposedly) ## not sure how well this works!
+for line in views_df['headline']:
+    soup = bs(line, "lxml")
+    line = bs.get_text(soup)
+    soup.original_encoding    # to see what the original encoding of 'line' was.
 
 
 # =============================================================================
@@ -1479,6 +1607,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 ###  """ MODULES """
 # =============================================================================
 
+# TO use a module you first need to install it via the cmd line / terminal / git bash:
+""" NOTE: open terminal via Anaconda Navigator and click play button next
+    to the environment you want to install the package/library in to. """
+    
+    
 """ A module is a .py file containing Python definitions and statements. 
     use import module to access functions in that file, e.g. to import two
     functions called featureFormat and targetFeatureSplit from a file called
@@ -1489,13 +1622,26 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
     Then you can use those functions in the current file.
 """
 
-# can also import an entire module
+# to resolve difficulty importing certain modules in bash:
+import pip
+package_name = "pytrends"
+pip.main(['install', package_name])
+
+
+# to import a module into a specific python environment, e.g. one called 'py36': 
+conda install --name py36 numpy
+# for info see: https://conda.io/docs/user-guide/tasks/manage-pkgs.html
+# or do it in the Anaconda Navigator (for common/official modules)
+
+
+
+# import entire module
 import math
 # then have to type math.function to specify where the function is from, e.g.:
 math.sqrt() # to run the square root function in the math module
 print(math.variable) # to print variable contained within the math module
 
-# Could import all functions from math so don't have to type math.function but shared function names can get confusing
+# can import all functions from math so don't have to type math.function, but shared function names can get confusing
 from math import *
 
 # But it's better to import a specific function from a module only, e.g. 'sqrt' from 'math'
@@ -1508,14 +1654,22 @@ print(everything)        # Prints the names of all the functions.
 
 # Download only the packages you want with the conda command (in Git Bash, not Spyder)
 conda install PACKAGENAME
+conda remove PACKAGENAME # to remove/uninstall it
 # e.g. conda install pyflux
 
-# can use pip instead of conda, but not recommended for Anaconda users 
+# can use pip instead of conda, but pip installs packages in a different place 
+# to conda, so can cause problems when trying to import them in python (py looks 
+# in the wrong place. Doesn't cause probs for all packages though, just textacy & spacy so far!)
 pip install PACKAGENAME
+pip uninstall PACKAGENAME
 
 # View module version
 import numpy as np
 np.__version__
+
+# can also do this in git bash using pip
+pip show packagename  # shows location, version and dependancies/dependents
+
 
 
 # =============================================================================
@@ -1570,7 +1724,77 @@ numpy.reshape(a, newshape)  # reshape an array into a new shape without changing
         C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
 """    
 
-            
+
+
+# =============================================================================          
+### """ PANDAS """
+# =============================================================================
+
+# amazing documentation: http://pandas.pydata.org/pandas-docs/stable/index.html
+# pandas for data science tricks: https://medium.com/towards-data-science/pandas-tips-and-tricks-33bcc8a40bb9
+
+import pandas as pd
+
+# open a csv file as a pandas dataframe
+views_sun = pd.read_csv('file.csv',index_col=0) # tells pandas which column to index by
+
+# make empty pd dataframe
+df = pd.DataFrame([])
+
+# view data type of object (not specific to pandas)
+type(df)
+
+# view data types -like str(mydata)
+df.dtypes
+df['column'].dtype
+
+# filter out / remove rows with a content_id containing " "
+views_df = views_df[views_df['content_id'].str.contains(' ') == False]
+
+
+
+# sort pandas df by date, hour and minute and reset the index column to save the order.
+views_sun = views_sun.sort_values(by=['date','hour','minute'])
+views_sun = views_sun.reset_index(drop=True)
+
+
+## aggregate / group by
+# info: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.aggregate.html
+# http://nbviewer.jupyter.org/github/jvns/pandas-cookbook/blob/v0.1/cookbook/Chapter%204%20-%20Find%20out%20on%20which%20weekday%20people%20bike%20the%20most%20with%20groupby%20and%20aggregate.ipynb
+import numpy as np
+df = pd.DataFrame(np.random.randn(10, 3), columns=['A', 'B', 'C'],
+               index=pd.date_range('1/1/2000', periods=10))
+df.iloc[3:7] = np.nan   # marks cells in rows 4-8 as NaN
+
+# aggregate (calc sum and min) across columns
+df.agg(['sum', 'min'])
+
+# aggregate different functions across different columns (and put NaN in any resulting empty cells)
+df.agg({'A' : ['sum', 'min'], 'B' : ['min', 'max']})
+
+# group by and aggregate in same line - sums the number of bike rides per day of week
+weekday_counts = berri_bikes.groupby('weekday').aggregate(sum)
+
+# group by one column and count the values of another column per this column value using value_counts
+df.groupby('name')['activity'].value_counts()
+
+# unstack: switches rows to columns (.fillna(0) fills missing values with 0)
+df.groupby('name')['activity'].value_counts().unstack().fillna(0)
+
+
+## working with time differences / durations:
+# see page on pandas for data science tricks: https://medium.com/towards-data-science/pandas-tips-and-tricks-33bcc8a40bb9
+
+# calculate time differences between consecutive events by the same person (name)
+df = df.sort_values(by=['name','timestamp'])
+df['time_diff'] = df.groupby('name')['timestamp'].diff()
+
+# rename columns
+import pandas as pd
+df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+df
+df = df.rename(index=str, columns={"A": "a", "B": "b"})
+
 
 # =============================================================================
 ### """ PICKLE FILES """
@@ -1665,6 +1889,34 @@ is_even(7)                  # 7 is not an even number so False is returned.
 11-5.0      # 5.0 is a float, so the answer will also be a float.
 8/5         # as both inputs are integers the answer is also (displayed as) an integer.
 
+
+# =============================================================================
+###  """ SAVING FILES - AS CSV OR TXT """
+# =============================================================================
+
+# CSV
+import pandas as pd
+
+# read in data from a csv file and convert to a pandas dataframe
+data = pd.read_csv('AirPassengers.csv')
+
+# save pandas dataframe as a csv file
+mydataframe.to_csv('my_data.csv')
+
+# save certain columns to a csv
+# one column
+a['content_id'].to_csv("filename.csv")
+# multiple columns
+a[['content_id' , 'content']].to_csv("filename.csv")
+
+
+# TXT
+# where myfile is the article
+myfile = open(output_filename, 'w') # w=write mode
+myfile.write(headline)
+myfile.write("\n") # insert new line
+myfile.write(text)
+myfile.close()
 
 
 # =============================================================================
@@ -1772,6 +2024,8 @@ url = page[start_quote+1:end_quote]
 # so 'dog!' wouldn't show up if I searched for 'dog'.
 sentence = "I have a dog!"
 sentence.split() # returns ['I', 'have', 'a', 'dog!']
+sentence.split()[0]  # view the first word in sentence
+
 
 # iterate through words in a string
 for word in sentence.split():   # <for word in sentence:> would print each character, not word.
@@ -1796,6 +2050,19 @@ ord(<string>)  # converts a one-letter string to a number ('a' = 97, 'b' = 98, '
 chr(<number>)  # converts a number to a one-letter string
 # ord and chr are interchangeable, e.g. chr(ord('a')) = 'a' and ord(chr(1)) = 1
 
+# to print a string in a nice format
+print("%s" %query)
+
+
+
+
+# =============================================================================
+###  """  SUBSETTING DATA FRAMES """
+# =============================================================================
+
+# subset by location
+views_GBR = views_sun_by_location[views_sun_by_location.location == "GBR"]
+
 
 
 
@@ -1811,7 +2078,16 @@ chr(<number>)  # converts a number to a one-letter string
 # C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects
 # (and ..\ud120-projects\text_learning\vectorize_text.py for some text processing functions).
 
-
+### Textacy
+""" to install use CONDA and not PIP - otherwise it is only installed in the 
+    pkgs folder (in Anaconda) and not in site-packages, which is where python
+    looks for libraries """
+conda install -c conda-forge textacy
+""" I had trouble with python not looking in the right place for textacy when
+    I tried to import it. Had to install the latest Windows windows software 
+    development kit  (and Windows C++ visual compiler, though not sure if this 
+    was required as I installed it before the SD kit and it wouldn't work 
+    without the kit too). """
 
 # =============================================================================
 ###  """ TUPLES """

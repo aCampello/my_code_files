@@ -16,5 +16,6 @@ e.g. conda install pyflux
 # If this command is not recognised: 
 # Go to the ControlPanel\System\Advanced system settings\Environment Variables\Path 
 #   Then hit edit and add <C:\Users\User\Anaconda3\Scripts> to the end (this changes the filepath associated with 'Path' in the cmd line).
+# Note the new path on S2DS laptop was: C:\Users\Client\Anaconda2\Scripts
 #   Then restart the cmd line. 
 # I found these instructions on https://stackoverflow.com/questions/44515769/conda-is-not-recognized-as-internal-or-external-command.
