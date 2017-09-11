@@ -65,6 +65,8 @@
 
 # For loops
 
+# Functions
+
 # General useful code
 
 # ggplot2
@@ -793,6 +795,23 @@ rcontrast(t, df) # and enter them here to calculate effect size for comparisons
 for (dt in anomalies){
   print(paste(dt))
 }
+
+
+#===============================#
+# Functions ###
+#===============================#
+
+myfun = function(vec){
+  mean(vec)
+}
+
+myvec = c(2,4,6,8)
+
+myfun(myvec)
+
+sum(myvec)/length(myvec)
+
+
 
 
 #======================#
