@@ -7,8 +7,9 @@ Created on Sat Aug 05 17:03:26 2017
 """
 
 # From: http://earthpy.org/pandas-basics.html
+# see jupyter notebook saved in my_cod_files / time_series folder
 
-impport numpy as no
+import numpy as no
 import pandas as pd
 
 # example data
