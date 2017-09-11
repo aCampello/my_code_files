@@ -1,5 +1,6 @@
 
-# my first R function
+# my first R function!
+
 myfun = function(vec){
   mean(vec)
 }
