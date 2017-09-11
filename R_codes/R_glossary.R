@@ -1,8 +1,8 @@
-# General bits and bobs
+# (previously this file was named "RCode_GENERAL_Useful bits and bobs.R"
 
-#=================#
-#   USEFUL CODE   #
-#=================#
+#=================================#
+#     GLOSSARY OF USEFUL CODE     #
+#=================================#
 
 ############## CONTENTS ################
 
