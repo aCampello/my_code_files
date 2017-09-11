@@ -1,0 +1,36 @@
+#==== PROBLEMS WITH CONVERGENCE: FITTING DIFFERENT OPTIMISERS:
+
+# When adding complexity, e.g. random slope, to lmer and glmer models they sometimes fail to converge without error warnings.
+# Changing the optimiser can improve model fit.
+
+# EXAMPLE
+
+# Original model that would not fit:
+mod <-glmer(y ~ x1 + x2 + (1|x3), data=mydata, family=poisson(link="log"))
+
+# 1. Re-fit model with the optimiser 'bobyqa' and see if mod will converge ### BOBYQA IS USUALLY THE BEST OPTIMISER
+mod.boby <-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log"), 
+                        control = glmerControl(optimizer = "bobyqa"))
+
+# 2. Re-fit model with the optimiser 'nelder-mead' and see if mod will converge (if bobyqa didnt work)
+mod.NM <- update(mod.boby, control=glmerControl(optimizer="Nelder_Mead")) 
+
+# 3. change optimiser to 'nlminb' and see if mod will converge
+library(optimx)
+mod.nlminb <- update(mod.boby, control=glmerControl(optimizer="optimx", optCtrl=list(method="nlminb")))
+
+# 4. change optimiser to 'L-BFGS-B' and see if mod will converge
+mod.LBFGSB <- update(mod.boby, control=glmerControl(optimizer="optimx", optCtrl=list(method="L-BFGS-B")))
+
+
+
+# Can also get mod to converge by increasing the no. iterations before R gives up fitting the model
+# Use the 'maxfun' command for lme4 models (default maxfun is ~50): 
+# Syntax= "optCtrl = list(maxfun = 100000))" - add after the optimiser, e.g.:
+
+# E.g. model with optimiser 'bobyqa' and more iterations:
+mod <-glmer(y ~ x1 + x2 + (1|x3), data=mydata, family=poisson(link="log"),
+                 control=glmerControl(optimizer="bobyqa",
+                                      optCtrl = list(maxfun=100000), 
+                                      check.conv.grad=.makeCC("warning",0.05))) 
+
