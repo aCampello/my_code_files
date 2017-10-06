@@ -8,7 +8,8 @@
 new_dataframe = dataframe # sometimes this won't work in functions so can use <.copy()>:
 new_dataframe = dataframe.copy()
 
-
+# gGeneral things
+help(“FunctionName”) # get help on a python function
 
 # =============================================================================
 ###  """ BASIC MATHEMATICAL OPERATIONS """
@@ -37,10 +38,10 @@ x ** 3  # x cubed (x times x times x), e.g. 2 ** 3 = 8
 # TABLE_DATE_RANGE
 
 # Error message: "Error: Can't parse table: DestinationTables"
-# - This means you have entered an incorrect table prefix - it should be the table name 
+# - This means you have entered an incorrect table prefix - it should be the table name
 # up to the start of the timestamp, e.g. the prefix for "times_data_20170101" is "times_data_"
 
-query = """ 
+query = """
     SELECT
         activity_date
         views
@@ -50,14 +51,14 @@ query = """
                          TIMESTAMP('{}')),
     GROUP BY
         activity_date """
-        
+
 
 ## Format function
 # syntax: "TIMESTAMP('{}')".format()
 # NOTE queries are entered as strings but .format() is not part of the string.
 # e.g. syntax to select rows between a specified start_date and end_date
-query = """ 
-    SELECT * FROM [table_name] ...... 
+query = """
+    SELECT * FROM [table_name] ......
         TIMESTAMP('{}'),
         TIMESTAMP('{}'))
         GROUP BY activity_date """.format(start_date, end_date)
@@ -65,9 +66,9 @@ query = """
 
 
 # Can't group by timestamp() functions so give them an alias:
-SELECT HOUR(datetime) AS hour 
+SELECT HOUR(datetime) AS hour
 FROM tablename
-GROUP BY hour          
+GROUP BY hour
 
 # =============================================================================
 ###  """ CLASSES """
@@ -165,51 +166,111 @@ Ctrl + # increases font size in the editor
 
 # https://ipython.org/ipython-doc/3/notebook/nbformat.html
 
-""" Jupyter (né IPython) notebook files are simple JSON documents, containing 
-    text, source code, rich media output, and metadata. each segment of the 
+""" Jupyter (né IPython) notebook files are simple JSON documents, containing
+    text, source code, rich media output, and metadata. each segment of the
     document is stored in a cell.
 
     Works like the python interpreter in spyder, but with more menu-driven
-    features for annotating code. 
+    features for annotating code.
 
     Useful on computers without Python or Spyder installed on the hard drive.
 
-    Open Jupyter Notebook via the start menu or from Git Bash, but if you have 
+    Open Jupyter Notebook via the start menu or from Git Bash, but if you have
     set up different environments in Anaconda it's best to open it via Anaconda
     Navigator: right click the PLAY button on the environment and open Jupyter
     Notebook from there.
-    
+
     # best practice is not to have multiple jupyter notebook terminals open/running
     at the same time as can cause problems.
-    
+
     This opens http://localhost:8888/tree in the web browser and lists all my
     local files.
-    
+
     Keep Git Bash open on the desktop to keep the browser session connected.
     Can set it to work for Python 2 or 3.
 
-    Click New on top right to create a new Notebook. 
-    
+    Click New on top right to create a new Notebook.
+
     Can drag and drop text or content from desktop programs into cells.
-    
+
     Set the working directory using cd C:\User\... the same as in Spyder.
 
-    Displays output below the cell containing the code (can toggle output on/off 
+    Displays output below the cell containing the code (can toggle output on/off
     or just clear it).
-    
+
     Can rearrange cells.
-    
+
     Can tag cells with keywords (new feature April 2017: not yet searchable).
-    
+
     Can create both code cells and rich text cells to display notes
-    
-    Print preview for printing with formatting. 
+
+    Print preview for printing with formatting.
 """
 
 
+# =============================================================================
+### """ DATA CLEANING """
+# =============================================================================
+
+# To extract certain columns from a dataframe
+wanted_columns = data[['Sex', 'Age', 'Fare', 'Survived']]
+
+# Drops rows that contain NaN in ANY field (sklearn models do not work with null values!)
+cleaned_wanted_columns = wanted_columns.dropna()
+
+# create a copy of the data
+cleaned_data = cleaned_wanted_columns.copy()
+
+# change a 2-level category to boolean
+is_female = (cleaned_data['Sex'] == 'female')
+cleaned_data['Sex'] = is_female
 
 
 
+# Mapping - to rename entries in a pandas df column (Series)
+# faster than looping through each entry
+# https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.map.html
+
+# e.g. like Antonio wrote to clean sections in cuzco:
+
+dataframe_clean = dataframe.copy()
+section_list = ['news', 'living', 'money', 'motors', 'sport', 'tv & showbiz', 'tech', 'travel', 'all']
+to_replace = {}  # make empty dict
+
+# A hash to map rename the section in time O(n)(instead of 2n):
+for section in dataframe_clean['section'].unique():
+	if section in section_list:
+		to_replace[section] = section
+	else:
+		to_replace[section] = 'other'
+
+dataframe_clean['section'] = dataframe_clean['section'].map(to_replace)
+
+# Old code to replace by looping - slower - takes 2N
+# dataframe_clean = dataframe.copy()
+#
+# to_replace = [section for section in dataframe_clean['section'] if section not in section_list]
+# value = 'other'
+# dataframe_clean['section'].replace(to_replace, value, inplace=True)
+
+
+
+
+# Create training and testing sets
+X = cleaned_data.drop('Survived', axis=1)  # drops the labels from the dataframe
+y = cleaned_data['Survived']  # saves only the column of labels
+
+# count NAs (null values) in a dataframe
+df.apply(lambda x: sum(x.isnull()),axis=0) # isnull() returns 1 if the value is null.
+
+
+# Replace nulls with a specific value...
+
+# replace NAs with the mean
+df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace=True)
+
+# replace NAs with 'No'
+ df['Self_Employed'].fillna('No',inplace=True)
 
 # =============================================================================
 ### """ DATES & TIMES """
@@ -235,24 +296,24 @@ from datetime import datetime, timedelta
 
 def extract_date_time(dataframe):
     """
-    :param dataframe: 
+    :param dataframe:
     """
     return datetime.strptime(dataframe['date']+' '+str(dataframe['hour'])+' '+str(dataframe['minute']),'%Y-%m-%d %H %M') + timedelta(minutes = dataframe['width'])
 
 
 def insert_end_date_time_columns(input_data_frame):
     """
-    Inserts columns with date times. 
+    Inserts columns with date times.
     Assumes that time is in minutes.
-    
+
     :param input_data_frame: pandas dataframe with day, hour and minute columns.
     :return: input_data_frame with new column containing datetime rounded to minutes.
-    
+
     """
 
     input_data_frame['end_date_time'] = 0
-    input_data_frame['end_date_time'] = input_data_frame[['date', 'hour', 'minute', 'width']].apply(extract_date_time, axis=1) 
-    
+    input_data_frame['end_date_time'] = input_data_frame[['date', 'hour', 'minute', 'width']].apply(extract_date_time, axis=1)
+
     return input_data_frame
 
 
@@ -262,7 +323,7 @@ def insert_end_date_time_columns(input_data_frame):
 ###  """ DICTIONARIES """
 # =============================================================================
 
-# (implemented like hash tables) 
+# (implemented like hash tables)
 
 # curly brackets
 # {'hydrogen': 1, 'helium: 2}  - set of <key, value> pairs
@@ -293,7 +354,7 @@ menu.values()    # get all the values
 menu.items()     # get all the key/value pairs
 menu['Chicken Alfredo'] # view the value  for Chicken Alfredo.
 
-# alternative syntax to return the value associated with a key, or "XX" if the 
+# alternative syntax to return the value associated with a key, or "XX" if the
 #   key doesn't exist:
 menu.get('Chicken Alfredo', 'XX')   # returns 14.5 (as above)
 menu.get('Chicken', 'XX')           # returns 'XX'
@@ -307,42 +368,42 @@ mystuff.tangerine  # same thing, it's just a variable
 
 ## Dictionaries of dictionaries
 elements = {}
-elements['H'] = {'name': 'Hydrogen', 
-                 'number' : 1, 
+elements['H'] = {'name': 'Hydrogen',
+                 'number' : 1,
                  'weight' : 1.00794}
 
 # So now the dictionary elements contains a key 'H' who's value is itself a dictionary, containing the name, number and weight of the element H.
 
 # Accessing individual keys/values in a dictionary of dictionaries:
-elements['H']  # returns the vaue associated with key 'H', which is another dictionary: 
+elements['H']  # returns the vaue associated with key 'H', which is another dictionary:
                # {'name': 'Hydrogen', 'number': 1, 'weight': 1.00794}
 
-elements['H']['name']   # returns 'Hydrogen' (looks up the key 'H' in dictionary 
-                        # elements, and then the key 'name' in dictionary 'H', and 
+elements['H']['name']   # returns 'Hydrogen' (looks up the key 'H' in dictionary
+                        # elements, and then the key 'name' in dictionary 'H', and
                         # returns the value associated with 'name' (='Hydrogen').
 # each key in elements could contain a different sized sub-dictionary
 
- 
+
 
 ## Add more data to elements
-elements['O'] = {'name': 'Oxygen', 
-                 'number' : 8, 
+elements['O'] = {'name': 'Oxygen',
+                 'number' : 8,
                  'weight' : 15.999,
                  'melting point' : -218.8}
 
-## Print name and atomic number from elements 
+## Print name and atomic number from elements
 for key in elements:
     print elements[key]["name"], elements[key]["number"]
-    
+
 """ prints:
-    Hydrogen 1 
+    Hydrogen 1
     Oxygen 8
 in some order """
 
 # print all the keys
 for key in categorised_time_series_device.keys():
     print(key)
-    
+
 
 # Another example of accessing specific values in dictionaries:
 
@@ -351,9 +412,9 @@ dic = {"apple":(1,2,3), "banana":(4,5,6), "carrot":(7,8,9)}
 for item in dic:
     """ print every 3rd element in a tuple, for each key """
     print item          # print the key (name)
-    print dic[item][2]  
-    print "--"  
-    
+    print dic[item][2]
+    print "--"
+
     """ prints:
         carrot
         9
@@ -363,10 +424,10 @@ for item in dic:
         --
         banana
         6
-        -- 
+        --
     note dictionaries are not ordered """
-    
-    
+
+
 # View just the rows for June 3rd (from all devices)
 [i[i["date"] == "2017-06-03"] for i in categorised_anomalies.values()]
 
@@ -386,9 +447,9 @@ def add_to_index(index, keyword, url):
 
 
 # Functions to search within dict of dicts:
-    
+
 def findmax(data_dict, feature):
-    """ Search within a dict of dicts and return the MAXIMUM value 
+    """ Search within a dict of dicts and return the MAXIMUM value
         of a given feature, e.g. "salary" """
     result = ["", 0]
     for person in data_dict:
@@ -400,11 +461,11 @@ def findmax(data_dict, feature):
 findmax(data_dict, "exercised_stock_options")  # ['LAY KENNETH L', 34348384]
 
 def findmin(data_dict, feature):
-    """ Search within a dict of dicts and return the MINIMUM value 
+    """ Search within a dict of dicts and return the MINIMUM value
         of a given feature, e.g. "salary" """
     # start with the maximum value, using the findmax function above
     max = findmax(data_dict, feature)
-    result = ["", max]   
+    result = ["", max]
     for person in data_dict:
         if data_dict[person][feature] != 'NaN':    # ignore NAs
             if data_dict[person][feature] < result[1]:
@@ -456,24 +517,24 @@ eval()
 """ When different features have vastly different scales, e.g. house age
     vs. house price, features with a larger range can have more influence on results.
     Udacity mach learn lesson 10 vid 8.
-    
+
     Feature scaling rescales features between 0-1 using this formula:
-    
-    X1 = (X - Xmin) / (Xmax - Xmin) 
+
+    X1 = (X - Xmin) / (Xmax - Xmin)
 
         X1 = the new rescaled feature
         X = the value to rescale
         Xmin and Xmax = the minimum and maximum values from the whole dataset.
-    
+
     Scaling can be a problem if you have outliers with extreme values.
-    
-    Rescaling is only useful for some algorithms: 
+
+    Rescaling is only useful for some algorithms:
     It will affect the results of algorithms like SVMs with rbf (non-linear)
-    kernels, and k-means clustering, work in multiple dimensions (trade-off 
+    kernels, and k-means clustering, work in multiple dimensions (trade-off
     one dimension against the other).
-    
+
     Scaling won't affect the results of decision trees, that use vertical/
-    horizonal lines to group data (e.g. resizing an image doesn't change it's 
+    horizonal lines to group data (e.g. resizing an image doesn't change it's
     proportions), or linear regression, which calculates independent coefficients
     for each variable that are unrelated to each other).
 """
@@ -485,7 +546,7 @@ eval()
 # MinMaxScaler
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
-rescaled_data = scaler.fit_transform(data) 
+rescaled_data = scaler.fit_transform(data)
 # FIT finds the xmin and xmax and TRANSFORM rescales each datapoint (can also
 # implement fit & transform separately).
 
@@ -496,14 +557,14 @@ import numpy
 salaries = numpy.array([[min_val],[max_val],[x_val]]) # all floats!
 salaries = numpy.array([[477.],[1111258.], [200000.]])  # example
 scaler = MinMaxScaler()
-scaler.fit_transform(salaries)  # 200,000 is rescaled to 0.179                                               
-                                                                     
+scaler.fit_transform(salaries)  # 200,000 is rescaled to 0.179
+
 # StandardScaler
 # to standardize features by removing the mean and scaling to unit variance.
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler().fit(data)
-    
-    
+
+
 # ============================================================================
 ### """ FILE INPUT/OUTPUT (I/O) """
 # ============================================================================
@@ -595,9 +656,9 @@ def total_enrollment(uni_list):
 ###  """ FUNCTIONS """
 # =============================================================================
 
-# If you update a function in a .py file use reload() in the imp module to 
+# If you update a function in a .py file use reload() in the imp module to
 # refresh the function in a notebook that calls that function
-from imp import reload   
+from imp import reload
 reload(time_series)   # reloads time_series.py without having to reload the kernel.
 
 
@@ -700,7 +761,7 @@ import sys
 sys.path.append("./tools/")    # sys tells Python where to look; doesn't change the working directory (sometimes you still have to cd into the folder though)
 from email_preprocess import preprocess   # imports the function preprocess from the file email_preprocess in the tools folder
 
-""" NOTE if I make changes to the function in the email_preprocess file, might 
+""" NOTE if I make changes to the function in the email_preprocess file, might
     need to restart the kernel (and reload in all the data/modules) for the
     changes to be recognised. Otherwise Python will work from the cache. """
 
@@ -832,9 +893,9 @@ for item in list_a:
         print item
 
 """ To compare two ordered lists of equal length, e.g. labels_test vs pred
-    in machine learning """          
+    in machine learning """
 len([1 for i, j in zip(list_a, list_b) if i == j]) # makes a new list with a 1 for each instance when items in list_a & list_b (at the same index position) match.
-# the list comprehension above is equivalent to:     
+# the list comprehension above is equivalent to:
 counter = 0
 for i, j in zip(list_a, list_b):
     if i == j:
@@ -842,7 +903,7 @@ for i, j in zip(list_a, list_b):
 print counter  # print the total
 
 """ list comprehension with 2 if statements """
-len([1 for i, j in zip(list_a, list_b) if i == 1.0 if i == j]) 
+len([1 for i, j in zip(list_a, list_b) if i == 1.0 if i == j])
 # long-hand equivalent:
 counter = 0
 for i, j in zip(list_a, list_b):
@@ -880,8 +941,8 @@ new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list 
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 
 ### List mutation: change/add/delete
-""" lists are mutable (can be changed/appended) unlike strings, e.g. can't 
-    change letters in strings using string[0]='s' will cause an error; but can 
+""" lists are mutable (can be changed/appended) unlike strings, e.g. can't
+    change letters in strings using string[0]='s' will cause an error; but can
     change values in lists or add new values."""
 
 # Change values in lists
@@ -949,21 +1010,21 @@ a.index([6])
 # and arranged in a NumPy array (it won't accept dictionaries)
 
 """ A python dictionary can’t be read directly into an sklearn classification
-    or regression algorithm; instead, it needs a NUMPY ARRAY or a LIST OF 
-    LISTS (where each element of the list (itself a list) is a data point, and the 
-    elements of the smaller list are the features of that point). 
-    
+    or regression algorithm; instead, it needs a NUMPY ARRAY or a LIST OF
+    LISTS (where each element of the list (itself a list) is a data point, and the
+    elements of the smaller list are the features of that point).
+
     ..........................................................................
     !!! Udacity Intro to Machine Learning wrote some helper functions:
     featureFormat() and targetFeatureSplit() in tools/feature_format.py
-    These functions can take a list of feature names and the data dictionary, 
+    These functions can take a list of feature names and the data dictionary,
     and return a numpy array. Can also choose which features to extract.
-    .........................................................................  
-    
+    .........................................................................
+
     The Udacity example dict is the enron dataset: the helper functions make
     a list of people, where each person is a list of features including their
     name, email address, salary etc.
-    
+
     If a feature doesn't have a value (e.g. no email available) the functions
     replace the NaN with 0. """
 
@@ -972,20 +1033,20 @@ a.index([6])
 ### SUPERVISED MACHINE LEARNING
 
 # HOW IT WORKS
-""" You subset your dataset into training and testing data, fit (train) the 
-    algorithm using the training data, and test it by using it to make 
+""" You subset your dataset into training and testing data, fit (train) the
+    algorithm using the training data, and test it by using it to make
     predictions about the testing data.
 
-    # The training set comprises FEATURES and LABELS (unsupervised learning has only FEATURES):    
+    # The training set comprises FEATURES and LABELS (unsupervised learning has only FEATURES):
     # Features = datapoints with measurements of one or more variable, e.g. height
         (can have multiple columns, e.g. gradient, bumpiness and speed limit)
-    # Labels = the response/output/result/value/target/class associated with 
+    # Labels = the response/output/result/value/target/class associated with
         each datapoint, e.g. tall/short, fast/slow.
-    
-    # You test the algorithm by giving it a set of features (heights) to predict 
-      the labels for, when you already know the answers, e.g. tall/short; and 
+
+    # You test the algorithm by giving it a set of features (heights) to predict
+      the labels for, when you already know the answers, e.g. tall/short; and
       then calculate the accuracy score to show how many preds are correct.
-    
+
     # More training data generally gives you a better result (higher accuracy) than
     # a fine-tuned algorithm (Udacity Lesson 6 video 3).
     # So accuracy is more influenced by the size of the training set than the parameters.
@@ -995,9 +1056,9 @@ a.index([6])
 # For train/test split see validation section below
 
 ### Classification vs Regression
- """ Supervised learning is divided into two main categories: 
-    
-# Supervised classification: 
+ """ Supervised learning is divided into two main categories:
+
+# Supervised classification:
     # continuous or discrete inputs
     # discrete outputs (CLASS LABELS) - fast/slow, name, phone number, ID number
     # finds a DECISION BOUNDARY
@@ -1023,10 +1084,10 @@ a.index([6])
     Slow, especially for large, noisy datasets with many features (e.g. text)
     Speed up optimisation by using smaller training datasets.
     ## SVMs are called SVC in sklearn - support vector classifier """
-    
-# To take a subset of 1% of a training dataset: 
-features_train = features_train[:len(features_train)/100] 
-labels_train = labels_train[:len(labels_train)/100] 
+
+# To take a subset of 1% of a training dataset:
+features_train = features_train[:len(features_train)/100]
+labels_train = labels_train[:len(labels_train)/100]
 
 
 ### (3) DECISION TREES
@@ -1037,9 +1098,9 @@ labels_train = labels_train[:len(labels_train)/100]
 
     - Prone to overfitting, especially when using many features and/or small training sets.
     - Overfit decision trees would give high accuracy on training set and low on the test set.
-    - Tune parameters to avoid overfitting, e.g. using min_samples_split: if nodes end up with just one 
+    - Tune parameters to avoid overfitting, e.g. using min_samples_split: if nodes end up with just one
         datapoint you've almost always overfit.
-        
+
     - Important to measure how well you're doing and stop the tree at the appropriate time.
     - Also play with the variance-bias tradeoff and the split criterion (entropy, gini...)
 """
@@ -1047,32 +1108,32 @@ labels_train = labels_train[:len(labels_train)/100]
 ### (4) K NEAREST NEIGHBOUR (KNN)
 """ Widely used classification technique
     (Can also be used for regression).
-    Easy to interpret output, reasonable predictive power and low calculation 
+    Easy to interpret output, reasonable predictive power and low calculation
     time (compared to e.g. random forest).
 
     HOW IT WORKS:
-    Assigns a query point to the class most common among it's k-nearest 
+    Assigns a query point to the class most common among it's k-nearest
     neighbours in the feature space.
 """
 
 ### sklearn syntax for clasfrom sklearn import treesifier algorithms
-    
+
 # 1) Import the algorithm / function
         from sklearn.naive_bayes import GaussianNB    # for naive Bayes
         from sklearn import svm                       # for SVM
         from sklearn import tree                      # for decision trees
         from sklearn.neighbors import KNeighborsClassifier    # for K nearest neighbour
-        
+
 # 2) Create the classifier
         clf = GaussianNB()      # for naive Bayes
         clf = svm.SVC()         # for SVM (svms are called SVC in sklearn)
         clf = tree.DecisionTreeClassifier()     # for decision trees
         clf = KNeighborsClassifier(n_neighbors=5, weights="uniform")   # for KNN
-        
+
 # 3) Train/fit the classifier using the training features/labels
         clf.fit(features_train, labels_train)   # i.e. clf.fit(X, y)
-        
-# 4) Use the classifier to make predictions about a new point/s from a test set (of data). 
+
+# 4) Use the classifier to make predictions about a new point/s from a test set (of data).
     # i.e. you pass in the test features and the algorithm predicts the labels.
         pred = clf.predict(features_test)
 
@@ -1105,24 +1166,24 @@ for importance in clf.feature_importances_:
     counter += 1
     if importance > 0.2:
         print "Feature number:", counter, "Importance:", importance
-        
-        
+
+
 
 ### A note about classification datasets
 """ When generating / augmenting a dataset, be VERY careful if your data are
-    coming from different sources for different classes. 
-    
-    Introducing features that come from different sources depending on the  
+    coming from different sources for different classes.
+
+    Introducing features that come from different sources depending on the
     class is a classic way to accidentally introduce biases and mistakes.
-    
-    E.g. different sources can contain missing values for different features, 
-    e.g. old weather datasets may be missing wind speed or have less accurate 
-    precipitation measures than new ones, suggesting that weather has changed 
+
+    E.g. different sources can contain missing values for different features,
+    e.g. old weather datasets may be missing wind speed or have less accurate
+    precipitation measures than new ones, suggesting that weather has changed
     over time (less rain or lower wind speed).
     (See note in Udacity intro to mach learn Lesson 6 quiz 35).
-    
+
     One solution is only using features that appear with a similar frequency or
-    accuracy in datapoints from all sources, e.g. temperature, and ignore 
+    accuracy in datapoints from all sources, e.g. temperature, and ignore
     features that vary with source, e.g. wind. """
 
 
@@ -1142,31 +1203,31 @@ preds = reg.predict(features_test)  # where features_test is an array of shape =
 # e.g. to predict the label of a new point [2, 4] (i.e. value for feature_1 = 2 and value for feature_2 = 4)
 reg.predict([[2,4]])         # list of lists (one per point, despite there being only one point in this example)
 # e.g. to predict the label of two new points
-reg.predict([[2,4], [2,7]])  
+reg.predict([[2,4], [2,7]])
 # e.g. to predict the label of a new point when the regression has only one feature, e.g. age
-pred = reg.predict([[27]])  
+pred = reg.predict([[27]])
 # NOTE: for regressions values to predict for must be in a list, even if there's only one value:
 pred = reg.predict(27)  # won't work as 27 is not in a list.
 
 
 # Evaluating regresssions
 """ Assess the regression fit by:
-  
+
 # 1. Plotting the regression line over the scatter points
-# 2. Examining some performance metrics: 
+# 2. Examining some performance metrics:
      - the errors that the regression makes (measured as the sum of squared errors, see below)
      - the r-squared score (see below)
-     - the regression coefficients (slope and intercept) - e.g. how they 
+     - the regression coefficients (slope and intercept) - e.g. how they
         change when you regress on different variables/remove outliers.
-"""    
-    
+"""
+
 # Plotting regressions
 plt.scatter(x,y)                # x=inputs, y=outputs
-plt.plot(x, reg.predict(x))     # x=inputs, reg.predict(x)=inputs and predicted 
+plt.plot(x, reg.predict(x))     # x=inputs, reg.predict(x)=inputs and predicted
                                 # outputs from the trained regression algorithm 'reg'.
 plt.show()
-                                
-# e.g...                                
+
+# e.g...
 plt.scatter(ages, net_worths)                    # make a scatter plot of all data points
 plt.plot(ages, reg.predict(ages), color="blue")  # draw predicted regression line
 plt.show()
@@ -1175,20 +1236,20 @@ plt.show()
 ## The Sum of Squared Errors, SSE
 
 """ Regression algorithms work by finding the slope and intercept that minimise
-    the SSE (distance between each training point and the 
+    the SSE (distance between each training point and the
     regression line, squared, and summed over all training points).
-    
+
     Squared errors are used rather than absolute errors (SUM|error|) as there can
     be multiple lines that minimise SUM|error| but only one line will minimise SSE.
     (it's also computationally much easier to calc regression using SSE than SUM|error|)
-    
+
     SSE is related to sample size!!
-        - It increases as you add more data (each point adds to the sum of errors), 
+        - It increases as you add more data (each point adds to the sum of errors),
           but it doesn't necessarily mean the fit is worse.
         - This makes it hard to compare fits between different-sized datasets.
           (Udacity Intro to Mach Learn Lesson 7 video 29)
 
-    Popular regression algorithms that minimise SSE: 
+    Popular regression algorithms that minimise SSE:
         - Ordinary Least Squares (OLS) - used in sklearn LinearRegression
         - Gradient Descent
 """
@@ -1209,10 +1270,10 @@ print "TRAIN SET r-sq:", reg.score(ages_train, net_worths_train)  # for the trai
 
 # if there is overfitting going on,r-squared will be lower for the test set than the training set.
 
-""" Best possible score is 1.0 and it can be negative (because the model can be 
-    arbitrarily worse). A constant model that always predicts the expected value 
+""" Best possible score is 1.0 and it can be negative (because the model can be
+    arbitrarily worse). A constant model that always predicts the expected value
     of y, disregarding the input features, would get a R^2 score of 0.0. """
-    
+
 # in a Udacity quiz I got scores of:
 # 0.85 - they said it was very good
 # 0.046 - they said it was 'low, but could be lower'.
@@ -1224,7 +1285,7 @@ print "slope:", reg.coef_            # show the slope  (as an array, shape (n_fe
 print "intercept:", reg.intercept_   # show the intercept (as an array, shape (n_targets,) or (1,) or empty)
 
 #####################################
-### UNSUPERVISED MACHINE LEARNING 
+### UNSUPERVISED MACHINE LEARNING
 
 # The training set has only FEATURES and no LABELS
 # So you have to find strucure in data without labels
@@ -1234,43 +1295,43 @@ print "intercept:", reg.intercept_   # show the intercept (as an array, shape (n
 
 # CLUSTERING
 # (Udacity Intro to Mach Learning: Lesson 9+10)
-""" e.g. screen sizes of devices used to view a website are small 
+""" e.g. screen sizes of devices used to view a website are small
     (mobile), medium (tablet) or large (laptops/desktops). Clustering
     algorithms recognize these clumps without help.
 
     ### sklearn documentation on clustering
     http://scikit-learn.org/stable/modules/clustering.html
-    
+
     ## Useful table comparing different scikit-learn clustering algorithms:
-    
+
     # Parameters: which ones you must specify
     # Scalability: how the algorithm performs with diff-sized datasets
-    # Use case: details of what kinds of data the algorithm is useful for, 
-    # 	e.g. k-means is good for general purpose when you have a 
-    # 	smallish number of clusters that contain an even number of 
+    # Use case: details of what kinds of data the algorithm is useful for,
+    # 	e.g. k-means is good for general purpose when you have a
+    # 	smallish number of clusters that contain an even number of
     # 	points.
-    # Geometry: how the algorithm works, e.g. k-means works by calculating 
+    # Geometry: how the algorithm works, e.g. k-means works by calculating
     	the distances between points).
 """
-    
-### K-MEANS CLUSTERING 
+
+### K-MEANS CLUSTERING
 
 # How it works
-""" 1. Assign: 
+""" 1. Assign:
      - You pick a number of clusters and where their cluster center (centroid)
         is positioned (the initial position is just rough guess).
      - Then points are assigned to the centroid they are closest to.
-    
-    2. Optimise: 
+
+    2. Optimise:
      a) update the centroids:
-        - reposition the centroid closer to the centre of each cluster 
-    	    of points, by minimising the total quadratic distance (error) 
+        - reposition the centroid closer to the centre of each cluster
+    	    of points, by minimising the total quadratic distance (error)
      	    between the centroid and each of the points.
      b) reassign the points:
         - to their nearest centroid: some will change clusters.
-    
+
     # 3. Repeat optimisation until points stop changing clusters.
-    
+
     useful website for visualising how k-means clustering works:
     https://www.naftaliharris.com/blog/visualizing-k-means-clustering/
 """
@@ -1279,8 +1340,8 @@ print "intercept:", reg.intercept_   # show the intercept (as an array, shape (n
 """ n_clusters=8, max_iter=300 and n_init=10.
 
     - n_clusters is most influenctial parameter and should be optimised.
-    - n_init safeguards against local minima: increase for datasets prone to 
-      clustering error. 
+    - n_init safeguards against local minima: increase for datasets prone to
+      clustering error.
 
     See more detailed explanations in Lesson9_KMeansClustering.py in:
         C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning
@@ -1307,7 +1368,7 @@ kmeans.fit_predict(features) # equivalent to calling fit(X) followed by predict(
 """ Useful for dimension reduction (feature transformation to condense many features
     into fewer 'latent' features) as a form of unsupervised learning, to prepare
     data for input into an algorithm such as an SVM.
-        
+
     For details see file lesson13_pca.py in:
     C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects
 """
@@ -1323,24 +1384,24 @@ svc.fit(features_train_pca, labels_train)   # fit the classifier
 features_test_pca = pca.transform(features_test)   # transform testing set using same PCs identified in the training data.
 pred = svc.predict(features_test_pca)  # use these to predict labels for
 
-    
+
 
 ### FEATURE SELECTION FOR MACHINE LEARNING
 """ Good algorithms employ the minimum number of features required to get as much info as possible.
       (quality not quantity)
-      
+
     ### Bias-variance tradeoff
     = goodness (VARIANCE, high N features) vs simplicity (BIAS, low N features) of the fit.
     - See <...Machine_Learning/ud120-projects/Bias-variance tradeoff.txt>
 
-    ### Recommended Process for Feature Selection:        
+    ### Recommended Process for Feature Selection:
     1. Use your human intuition to choose a potential feature of interest
     2. Code it up
     3. Visualise the result (can use colour coding, e.g. colour the POIs red if you
        are trying to discriminate them from non-POIs. Look for clustering/patterns and
-       decide whether the feature gives you discriminating power in the classification 
+       decide whether the feature gives you discriminating power in the classification
        problem you are trying to solve. If yes, keep it.
-    4. Repeat this process a few times to zero in on what you think will be the most 
+    4. Repeat this process a few times to zero in on what you think will be the most
        helpful new feature for you.
 
     ### Reasons to exclude a feature from a model:
@@ -1354,11 +1415,11 @@ and: find_signature.py in ..Online_course_notes\Udacity_Intro_to_Machine_Learnin
 """
 
 ### sklearn (univariate) feature selection tools:
-    
+
 ## 1. SelectKBest
 """ Selects the K most powerful features, e.g. if you want to condense the
     features down to a specific number, and perhaps have an idea that there
-    are 2 key ones driving most of the variation in the data. 
+    are 2 key ones driving most of the variation in the data.
     (no example here) """
 
 ## 2. SelectPercentile
@@ -1382,14 +1443,14 @@ vectorizer = TfIdfVectorizer(max_df=1.0)
 
 ### Regularisation / Lasso Regression
 """ (Udacity intro to machine learning lesson 12 video 15-16)
-    - regularization AUTOMATICALLY finds the best features to include in a model. 
+    - regularization AUTOMATICALLY finds the best features to include in a model.
     - works by penalising extra features to balance goodness of fit with simplicity.
     - helps stop models overfitting the training data
-    
-    # Lasso Regression: uses regularization to find the best fit 
+
+    # Lasso Regression: uses regularization to find the best fit
     - adds a penalty to each feature f (Pf)
     - seeks to minimise <SSE + Pf*Cf>	# Cf = coefficient of feature f
-    - so adding a new feature may reduce the SSE but not enough to offset the penalty of 
+    - so adding a new feature may reduce the SSE but not enough to offset the penalty of
       increasing the model's complexity
     - this identifies the features with the most important effect on the regression.
     - and sets the coefficients for all other features to zero (so they become irrelevant to the fit).
@@ -1402,10 +1463,10 @@ lasso_reg.fit(features, labels)
 lasso_reg.predict(features_test)  # e.g. .predict([[2,2,4,5,6]])
 
 # access the coefficients
-""" this command lists the coefficients for each feature. Features with 
+""" this command lists the coefficients for each feature. Features with
     larger coefficients are more important. Features with zero coefficients
     are not being used in the regression so can be disregarded. """
-print lasso_reg.coef_   
+print lasso_reg.coef_
 
 # access the intercepts (if wanted)
 print lasso_reg.intercept_
@@ -1418,10 +1479,10 @@ print lasso_reg.intercept_
 ### Train/Test split in sklearn
 
 # Training set size
-""" # If you have too few training examples the accuracy could be too low to be useful. 
+""" # If you have too few training examples the accuracy could be too low to be useful.
     # The only way to know if you have enough data is to try the algorithm.
-    # If the accuracy is too low you could collect more data, e.g. do more training 
-      sessions in the self-driving car. 
+    # If the accuracy is too low you could collect more data, e.g. do more training
+      sessions in the self-driving car.
     # Sometimes it's not possible to collect more data, e.g. the Enron dataset.
 """
 
@@ -1431,12 +1492,12 @@ from sklearn.model_selection import train_test_split
 
 X, y = features, labels
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)  
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
 # returns a list containing train-test split of inputs: list length = 2*len(arrays)
-""" default test_size = 0.25 (25% of data set). But can specify the test_size 
+""" default test_size = 0.25 (25% of data set). But can specify the test_size
     as an integer or float (= number or proportion of samples to put in the test set).
-    
-    The optional random_state parameter is a pseudo-random number generator 
+
+    The optional random_state parameter is a pseudo-random number generator
     state used for random sampling, e.g. random_state=42. """
 
 # & see validation & evaluation section for K-Fold cross validation when choosing
@@ -1444,34 +1505,34 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random
 
 
 ### K-Fold cross validation
-""" Training and testing on single datasets is prone to error if you have a 
+""" Training and testing on single datasets is prone to error if you have a
     limited training set or a limited test set.
     K-Fold Cross Validation 'folds' (splits) the data into training and testing
-    sets K times, producing K different training/testing sets, which you can 
+    sets K times, producing K different training/testing sets, which you can
     fit separate algorithms to and take an average of the output.
-    This increases training time but gives a more accurate result. 
+    This increases training time but gives a more accurate result.
 """
 from sklearn.model_selection import KFold
 kf = KFold(samples, k)   # samples = N items in whole dataset; k = N folds
 kf = KFold(len(authors), 2)  # add parameter shuffle=True if datapoints are ordered,
-""" # shuffle=true randomises the datapoints before splitting them up into folds, 
+""" # shuffle=true randomises the datapoints before splitting them up into folds,
       rather than splitting the data based on index value (simply half way through
       all the datapoints if you choose 2 folds). If ordered, certain labels might
       be more common in one half of the dataset, leading to different labels in
       the training and testing sets and low accuracy scores.
 
-    # output kf is 2 lists of indices ('random' numbers between 1 and len(authors)), 
-      that specify which datapoints should go in the training or testing sets. 
+    # output kf is 2 lists of indices ('random' numbers between 1 and len(authors)),
+      that specify which datapoints should go in the training or testing sets.
     # can use these indices to refer to features and labels by their index number
       and assign them to the training or testing sets. """
 
 
 ### GridSearchCV
-""" GridSearchCV is a way of systematically working through multiple 
-    combinations of parameter tunes (values), cross-validating as it goes to determine 
+""" GridSearchCV is a way of systematically working through multiple
+    combinations of parameter tunes (values), cross-validating as it goes to determine
     which tune gives the best algorithm performance. This saves you tuning the parameters
     yourself by trying and testing your best guesses (which takes ages). """
-    
+
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV
 
 from sklearn.model_selection import GridSearchCV
@@ -1493,16 +1554,16 @@ clf.best_params_
 
 
 ### Accuracy Score
-""" accuracy = [N items (datapoints) in a class that are labelled correctly / 
+""" accuracy = [N items (datapoints) in a class that are labelled correctly /
                      N items in that class]
 
-    Accuracy is less reliable for skewed data, i.e. with imbalanced classes 
-    like the Enron dataset (many more non-POIs than POIs), as you can just 
-    guess the more common class label for every point AND STILL GET PRETTY 
+    Accuracy is less reliable for skewed data, i.e. with imbalanced classes
+    like the Enron dataset (many more non-POIs than POIs), as you can just
+    guess the more common class label for every point AND STILL GET PRETTY
     GOOD ACCURACY!
-    
-    Accuracy is also less reliable if you want to err on the side of caution 
-    of a yes/no answer, e.g. cancer tests - prefer a false positive than a false neg. 
+
+    Accuracy is also less reliable if you want to err on the side of caution
+    of a yes/no answer, e.g. cancer tests - prefer a false positive than a false neg.
 """
 from sklearn.metrics import accuracy_score
 accuracy_score(pred, labels_test)
@@ -1511,8 +1572,8 @@ clf.score(features_test, labels_test)
 
 ## Confusion matrix
 """ shows N datapoints predicted to be in each class and whether the prediction
-    was correct (+ve) or incorrect (-ve), as a matrix. 
-    So 2x2 matrix if there are 2 classes (+ve/-ve for points predicted in class 1; 
+    was correct (+ve) or incorrect (-ve), as a matrix.
+    So 2x2 matrix if there are 2 classes (+ve/-ve for points predicted in class 1;
     +ve/-ve for points predicted in class 2) - see Udacity Mach Learn Less 15 Vid 6-9.
 """
 from sklearn.metrics import confusion_matrix
@@ -1526,7 +1587,7 @@ print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N
          Donald [0   7  19]
 
     true/real labels are on LHS and predicted labels on RHS, in the same order.
-    
+
     rows = the true positive (tp) and any false negatives (fn)
     cols = the true positive (tp) and any false positives (fp)
 
@@ -1535,8 +1596,8 @@ print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N
         - 10 photos of George were correctly identified, but 6 were mistaken for Donald.
         - there were 18 photos of Ariel (sum of first row)
         - 21 photos were predicted to be George (sum of 2nd column) """
-   
-   
+
+
 ### Precision & Recall
 
 #  calculated from the confusion matrix above
@@ -1545,27 +1606,27 @@ print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N
 
     tp=true positives, fp=false positives, fn = false negatives.
 
-    # PRECISION rate = tp / (tp + fp) = 10/21 (21 is the col sum), 
+    # PRECISION rate = tp / (tp + fp) = 10/21 (21 is the col sum),
         i.e. probability that a photo *identified as* George is actually George.
-        
-    # RECALL rate = tp / (tp + fn) = 10/16 (16 is the row sum), 
+
+    # RECALL rate = tp / (tp + fn) = 10/16 (16 is the row sum),
         i.e. probability that a photo *of* George is identified as George, or
              the ability of the classifier to find all the positive samples.
 
     # High recall/low precision = high true positives, but risk of false positives.
-        e.g. "Nearly every time a POI shows up in my test set, I am able to 
-        identify him or her. The cost of this is that I sometimes get some 
+        e.g. "Nearly every time a POI shows up in my test set, I am able to
+        identify him or her. The cost of this is that I sometimes get some
         false positives, where non-POIs get flagged."
-    
-    # High precision/low recall = low false positives, risk of false negatives. 
-        e.g. "Whenever a POI gets flagged in my test set, I know with a lot of 
-        confidence that it’s very likely to be a real POI and not a false alarm. 
-        On the other hand, the price I pay for this is that I sometimes miss 
+
+    # High precision/low recall = low false positives, risk of false negatives.
+        e.g. "Whenever a POI gets flagged in my test set, I know with a lot of
+        confidence that it’s very likely to be a real POI and not a false alarm.
+        On the other hand, the price I pay for this is that I sometimes miss
         real POIs, since I’m effectively reluctant to pull the trigger on edge cases.”
-        
+
     # Depends on project aims as to whether you want high precision or high recall.
       For Enron we want high recall/low precision as don't want to miss any POIs (false negs).
-        
+
     # A high F1-score represents a good balance between recall and precision,
         so fp and fn are low and predictions are accurate.
 """
@@ -1574,18 +1635,18 @@ precision = precision_score(y_true, y_pred)  # y=labels
 
 from sklearn.metrics import recall_score
 recall = recall_score(y_true, y_pred)
-    
+
 
 ## The F1-score (0-1)
 """ # the balance between (weighted average of) RECALL and PRECISION
 
-    # a measure of the classifier's performance: higher is better. 
-    
-    # can be used to monitor how changing/tuning parameters affect the 
+    # a measure of the classifier's performance: higher is better.
+
+    # can be used to monitor how changing/tuning parameters affect the
       accuracy / performance of an algorithm.
-      
+
     # https://en.wikipedia.org/wiki/F1_score
-""" 
+"""
 
 # view the F1-score in the classification report:
 
@@ -1593,7 +1654,7 @@ recall = recall_score(y_true, y_pred)
 """ shows precision, recall, F1-score snd support for each classification """
 from sklearn.metrics import classification_report
 y_pred = clf.predict(X_test)  # X = features, y = labels
-print classification_report(y_test, y_pred, target_names=target_names)  
+print classification_report(y_test, y_pred, target_names=target_names)
 
 
 # =============================================================================
@@ -1601,7 +1662,7 @@ print classification_report(y_test, y_pred, target_names=target_names)
 # =============================================================================
 
 # E.g. to make predictions with a machine learning classifier
-from time import time    # import the time module 
+from time import time    # import the time module
 t0 = time()              # show current clock time
 pred = clf.predict(features_test)       # run your code of interest
 print "prediction time:", round(time()-t0, 3), "s"   # use current clock time to calculate time elapsed
@@ -1617,15 +1678,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 # TO use a module you first need to install it via the cmd line / terminal / git bash:
 """ NOTE: open terminal via Anaconda Navigator and click play button next
     to the environment you want to install the package/library in to. """
-    
-    
-""" A module is a .py file containing Python definitions and statements. 
+
+
+""" A module is a .py file containing Python definitions and statements.
     use import module to access functions in that file, e.g. to import two
     functions called featureFormat and targetFeatureSplit from a file called
     feature_format.py, use this command:
-        
+
     from feature_format import featureFormat, targetFeatureSplit
-    
+
     Then you can use those functions in the current file.
 """
 
@@ -1635,12 +1696,12 @@ package_name = "pytrends"
 pip.main(['install', package_name])
 
 
-# to import a module into a specific python environment, e.g. one called 'py36': 
+# to import a module into a specific python environment, e.g. one called 'py36':
 conda install --name py36 numpy
 # for info see: https://conda.io/docs/user-guide/tasks/manage-pkgs.html
 # or do it in the Anaconda Navigator (for common/official modules)
 
-
+# module cv2 = opencv
 
 # import entire module
 import math
@@ -1664,8 +1725,8 @@ conda install PACKAGENAME
 conda remove PACKAGENAME # to remove/uninstall it
 # e.g. conda install pyflux
 
-# can use pip instead of conda, but pip installs packages in a different place 
-# to conda, so can cause problems when trying to import them in python (py looks 
+# can use pip instead of conda, but pip installs packages in a different place
+# to conda, so can cause problems when trying to import them in python (py looks
 # in the wrong place. Doesn't cause probs for all packages though, just textacy & spacy so far!)
 pip install PACKAGENAME
 pip uninstall PACKAGENAME
@@ -1684,56 +1745,56 @@ pip show packagename  # shows location, version and dependancies/dependents
 # =============================================================================
 # https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
 
-# NumPy’s array class is called ndarray. 
+# NumPy’s array class is called ndarray.
 
 # Basic NumPy commands
 ndarray.ndim    # number of axes (dimensions) of the array, e.g. arrayname.ndim
-ndarray.shape   # dimensions of the array 
+ndarray.shape   # dimensions of the array
                 # For a matrix with n rows and m columns, shape will be (n,m)
 
 numpy.reshape(a, newshape)  # reshape an array into a new shape without changing its data.
                             # a = array to be reshaped
-                            # newshape = tuple of integers: (n_rows, n_columns). 
-                            # If newshape is just one integer then the result 
+                            # newshape = tuple of integers: (n_rows, n_columns).
+                            # If newshape is just one integer then the result
                             # will be a 1D array of that length.
-                
-                               
+
+
 
 # =============================================================================
 ### """ OUTLIERS """
 # =============================================================================
  """ See Udacity intro to machine learning: Lesson 8 Outliers.
- 
- To identify outliers: 
+
+ To identify outliers:
     # Plot the raw data as a scatterplot and use the raw data sheets to identify unusual values.
-    # Fit regression and plot scatterplot with reg line to check the fit visually 
+    # Fit regression and plot scatterplot with reg line to check the fit visually
     # Also check the r-squared value
         - If there are outliers decide whether to accept (fraud etc) or reject them.
-     
+
  OUTLIER REJECTION
     # Method for outlier detection in machine learning regression:
     1. Train the regression algorithm (with the training dataset).
     2. Remove the 10% values with the highest residual errors (distance from reg line)
-    3. Re-format the data (if necessary) and re-train the algorithm on the 
+    3. Re-format the data (if necessary) and re-train the algorithm on the
         reduced training set. The R-Sq should be higher and the line should fit better..
     4. This train-remove-retrain procedure can be repeated.
 
     # Function I wrote to clean data by removing values with large errors:
         function outlierCleaner in the file outlier_cleaner.py in
         C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
-        
+
     # For a small number of known data points, use dictionary.pop('KEY', 0) to
     remove a key-value pair from a dictionary:
-        dictionary.pop(key, 0) 
-        
-    # Udacity code to re-train the regression using the cleaned data in the 
+        dictionary.pop(key, 0)
+
+    # Udacity code to re-train the regression using the cleaned data in the
         file outlier_removal_regression.py in:
         C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
-"""    
+"""
 
 
 
-# =============================================================================          
+# =============================================================================
 ### """ PANDAS """
 # =============================================================================
 
@@ -1782,6 +1843,14 @@ df.agg({'A' : ['sum', 'min'], 'B' : ['min', 'max']})
 # group by and aggregate in same line - sums the number of bike rides per day of week
 weekday_counts = berri_bikes.groupby('weekday').aggregate(sum)
 
+# multiple aggregate functions
+# https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/
+mean_daily_consumption = df.groupby(['day']).agg({'kwh': [min, max, sum, "mean", "std", "mad"]})
+
+# Use ravel to create better names for the columns when using multiple aggregates
+mean_daily_consumption.columns = ["_".join(x) for x in mean_daily_consumption.columns.ravel()]
+
+
 # group by one column and count the values of another column per this column value using value_counts
 df.groupby('name')['activity'].value_counts()
 
@@ -1803,33 +1872,41 @@ df
 df = df.rename(index=str, columns={"A": "a", "B": "b"})
 
 
+# drop irrelevant columns
+df = df.drop('col_name', axis = 1)
+
+# select relevant columns
+df1 = df[['a','d']]
+
+
+
 # =============================================================================
 ### """ PICKLE FILES """
 # =============================================================================
 
-""" The Pickle module implements an algorithm for serializing and 
-    de-serializing a Python object structure (list, dict, etc.) so it can be 
-    saved on disk. 
+""" The Pickle module implements an algorithm for serializing and
+    de-serializing a Python object structure (list, dict, etc.) so it can be
+    saved on disk.
     Serializing means it converts the object into a character stream containing
     all the info necessary to reconstruct the object in the same layout/format
     in another python script.
-    
+
     Python pickle files are byte streams, so should be opened in binary mode:
        use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
 """
 # official user guide https://docs.python.org/2/library/pickle.html
 # simpler quick ref guide https://wiki.python.org/moin/UsingPickle
- 
+
 ## EXAMPLE:
-    
+
 import pickle
 
 # Save a dictionary into a pickle file.
 fave_col = {"lion": "yellow", "kitty": "red"}   # create dictionary
 pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "save.p"
                                                 # "wb" = write in binary mode
-# Load the dictionary back from the pickle file.  
-fave_col_p = pickle.load(open("save.p", "rb"))    
+# Load the dictionary back from the pickle file.
+fave_col_p = pickle.load(open("save.p", "rb"))
         # 'rb' = opens the file for reading in binary mode.
 
 
@@ -1875,7 +1952,7 @@ print(something)  # requires parentheses as it's a function
 ###  """ RAW INPUT """
 # =============================================================================
 
-# when the user can type something in 
+# when the user can type something in
 # automatically converts what they type into a string. Specify integer using int():
 guess = int(raw_input("Your guess: "))
 
@@ -1982,6 +2059,12 @@ sentence = "I have a dog"
 sentence2 = sentence + " " + "cat"
 print sentence2   # = 'I have a dog cat'
 
+# to insert things into strings use .format()
+# .format() acts on string types
+x = 5
+my_string = "My number is {}".format(x)
+print(my_string) # >>> My number is 5
+
 # Indexing strings
 'Joanne'[0]     # selects the 0th character in the string ('J').
 'Joanne'[-1]    # counts from the right side (backwards) so will show the last character in the string ('e').
@@ -2086,24 +2169,24 @@ views_GBR = views_sun_by_location[views_sun_by_location.location == "GBR"]
 # (and ..\ud120-projects\text_learning\vectorize_text.py for some text processing functions).
 
 ### Textacy
-""" to install use CONDA and not PIP - otherwise it is only installed in the 
+""" to install use CONDA and not PIP - otherwise it is only installed in the
     pkgs folder (in Anaconda) and not in site-packages, which is where python
     looks for libraries """
 conda install -c conda-forge textacy
 """ I had trouble with python not looking in the right place for textacy when
-    I tried to import it. Had to install the latest Windows windows software 
-    development kit  (and Windows C++ visual compiler, though not sure if this 
-    was required as I installed it before the SD kit and it wouldn't work 
+    I tried to import it. Had to install the latest Windows windows software
+    development kit  (and Windows C++ visual compiler, though not sure if this
+    was required as I installed it before the SD kit and it wouldn't work
     without the kit too). """
 
 # =============================================================================
 ###  """ TUPLES """
 # =============================================================================
-""" A tuple is a comma-separated list of values. 
-    Values stored in a tuple can be any type, and they are indexed by integers. 
-    Unlike lists, tuples are immutable. 
-    
-    Tuples are comparable and hashable so we can sort lists of them and use 
+""" A tuple is a comma-separated list of values.
+    Values stored in a tuple can be any type, and they are indexed by integers.
+    Unlike lists, tuples are immutable.
+
+    Tuples are comparable and hashable so we can sort lists of them and use
     tuples as key values in Python dictionaries.
 
     Although unnecessary, it's common to enclose tuples in parentheses () to
@@ -2117,7 +2200,7 @@ type(t1)    # returns <type 'tuple'>
             # without the comma it would evaluate to a string.
 
 
-## Sort a list of tuples 
+## Sort a list of tuples
 mytuplist = [('app', 121, 4),('ban', 231, 3),('car', 148, 2), ('dat',221, 1)]
 # key = function that identifies the thing to sort by.
 
@@ -2125,17 +2208,17 @@ mytuplist = [('app', 121, 4),('ban', 231, 3),('car', 148, 2), ('dat',221, 1)]
 sorted(mytuplist, key=lambda x: x[1]) # x[1]=sort by 2nd value in each tuple (in index position 1)
 
 # use list.sort() to sort the list and save it in the new order.
-mytuplist.sort(key=lambda x: x[1]) 
+mytuplist.sort(key=lambda x: x[1])
 
 ## Alternatives to lambda
 # itemgetter
 from operator import itemgetter
 sorted(mytuplist, key=itemgetter(2)) # x[2]=sort by the 3rd value in each tuple.
 
-# a self-defined function 
+# a self-defined function
 def mysortfun(a):
     return a[1]   # to sort by 2nd element
-sorted(mytuplist, key=mysortfun)   
+sorted(mytuplist, key=mysortfun)
 
 
 # =============================================================================

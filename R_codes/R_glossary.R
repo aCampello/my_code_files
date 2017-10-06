@@ -7,6 +7,7 @@
 ############## CONTENTS ################
 
 # AICc - see model selection section below
+
 # APPLY function in plyr package
 
 # Annotate plots
@@ -21,8 +22,7 @@
 
 # Center variables
 
-# Citing packages
-## package version
+# Cleaning data
 
 # Clear workspace
 
@@ -34,7 +34,9 @@
 
 # Correlation test
 
-# CSV - Save data frame as csv file
+# CSV - import and save dataframes as csv files
+
+# Data frames
 
 # Datetime formats in Excel
 
@@ -72,6 +74,8 @@
 # ggplot2
 
 # glmmADMB package - for -inflated mixed models, negbinoms etc
+
+# Good coding practices
 
 # Ifelse
 
@@ -117,7 +121,15 @@
 
 # Normality testing
 
+# Numbers
+## seq() etc.
+
 # Outliers
+
+# Packages
+## versions, citing, updating etc
+
+# Pipes
 
 # Plotting
 ### Basic plot in base R
@@ -158,6 +170,8 @@
 
 # R-SQUARED FOR MIXED MODELS
 
+# RStan
+
 # Sort a data frame by a column
 
 # Split character variables using strsplit
@@ -165,6 +179,10 @@
 # Structure of data - view
 
 # Subset data
+
+# Time functions / code (timing)
+
+# T-tests
 
 # Variance inflation factor
 
@@ -223,9 +241,9 @@ anova(model1, model2) # gives a chi-sq goodness of fit if model includes categor
 # anova gives same result as a likelihood ratio test using package lrtest:
 lmtest::lrtest(model1, model2)
 
-#=========================================
+#===================================#
 # APPLY function in plyr package ####
-#=========================================
+#===================================#
 # apply the same function to each row in a matrix
 a <- apply(shortest.paths(T1winB4_net_graph), 1, sum) # get sum per node of shortest paths without takng reciprocal
 
@@ -282,9 +300,9 @@ summary(lsmeans(glmm3, ~ season | Origin), type = "response")
 # but SEs are not same from phia and lsmeans
 
 
-#======================
+#=======================#
 # Binomial exact test ####
-#======================
+#======================#
 # syntax = binom.test(number of successes, total observations, expected proportion)
 # expected proportion is typically 0.5 - so 50% chance of either 0 or 1, male or female etc
 # E.g....
@@ -292,9 +310,9 @@ binom.test(2442, sum(sum_status_sub$freq), 0.5) # see p.37 Rob Thomas' R book
 
 
 
-#=================================
+#=================================#
 # Categorise continuous variables ####
-#================================= 
+#=================================#
 
 # Split DF and MJ into equal-sized categories
 
@@ -314,9 +332,9 @@ table(patchdata$DFcateg) # see n observations in each category
 
 
 
-#======================
+#======================#
 # Center variables  ####
-#======================
+#======================#
 #http://rtutorialseries.blogspot.co.uk/2012/03/r-tutorial-series-centering-variables.html
 # to center a variable, subtract the overall  mean from each  data point
 # z-scores are made by subtracting the overall mean from each data point and then dividing that by the overall SD
@@ -325,14 +343,53 @@ scale(variable, center = TRUE, scale = TRUE)  # to create z-scores
 
 
 
-#===========================================#
-# Citing R packages ####
-#===========================================#
-getwd() # view current working directory
-citation("qgraph")
-citation() # to cite R itself
-packageVersion("asnipe")
-sessionInfo() # view loaded packages, versions etc
+#==================#
+# Cleaning data ####
+#==================#
+
+# Replace NAs with zeros
+replace(df, is.na(df), 0) 
+df[is.na(df)] <- 0 # better
+centrality$maincomp[is.na(centrality$maincomp)] <- 0 # using column names
+
+# Replace zeros with NAs
+df[,25][df[,25] == 0] <- NA # assuming column of interest is column #25
+centrality$eig_maincomp[centrality$eig_maincomp  == 0] <- NA  # with column names instead
+
+# Replace data with missing value coded as -9999 with NA (across the whole dataframe)
+df[df == -9999] <- NA        # = "look at df; take all the things in df that equal -9999, replace them with NA"
+
+#== Replace empty cells in specific column with NAs
+df$sex[df$sex==''] <- NA
+
+
+# NOTE: sometimes empty cells are treated as factor levels and no matter what I can't get rid of the empty factors (converting to NA or zero doesnt work)
+# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty 
+# cells as NA before converting the variable to a factor.
+
+#== Adjust or rename datapoints, e.g. if some rows are 'Male' and some are 'male' convert them all to 'male'
+data$sex[data$sex=='Male'] <- 'male'
+
+#== change signs of values: negative to positive
+centrality$eig_maincomp <- abs(centrality$eig) # abs = absolute value irrespective of sign
+
+#== Delete column from data frame
+centrality$fragment <- NULL
+
+#== Rename column in data frame
+names(df)[names(df) == 'old.var.name'] <- 'new.var.name' # template
+names(TAll_attr2)[names(TAll_attr2) == 'closeness'] <- 'closeness_maincomp' # example
+
+#=== row numbers and row names
+row.names(attribs) # view / refer to row id number in table (row number when first imported, doesn't change when re-order the dataframe)
+1:nrow(attribs) # view row sequence
+
+#=== Concatenate strings or numbers in a data frame
+paste(item1, item2, sep=c("", "-", "_", "."))
+
+# Concatenate rounded values in Excel
+=ROUND(A1,1) & " ? " & ROUND(A2,1) # use ROUND with '&' to combine rather than concatenate with commas
+
 
 
 #===========================================#
@@ -441,26 +498,54 @@ min(length(visitdata$PatchDaysFedPW), length(visitdata$MeanMJPerDay))-2 # -2 as 
 
 
 
-#===============================
+#======================================#
 # CSV - Save data frame as csv file ####
-#===============================
-write.csv(attribs.NC, file="Filename.csv", row.names = FALSE) # saves as csv file in current working directory
-read.csv("Filename.csv") # re-open file in R
+#======================================#
+
+# typical method, but slow for big datasets (>2GB)
+read.csv("Filename.csv") # open file in R
+
+#= Reading CSVs using Fread
+
+# For importing big datasets data.table::fread is much faster than read.csv or read_csv
+mydata <- fread(csv_name, drop = c("Acorn", "Acorn_grouped")) # exclude irrelevant cols
+
+# Can use fread to import and combine multiple CSV files 
+# (might overload R's RAM and crash it/slow it down loads):
+
+# first make a list of all the filenames in the target folder
+file_list <- list.files(path = "~/my_code_files/R_codes/gla_interview_task_011017/smart_meter_data/separate_csvs") # this particular example did not work - files too large
+# set wd to same directory as the files in file_list.
+setwd("~/my_code_files/R_codes/gla_interview_task_011017/smart_meter_data/separate_csvs") 
+# put all the csv files in a list
+lst <- lapply(file_list, fread, sep=",") 
+# combine them (rbindlist is faster than rbind)
+mydata <- rbindlist(lst)
+
+# Note Fread does not modify variable names if they include spaces, e.g. KWH (per hour) 
+# is not changed (whereas read.csv() would change it to kwh.per.hour.)
+# so to rename variables containing spaces use quote marks:
+mydata <- rename(mydata, kwh = 'KWH/hh (per half hour)')  # changes name to kwh
+
+
+# saves data as csv file in current working directory
+write.csv(attribs.NC, file="Filename.csv", row.names = FALSE) 
+fwrite(daily_kwh_household, file = "daily_kwh_household.csv") # 30x faster!
 
 
 
-#===========================#
+#==============================#
 # Datetime formats in Excel ####
-#===========================#
+#==============================#
 # Convert number of seconds to hours, minutes and seconds
 =TEXT(A1/(24*60*60),"hh:mm:ss") # when cell A1 contains number of seconds
 =TEXT(A1/(24*60*60),"mm:ss") # or just mins and secs
 
 
 
-#===============================
+#==========================#
 # Datetime formats in R ####
-#===============================
+#==========================#
 
 # Helpsheet for working with dates and times in R: http://www.aridhia.com/technical-tutorials/working-with-date-times-and-time-zones-in-r/
 
@@ -468,8 +553,7 @@ read.csv("Filename.csv") # re-open file in R
 # http://www.statmethods.net/input/dates.html
 date_list = c("2007-06-22", "2004-02-13")    # list of string dates
 mydates <- as.Date(date_list)    # converts to date type, default format is yyyy-mm-dd
-
-
+mydates = as.Date(date_list, "%m/%d/%y") # sometimes have to specify input date type
 
 datetime <-as.POSIXct(paste(datacsv$MidEncounterDateTime),format="%d/%m/%Y %H:%M:%S", tz="UTC")
 # as.POSIXct = calendar time: a numeric vector of N seconds since the origin (Jan 1st 1970).
@@ -482,6 +566,20 @@ datacsv$DAY<-as.Date(datacsv$DAY, format = "%d/%m/%Y") # this works on 'POSIXct'
 datacsv$Date <- strptime(datacsv$DAY,format="%d/%m/%Y") # this works on 'character'
 
 # POSIXCT data type messes with plyr so don't convert date before using plyr - or delete the column.
+# BUT: POSIXCT seems ok with dplyr.
+
+#= Good resource for extracting different components from datetimes:
+# https://www.aridhia.com/technical-tutorials/working-with-date-times-and-time-zones-in-r/
+# http://neondataskills.org/R/time-series-convert-date-time-class-POSIX/
+  
+# first convert column of datetimes into POSIXct format...
+mydata$dt = as.POSIXct(paste(mydata$DateTime)) 
+# ...then use strftime to convert the POSIXct to POSIXlt (list of dt components) and extract the year, day, time etc.
+mydata$year = strftime(mydata$dt, format = "%Y") 
+mydata$day = strftime(mydata$dt, format = "%D")
+mydata$t = strftime(mydata$dt, format = "%H:%M:%S")
+
+
 
 
 
@@ -507,11 +605,36 @@ deg(radtimes) # package 'circular'
 
 
 
+#================#
+# Data frames ####
+#================#
+
+# save a data frame or R object
+save(mydata, file = "saved_data.RData") # filename doesn't rename the dataframe itself - i.e. when loaded back into R it will still be called 'mydata'
+
+# transpose data frame
+a <- t(df) 
+
+#== wide vs long data formats
+# http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/
+
+# convert from wide to long using tidyr::gather()
+long_dat <- gather(wide_dat, weight_time, measurement_grams, Weight1:Weight3, factor_key = TRUE) 
+# factor_key=TRUE makes the grouping variable into a factor
+
+# convert from long to wide using tidyr::spread()
+wide_dat_new <- spread(long_dat, weight_time, measurement_grams)
+
+# can also use reshape2::melt() and reshape2::dcast()
+# or base R's functions reshape() stack() and unstack() - but these 3 are harder to use.
 
 
-#===============================
+
+
+
+#================================#
 # ddply - organising datasets ####
-#===============================
+#================================#
 # POSIXCT data type messes with plyr so don't convert date
 
 # Recode levels of factors and save in new column ***Can't do if import dataset using 'stringsAsFactors=FALSE' as factors will be saved as characters. Need to be factors.
@@ -814,115 +937,48 @@ sum(myvec)/length(myvec)
 
 
 
-#======================#
+#========================#
 # General useful code ####
-#======================#
+#========================#
+
+# Run line
+Ctrl + R
+
+# Run whole script
+Ctrl + Shift + S
+
+# Resends the previously sent chunk of code from the editor to the console
+# Useful if you changed one parameter and want to run the chunk again
+Ctrl + Shift + P
+
+# Learn more about a function
+# highlight function name, e.g. geom_point, and press F1
+
+# view shortcuts in RStudio
+Alt+Shift+K (Esc to return)
+
+Ctrl+/- # increase text size in Rstudio
+Ctrl_shift+1/2/3/4/5/6/7/8... # maximise panels in Rstudio (toggle to go between max/min) 
 
 # Organise code by putting 4 hashtags # after the line of code
 # This creates a subtitle which can be navigated to easily using the bottom ribbon
 # - and collapsed to hide code if required
 
+# To comment out a multi-line comment all at once, highlight the text and press:
+Ctrl + Shift + C
+
+Ctrl + up/down arrows # re-run previous commands in the console
+
 #=== Load in data by opening the working directory folder and manually selecting the file
 dframe1 <- read.csv(file.choose()) # Navigate to file 
 
-# save workspace to .Rdata in current working directory
-save.image() # or save.image("Activity patterns.Rdata") #can take a while but be patient - R will crash if you cancel it!
+# recreate data for stackoverflow questions
+dput(mydata) # generates R code to recreate the data. 
+# Run this in Rstudio, copy the output and paste it into your Stackoverflow question, where you can save it as a new mydata variable using mydata <- <pasted output from dput(mydata)>
 
-#== detach package
-detach("package:lme4")
+#== Printing outputs
+(x <- "hello world") # make assignments within parentheses to print output automatically
 
-#== Save workspace to pick up where you left off on re-opening R:
-save.image('myworkspace.RData') # saves everything about your current R workspace
-load("myworkspace.RData") # loads the saved workspace with objects and any modifications to data frames, variable names etc
-
-# alternative way to load to environment
-
-
-#== Save a particular data frame or R object
-save(mydata, file = "saved_data.RData") # filename doesn't rename the dataframe itself - i.e. when loaded back into R it will still be called 'mydata'
-
-#== turn off the graphics device
-dev.off()
-
-#== replace NAs with zeros
-replace(df, is.na(df), 0) 
-df[is.na(df)] <- 0 # better
-centrality$maincomp[is.na(centrality$maincomp)] <- 0 # using column names
-
-#== Replace zeros with NAs
-df[,25][df[,25] == 0] <- NA # assuming column of interest is column #25
-centrality$eig_maincomp[centrality$eig_maincomp  == 0] <- NA  # with column names instead
-
-#== Replace empty cells with NAs
-data$sex[data$sex==''] <- NA
-
-# NOTE: sometimes empty cells are treated as factor levels and no matter what I can't get rid of the empty factors (converting to NA or zero doesnt work)
-# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty 
-# cells as NA before converting the variable to a factor.
-
-#== Adjust or rename datapoints, e.g. if some rows are 'Male' and some are 'male' convert them all to 'male'
-data$sex[data$sex=='Male'] <- 'male'
-
-#== change signs of values: negative to positive
-centrality$eig_maincomp <- abs(centrality$eig) # abs = absolute value irrespective of sign
-
-#== Delete column from data frame
-centrality$fragment <- NULL
-
-#== Rename column in data frame
-names(df)[names(df) == 'old.var.name'] <- 'new.var.name' # template
-names(TAll_attr2)[names(TAll_attr2) == 'closeness'] <- 'closeness_maincomp' # example
-
-#=== row numbers and row names
-row.names(attribs) # view / refer to row id number in table (row number when first imported, doesn't change when re-order the dataframe)
-1:nrow(attribs) # view row sequence
-
-#=== Concatenate strings or numbers in a data frame
-paste(item1, item2, sep=c("", "-", "_", "."))
-
-# Concatenate rounded values in Excel
-=ROUND(A1,1) & " � " & ROUND(A2,1) # use ROUND with '&' to combine rather than concatenate with commas
-
-# transpose data frame
-a <- t(df) 
-
-#== Multi-panel plotting:
-par(mfrow=c(2,1))
-layout()
-split.screen()
-
-#== change text size in plots
-cex.before <- par("cex") # par() gives the current settings in the R environment
-par(cex = 1) #save the text size as a bit bigger by default
-
-#== customise plot MARGINS
-par()$mar # retrieve current margin settings
-# mar = a vector of bottom/left/top/right for no. lines of margin on each side of plot. 
-# Default is c(1,3,5.1,2)
-par(mar=c(5.1,4.1,4.1,2.1)) # default R margins - bottom/left/top/right
-par(mar=c(6,4,5,1)) # new ones  # mar = in number of lines
-par(mai=c(1.02,0.82,0.82,0.42)) # mai =in inches
-
-#== Custom axis labels with position specified by coordinates
-# Plot 4*1 panel
-par(mfrow=c(4,1))
-par(mar = c(3.5, 1.25, 1.5, 1.5), oma = c(2, 4, 1, 1)) # mar = margins, oma = outer margins.
-densityPlot(springdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, col="forestgreen", main="Spring")
-densityPlot(sumdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="darkorange", main="Summer", cex=1.5)
-densityPlot(autdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="red", main="Autumn", cex=1.5)
-densityPlot(wintdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="blue", main="Winter", cex=1.5)
-# add exis labels
-mtext("Density", side = 2, outer = TRUE, cex = 1, line = 2, col = "black")
-mtext("Time of day", side = 1, outer = TRUE, cex = 1., line = 0, col = "black") 
-
-
-# make text italic or bold in labels
-xlab=expression(italic("N")~"camera sites")
-xlab=expression(bold("N")~"camera sites")
-xlab=expression(bolditalic("N")~italic("camera sites"))
-
-#== set working directory
-setwd("G:/Statistics 2016/Social network analysis") # make sure use forward slashes not backslashes
 
 #== view things you can do with the type of model
 methods(class="merMod") 
@@ -933,16 +989,343 @@ perm <- numeric(1000) # 'perm' is an empty vector containing 1000 spaces
 
 
 
-#=========#
-# ggplot2 ####
-#=========#
+#===========================#
+# ggplot2 visualisations ####
+#===========================#
 
-# annotate plots
+# The Grammar of Graphics
+# You can uniquely describe any plot as a combination of 7 parameters:
+# a dataset, a geom (geometric function), a set of mappings, a stat, 
+# a position adjustment, a coordinate system and a faceting scheme (subplots).
+
+# Template code containing these 7 parameters:
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+    mapping = aes(<MAPPINGS>),
+    stat = <STAT>, 
+    position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+  
+# ggplot works by plotting layers 
+
+# The first argument of ggplot() is the dataset to use in the graph.
+# Then each geom_ (geometric) function makes a layer, based on this dataset. 
+# Each geom_ function requires 'mappings': x,y coordinates and/or aesthetics.
+
+# Aesthetics (visual properties) include:
+colour = variable_name 
+size = variable_name   # Note you should only map continuous/ordered variables to size
+alpha = variable_name  # The transparency aesthetic
+shape = variable_name  # Note ggplot2 will only use six shapes at a time
+stroke = 2             # Shape border width, not specifiable inside aes()
+
+# Specify aesthetics outside of aes() to apply them to all data, or 
+# within aes() to associate them with a particular variable.
+
+# Colour specified within aes() so diff manufacturers are diff colours.
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, colour = manufacturer)) 
+
+# Colour specified outside of aes() so all points are blue.
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), colour = "blue") 
+
+# For shapes that have a border (like shape 21), you can colour the inside and
+# outside separately. 
+# Use the stroke aesthetic to modify the width of the border.
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), shape = 21, fill = "white", size = 5, stroke = 2)
+# a.k.a...
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(shape = 21, fill = "white", size = 5, stroke = 2)
+
+# Can also colour based on a condition rather than the level/value.
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, colour = displ < 4))
+
+
+
+#= FACETS
+
+# facet_wrap wraps a 1d sequence of panels into 2d
+# facet_grid forms a matrix of panels (best for discrete variables where all combos exist in the data)
+# When using facet_grid() put the variable with more unique levels in the columns
+
+facet_wrap(rows ~ columns) # replace either with a dot to inindicate there should be no faceting on this dimension
+
+# To plot by a single (DISCRETE) variable
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ cyl) # facet_wrap(~ cyl, nrow=1) to make it all on 1 row. Facet_grid doesnt have ncol or nrow arguments.
+
+## Facet on the combination of two variables
+
+#     drv = drive (f/r/4), cyl = N cylinders 
+
+# facet_GRID plots grid squares for all combinations, with empty graphs for combos with no data
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+
+# facet_WRAP plots grid squares for all combinations, with empty graphs for combos with no data
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(drv ~ cyl)
+
+# facet by N cylinders only, in columns (all one row)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(. ~ cyl)
+
+# facet by N cylinders only, in rows (all one column)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(cyl ~ .)
+
+
+# plot facets with different y-axis scales
+facet_grid(Variable ~ ., scales = "free") # must put dot after ~
+
+
+
+#== The group aesthetic
+
+# to display all data as a single object (line)
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+
+# to display data as multiple objects, set the group aesthetic to a categorical 
+# variable: plots each level of variable as a separate line/colour/shape depending on the geom_ type.
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+
+# ggplot automatically sets the group aesthetic when you set linetype/colour/shape etc. as a categorical variable.
+# This is better as the group aesthetic by itself does not add a legend or distinguishing features to the geoms so they're hard to identify.
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv), show.legend = FALSE)
+
+
+
+#== Different geoms
+
+# ggplot2 provides over 30 geoms
+# extension packages provide even more: www.ggplot2-exts.org
+
+# Some graphs, like scatterplots, plot the raw values of your dataset. 
+# Others calculate new values to plot using statistical transformations ("stats"):
+#   - Histograms, bar charts & area charts/frequency polygons calculate & plot bins of data (labelled as 'count').
+#   - Smoothers fit a model to your data and then plot predictions from the model.
+#   - Boxplots compute a robust summary of the distribution and then display a specially formatted box.
+
+# see default "stats" for different geoms http://ggplot2.tidyverse.org/reference/#section-layer-geoms
+
+# histogram geom - plots one x variable only: no y aesthetic
+ggplot(data = mpg, mapping = aes(x = displ)) +
+  geom_histogram()
+
+# area geom - plots one x variable only: no y aesthetic
+ggplot(data = mpg, mapping= aes(x = displ)) +
+  geom_area(stat = "bin")
+
+# frequency polygon
+ggplot(data = mpg, mapping = aes(x = displ)) + 
+  geom_freqpoly(binwidth = 10)
+
+
+# BAR PLOTS 
+
+# bar geom - takes a "stat" parameter.
+# default stat="count": bar size represents count/freq of a value in the df rather than its actual value.
+# using ggplot() + geom_bar(stat="count") is same as using ggplot() + stat_count()
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, group = 1))
+
+ggplot(data = diamonds) + 
+  stat_count(mapping = aes(x = cut, group = 1))
+
+# The stat function calculates both counts and proportions, but plots counts by default.
+# To plot proportions, specify y as ..prop.. # see computed variables section in ?geom_bar.
+# ..prop.. is a keyword
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))  
+# group=1 tells ggplot to plot the proportion of ALL datapoints that have each 
+# value of x. Important, as the default is to plot the proportion of datapoints 
+# for each value of x that have each value of x, so every proportion would be 1!) 
+# Can also specify <y = ..count..> but this is pointless as count is default.
+
+# Can override geom_bar's default to specify a y aesthetic & so bar height 
+# represents the raw y values.
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_bar(stat = "identity")  
+
+# geom_col is equivalent to geom_bar(stat="identity").
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_col()
+
+# Can also plot a statistical summary of y values for each unique/binned x.
+# ggplot2 provides >20 stats to use, e.g. min, max, median... See RStudio's ggplot2 cheatsheet.
+# https://www.rdocumentation.org/packages/ggplot2/versions/1.0.1/topics/stat_summary
+ggplot(data = diamonds) + 
+  stat_summary(mapping = aes(x = cut, y = depth),
+               fun.ymin = min,
+               fun.ymax = max,
+               fun.y = median)
+
+# default geom of stat_summary is geom_pointrange() 
+ggplot(data = diamonds)+
+  geom_pointrange(mapping = aes(x = cut, y = depth),
+                  fun.ymin = min, 
+                  fun.ymax = max, 
+                  fun.y = median, 
+                  stat = "summary")
+
+# stacked bar chart
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity)) 
+
+# proportional stacked bar chart - compare proportions between groups
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+
+# unstacked bar chart - compare individual values
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position=position_dodge())
+
+# line chart geom
+ggplot(data = mpg, mapping= aes(x = displ, y = hwy)) +
+  geom_line()
+
+# boxplot geom - must specify the group aesthetic
+ggplot(data = mpg, mapping= aes(x = displ, y = hwy, group = displ)) +
+  geom_boxplot()
+
+# smooth geom, a smooth line fitted to the data
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_smooth()
+
+# violin plots 
+# see http://rpackages.ianhowson.com/cran/ggplot2/man/geom_violin.html
+ggp + geom_violin(aes(x=Sex, y=strength), stat = "ydensity", scale = "count", draw_quantiles = 0.5)
+
+
+
+#== Positional adjustments 
+
+# http://r4ds.had.co.nz/data-visualisation.html#position-adjustments
+
+?position_dodge, ?position_fill, ?position_identity, ?position_jitter, ?position_stack
+
+# jittering points on scatter plots to reduce overlap
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_jitter()  # equivalent to geom_point(position = "jitter")
+# geom_jitter(width=0.4) # width specifies amount of vertical and horizontal jitter. Default = 40% of resolution of data.
+
+# alternatively use geom_count() to plot larger dots where many points overlap
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_count()
+
+
+
+#== Plotting coordinate systems
+
+# http://r4ds.had.co.nz/data-visualisation.html#coordinate-systems
+
+# swap the x and y axes (e.g. for horizontal boxplots / long labels) - coord_flip()
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+  geom_boxplot() +
+  coord_flip()
+
+
+## Set correct aspect ratio for maps - coord_quickmap()
+nz <- map_data("nz")
+
+# plot with incorrect aspect ratio
+ggplot(nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black")
+
+# plot with correct aspect ratio
+ggplot(nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black") +
+  coord_quickmap()
+
+# Note: coord_map() and coord_quickmap() differ:
+""" coord_map uses map projection to project a spherical portion of the earth 
+    onto a flat 2D plane. This requires considerable computation as map 
+    projections dont preserve straight lines.
+    
+    coord_quickmap is a quick approximation that does preserve straight lines. 
+    It works best for smaller areas closer to the equator. """
+
+# polar coordinates - coord_polar()
+bar <- ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut), 
+           show.legend = FALSE, 
+           width = 1) + 
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+
+
+
+
+#== Plotting multiple geoms (layers) 
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, colour = drv)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, colour = drv, linetype = drv))
+# = Lots of repetition in code!
+
+# Best to pass the xy mappings to ggplot() as global mappings 
+# Avoids repetition and reduces errors when updating code.
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+
+# Can still specify (different) mappings in a geom_ function:
+# ggplot2 will treat them as local mappings for the layer (to extend or 
+# overwrite the global mappings for that layer only). 
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(colour = drv)) + 
+  geom_smooth(mapping = aes(linetype=drv), se = FALSE)
+
+# Can also specify different datasets in a geom_ function:
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
+
+
+
+#== Formatting plots
+
+## Reference lines
+# Useful for annotation
+# Drawn using geom_line so support the same aesthetics.
+# Do not inherit aesthetics from the plot default, because they do not 
+# understand global x and y aesthetics (unlike most other geoms). 
+# Also do not affect the x and y scales.
+
+geom_hline() # horizontal
+geom_vline() # vertical
+geom_abline() # diagonal
+
+# e.g.
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+
+# add horizontal line to plot at specified intercept
+ggp + geom_hline(yintercept=0.5, linetype="dotted", color = "gray10", size=0.3)
+
+
+## Text annotations / labels
 ggp +  annotate("text", x = 0.8, y = 0.982, label="y = 4.191 + 1.467x\n psuedo Rsq = 0.0017", 
                 size=4.5)
 
-# Add horizontal line to plot at specified intercept
-ggp + geom_hline(yintercept=0.5, linetype="dotted", color = "gray10", size=0.3)
+
 
 # Change style of facet labels
 ggp + theme(strip.text.x = element_text(size = 12, face="bold"),
@@ -956,22 +1339,6 @@ scale_x_log10()
 scale_y_log10() 
 scale_x_reverse()
 
-# diff between facet_wrap and facet_grid
-facet_grid(sex~status) # draws a grid for all combinations of sex + status, so if there are no dom-males there will be a blank space in the grid
-facet_wrap(sex~status) # only includes extant combinations in the grid, so if there are no dom-males there will be no blank grid
-facet_grid(SocialStatus~Sex) # switch this to make it the other way round
-facet_grid(~Sex) # just one row
-
-# plot facets with different y-axis scales
-facet_grid(Variable ~ ., scales = "free") # must put dot after ~
-
-# boxplots
-geom_boxplot(size=0.7, colour="grey50", alpha=0.3) # alpha fades it for plotting in background, colour selects line colour
-
-# violin plots 
-# see http://rpackages.ianhowson.com/cran/ggplot2/man/geom_violin.html
-ggp + geom_violin(aes(x=Sex, y=strength), stat = "ydensity", scale = "count", draw_quantiles = 0.5)
-
 # getting lines to join points
 geom_line(aes(group=Origin), size=1) # in geom_line must specify group so ggplot knows which points to connect with lines
 
@@ -984,29 +1351,8 @@ ggtitle("")
 # change text size of title
 theme(plot.title = element_text(size=18))
 
-### LEGENDS
-# title
-scale_colour_discrete(name="Days seen")  # rename legend in line or dot plots - e.g. when specify colour=factor
-scale_fill_discrete(name="Days seen")  # rename legend in bar or box plots - e.g. when specify fill=factor
-
-# Remove legend - use guide=FALSE in scale_fill_manual or scale_fill_discrete etc
-scale_fill_manual(name="Sex", values=c('royalblue3','firebrick1'), guide=FALSE)
-
-# reposition legend: add this to theme() section of ggplot code:
-theme(legend.position = "top", legend.direction=c("horizontal", "vertical")) # Or:
-theme(legend.position = c(x,y)) # e.g. where (1,1), (0,0), (0,1), (1,0) mean the four corners of plot: must be between 0-1 (coordinates)
-
-# remove legend'd white background - to plot closer to panel border without overlapping
-theme(legend.background = element_rect(fill = NA)) # add this to the theme() section of ggplot code - see http://docs.ggplot2.org/dev/vignettes/themes.html
-
-# remove box around legend symbols
-theme(legend.key = element_blank())
-
-# remove legend title
-theme(legend.title = element_blank())
-
-
-geom_bar(stat="identity") # for bar plots, MUST specify stat="identity" or size of bar represents frequency of a value in dataframe rather than its actual value
+# alpha = transparency: useful for fading points into the background.
+geom_boxplot(size=0.7, colour="grey50", alpha=0.3) 
 
 # remove background grid
 theme_bw() + # must put theme_bw FIRST or it won't work
@@ -1023,13 +1369,6 @@ theme(panel.border = element_rect(linetype = "solid", colour = "black"))
 scale_x_continuous(breaks = 0:6) # specify limits and breaks will be every whole number in between
 xlim(0,6) # specify limits but not breaks
 
-### Error bars
-# use ribbon to shade CIs or use ribbon border and no fill to plot lines
-geom_ribbon(data=lsmpreds, mapping=aes(x=MeanMJperDay, ymin=lower.CL, ymax=upper.CL), 
-            fill="grey40", lty=0, alpha=0.3) 
-# lty=0 removes lines from border so can use fill
-# alpha of increasing values increases fill transparency (works for boxplot too)
-# Can use diff data frame as other elements of the plot e.g. geom_line or geom_jitter
 
 # Change colour of geom_ribbon
 ggplot(lsmDF, aes(x=DaysFedPerWeek,y=prob, group=factor(Sex), colour=factor(Sex))) + 
@@ -1046,17 +1385,9 @@ ggplot(subsetALL,aes(x=TaggedFoxes,y=PropUnidPhotos)) +
   geom_point(shape=1) + 
   geom_smooth(method=lm, size=1, se=TRUE)  # se=true adds a ribbon for the SE
 
-# Actual error BARS
-geom_errorbar(aes(ymin=lower.CL, ymax=upper.CL), size=1, width=0.2,
-              position=position_dodge(0.2)) # make sure position_dodge geom_point too
-
 # overlay raw data
 geom_point(data=patchdata, aes(fSeason, DaysFedPerWeek), colour="grey70", 
            position=position_jitter()) 
-
-# plot 2+ ggplots side by side / on panel (as can't use par() command for ggplots)
-library(gridExtra)
-grid.arrange(ggp1, ggp2, nrow=2, ncol=NULL) # where ggp is ggplot2 code for each plot
 
 # Axis text colour # see http://docs.ggplot2.org/0.9.2.1/theme.html
 theme(axis.text = element_text(colour = "black"))
@@ -1064,6 +1395,52 @@ theme(axis.text = element_text(colour = "black"))
 # geom_bar width & bar border & dodge to avoid overlapping (also need to dodge any error bars)
 geom_bar(stat="identity", width=0.8, position=position_dodge(0.9), color="black") 
 
+
+
+#== LEGENDS
+
+# title
+scale_colour_discrete(name="Days seen")  # rename legend in line or dot plots - e.g. when specify colour=factor
+scale_fill_discrete(name="Days seen")  # rename legend in bar or box plots - e.g. when specify fill=factor
+
+# Remove legend - use guide=FALSE in scale_fill_manual or scale_fill_discrete etc
+scale_fill_manual(name="Sex", values=c('royalblue3','firebrick1'), guide=FALSE)
+# or:
+show.legend = FALSE # have to paste it in every geom_ function / layer
+
+# reposition legend: add this to theme() section of ggplot code:
+theme(legend.position = "top", legend.direction=c("horizontal", "vertical")) # Or:
+theme(legend.position = c(x,y)) # e.g. where (1,1), (0,0), (0,1), (1,0) mean the four corners of plot: must be between 0-1 (coordinates)
+
+# remove legend'd white background - to plot closer to panel border without overlapping
+theme(legend.background = element_rect(fill = NA)) # add this to the theme() section of ggplot code - see http://docs.ggplot2.org/dev/vignettes/themes.html
+
+# remove box around legend symbols
+theme(legend.key = element_blank())
+
+# remove legend title
+theme(legend.title = element_blank())
+
+
+
+#== Error bars
+# use ribbon to shade CIs or use ribbon border and no fill to plot lines
+geom_ribbon(data=lsmpreds, mapping=aes(x=MeanMJperDay, ymin=lower.CL, ymax=upper.CL), 
+            fill="grey40", lty=0, alpha=0.3) 
+# lty=0 removes lines from border so can use fill
+# alpha of increasing values increases fill transparency (works for boxplot too)
+# Can use diff data frame as other elements of the plot e.g. geom_line or geom_jitter
+
+# Actual error BARS
+geom_errorbar(aes(ymin=lower.CL, ymax=upper.CL), size=1, width=0.2,
+              position=position_dodge(0.2)) # make sure position_dodge geom_point too
+
+
+#== Layout
+
+# plot 2+ ggplots side by side / on panel (as can't use par() command for ggplots)
+library(gridExtra)
+grid.arrange(ggp1, ggp2, nrow=2, ncol=NULL) # where ggp is ggplot2 code for each plot
 
 
 #======================================#
@@ -1113,7 +1490,7 @@ model <- glmer(NTrueAssocs ~ Sex*SocialStatus +
 
 
 # Extract information from glmmADMB model for reporting (for lme4 models can save whole model in data frame in 1 step by coef(summary(model))
-############################
+#===========================#
 # save model coefficients
 ERmod_zinb2_coeffs <- data.frame(beta=coef(ERmod_zinb2))
 
@@ -1131,7 +1508,7 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
                                ERmod_zinb2_se,
                                ERmod_zinb2_cis,
                                ERmod_zinb2_p)
-########################
+#======================#
 
 # ERRORS
 # Warning message: In checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :Model failed to converge with max|grad| = 0.240412 (tol = 0.05, component 1)
@@ -1140,6 +1517,16 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
 # Ideas to help models converge
 # Add these optional control parameters: admb.opts=admbControl(shess=F,noinit=F, maxfn=5000) # shess and noinit are the most useful
 
+
+
+#==========================#
+# Good coding practices ####
+#==========================#
+
+# Never include install.packages() or setwd() in a script that you share. 
+# - It’s very antisocial to change settings on someone else’s computer!
+
+# Always start scripts with the packages required
 
 
 #===============#
@@ -1203,7 +1590,7 @@ legend("topright", c("M sub", "F sub", "M dom", "F dom"),bty="n",lty=c(2,2,1,1),
 
 
 # Interpreting two-way interactions
-####################################
+#==================================#
 # Spring-Summer * Neighbour-PGM means 'is the difference between spring and summer simlar for 
 # neighbours and PGMs?' So can say there were significantly more neighbours in summer than spring but not PGMs.
 
@@ -1293,9 +1680,9 @@ pairs(lst) # get p-value
 # NOTE - need lsmeans:: before the code for it to work.
 
 
-#=======================
+#======================#
 # Linear regression ####
-#=======================
+#======================#
 
 # check the response has a normal distrib
 hist(mydata$UnidPhotos)
@@ -1755,9 +2142,9 @@ anova(orimod1, orimod2)
 anova(orimod2, orimod3) # orimod3 has lowest AIC - indicates interaction is the best model
 
 
-#==============================================================================================
+#================================================================================================#
 # MIXED MODELS FOR OVERDISPERSED COUNT DATA: FITTING AN OBSERVATION-LEVEL RANDOM EFFECT (OLR) ####
-#==============================================================================================
+#=================================================================================================#
 
 # lme4 glmer with observation-level ranef - doesn't need to be a factor
 model1 <- glmer(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded + (1|ShortCode) + (1|OLR), data=mydata, 
@@ -1997,7 +2384,7 @@ plot(inf,
      which="cook", # plot cooks distance
      cutoff=4/35, # 2/vn where N=no.grouping levels (patches) - (Van der Meer et al., 2010)
      sort=TRUE, # sort in order of most-least influential
-     xlab="Cook�s Distance", ylab="StationCode") 
+     xlab="Cook?s Distance", ylab="StationCode") 
 
 # See whether exclusion of each patch in turn affects each model coefficient by changing the 
 # t-value or z-value by >1.96, which would alter the significance of the coefficient
@@ -2196,7 +2583,7 @@ reach2=function(x){
 reach2(T1winB4_net_graph) # PROPORTION (Shows same pattern as dwreach but scaled between 0-1)
 
 
-#####
+#==
 
 library(sna) # some function names same as igraph so don't have both loaded at once
 stackcount(T1sprB4_rand) # count number of networks (matrices) in the graph stack? - useful for random networks
@@ -2222,7 +2609,7 @@ gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE)
 # Get main component only (library sna)
 component.largest(T1spr_net, result = "graph") # returns the network without isolates and pairs (i.e. the largest component)
 
-#####
+#======#
 
 library(qgraph) #alternative package for quick+easy centrality #BUT NOT CUSTOMISABLE AND CALC METHODS NOT WELL EXPLAINED!!
 qgraph.centrality<-centrality_auto(T1sumAf_net)$node.centrality # DONT USE #computes betweenness, closeness and strength (same strength as igraph/sna but closeness different to igraph and tnet)
@@ -2230,7 +2617,7 @@ qgraph.centrality<-centrality_auto(T1sumAf_net)$node.centrality # DONT USE #comp
 qgraph.cc <- clustcoef_auto(T1sumAf_net) # compute local CC by several methods. Zhang method is most similar to that in SOCPROG so will use that. (See qgraph.pdf for details)
 T1sprB4_attr$qgraph.cc.zhang <- clustZhang(T1sumAf_net)$clustZhang # compute weighted local CC by Zhang method (most similar CC to that calc by SOCPROG)
 
-#####
+#======#
 
 library(tnet) # alternative library for local CC and closeness # I TRUST THIS MORE THAN QGRAPH PACKAGE
 # tnet works with edgelists rather than matrices, but automatically converts matrices into egelists within each function
@@ -2273,7 +2660,7 @@ c((data.frame(closeness_w(T6aut_net, gconly=F))$closeness), "0")
 T1winB4_attr$cc <- data.frame(clustering_local_w(T1winB4_net, measure="gm"))$gm # uses Barratt 2004 method
 a<-data.frame(T1winB4_attr$ShortCode, T1winB4_attr$cc)
 
-#####
+#====#
 
 library(keyplayer)
 # fragmentation: nodes to target to break up the network e.g. break up a terrorist network
@@ -2291,9 +2678,9 @@ a[net !=0] <- 1/net[net !=0] # take inverse of non-zero ties to make shortest pa
 mrc <- mreach.closeness(a, cmode="indegree") # indegree or else will sum in and outdegree and double the score (no way to specify that network is undirected)
 mrc1sp <- data.frame(id=rownames(net), mrc) # view results
 
-#==================================================
+#==========================================#
 # MODELLING NETWORK CENTRALITY MEASURES ####
-#================================================== 
+#==========================================# 
 # PROCEDURE
 # 1. Make sampling period arrays
 # 2. Make networks (association matrices)
@@ -2330,9 +2717,9 @@ mean(E(T1sprAf_net_graph)$weight) # mean edge weight
 #== Calculate network density (weighted) using package sna
 gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE) 
 
-#===============================================
+#==============================================#
 # Normalisation, normalising, standardising ####
-#===============================================
+#==============================================#
 # to normalize between 0-1 in Excel
 =(B3-MIN($B$3:$B$17))/(MAX($B$3:$B$17)-MIN($B$3:$B$17))
 
@@ -2340,13 +2727,40 @@ gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE)
 mydata$xnorm <- (x-min(x))/(max(x)-min(x)) # this is a linear transformation so doesn't change shape of distribution & hence doesn't convert to a normal distrib
 
 
-#===================#
+#======================#
 # Normality testing ####
-#===================#
+#======================#
 shapiro.test(mydata$Group.size) # test of normality (low P = sig diff from normality)
 shapiro.test(mydata$Number.of.transient.visitors)
 
 # ANOVA is robust to deviations from normality
+
+
+
+#============#
+# Numbers ####
+#============#
+
+# Logical operators: < > = == >= != | &
+& is “and”, | is “or”, and ! is “not”.
+
+# De Morgan’s law
+!x | !y # is the same as: 
+!(x & y) 
+
+!x & !y # is the same as:
+!(x | y) 
+
+# Floats
+1/49 * 49 == 1 # returns FALSE despite being true, because the division returns a float that is not exactly 1.
+# Better to use near() instead of == when working with floats
+near(1/49 * 49, 1) # returns TRUE
+
+# Making sequences of numbers
+seq() # makes regular sequences of numbers 
+seq(0,60) # increments of 1
+seq(0,60,5) # increments of 5
+seq(0,60, length.out=3) # automatic number of increments to make 3 evenly spaced numbers)
 
 
 
@@ -2401,7 +2815,7 @@ outliersZ <- function(data, zCutOff = 1.96, replace = NA, values = FALSE, digits
   }
 }
 # data: the VECTOR you're passing to the function
-# zCutOff: the z value you deem as an outlier (default is 1.96 since 95% of values fall within � 1.96 in a normal distribution)
+# zCutOff: the z value you deem as an outlier (default is 1.96 since 95% of values fall within ? 1.96 in a normal distribution)
 # replace: replace any outliers with this value (default is NA)
 # values: default is FALSE; if TRUE, returns the absolute z-scores for each value
 # digits: number of decimal places to return 
@@ -2414,34 +2828,154 @@ dailyPRT$totalPRT_z <- outliersZ(dailyPRT$totalPRT, zCutOff=3.0)
 dailyPRT$totalPRT_z <- outliersZ(dailyPRT$totalPRT, zCutOff=3.0, replace=mean(dailyPRT$totalPRT)+3*sd(dailyPRT$totalPRT))
 
 
+
+#===========================================#
+# Packages ####
+#===========================================#
+
+# view current working directory
+getwd() 
+
+# set working directory
+setwd("G:/Statistics 2016/Social network analysis") # use forward slashes or double-backslashes
+# not good practice to use absolute paths ("C:/") in scripts, especially for shared projects. See http://r4ds.had.co.nz/workflow-projects.html
+
+# Better to use R projects
+""" R Projects in RStudio keep all files associated with a project together — 
+    input data, R scripts, analytical results, figures. """
+
+# loading packages in Jupyter
+.libPaths() # see where R is looking for libraries
+.libPaths('C:/Users/User/Documents/R/win-library/3.4') # tell R where to look explicitly
+
+
+# save current workspace in current working directory (so can pick up where you left off on re-opening R)
+save.image() # saves it as ".Rdata"
+save.image("myworkspace.Rdata") # be patient - R will crash if you cancel it!
+
+# loads the saved workspace with objects and any modifications to data frames, variable names etc
+load("myworkspace.RData") 
+
+# clear and restart the R session (to ensure code is reproducible)
+Ctrl+Shift+Fn+F10
+# or:
+rs.restartR() 
+
+# cite R itself
+citation()
+
+# cite packages
+citation("qgraph")
+
+packageVersion("asnipe")
+
+sessionInfo() # view loaded packages, versions etc
+
+# detach package
+detach("package:lme4")
+
+# check for package updates and optionally install them
+packagename_update()
+
+# see the order in which R looks for attached packages/enviros 
+""" (it will use the first one it finds)
+    because having multiple packages loaded at once can cause conflicts if they 
+    contain functions with the same name """
+search() 
+
+
+
+#======================#
+#      Pipes  %>%   ####
+#======================#
+
+# http://r4ds.had.co.nz/pipes.html
+# read them like 'and then...'
+
+# shortcut for pipes
+Ctrl + Shift + M
+
+library(tidyverse)  # uses pipes
+
+# Get count per level of a factor variable
+df %>% count(factor)
+# gives the counts in a new df that you can save and use in more computations.
+
+# Compute daily consumption per household  
+daily_kwh_per_household <- mydata %>%  
+  # use households on standard tariff only 
+  filter(stdorToU=="Std") %>%
+  # rename variables for ease of reference
+  rename(kwh = 'KWH/hh (per half hour)') %>%
+  # extract date from datetime
+  mutate(
+    dt = as.POSIXct(paste(DateTime)),
+    day = as.Date(strftime(dt, format = "%D"), "%m/%d/%y")) %>%
+  # compute total daily consumption for each household
+  group_by(year, day, LCLid) %>%
+  summarise(total_kwh = sum(kwh))
+
+
+
 #===========================================#
 #     PLOTTING ####
 #===========================================#
 # see http://www.ashander.info/posts/2015/04/D-RUG-mixed-effects-viz/
 # see also ggplot2 section
 
-# Basic plots in R
+# turn off the graphics device
+dev.off()
 
-## Basic plot() template: 
+# basic plot() template: 
 plot(x, y, main=heading) 
 
 pairs(mydata) #to view possible correlations and interactions
 
-# change font sizes
-cex=1 # default. Increase or decrease to alter size for all text in plot (sometimes doesnt work so have to specify separately as follows:)
+# change text / font size in plots
+cex.before <- par("cex") # par() gives the current settings in the R environment
+par(cex = 1) # save the text size as a bit bigger by default
+cex=1 # default size. Increase or decrease to alter size for all text in plot (sometimes doesnt work so have to specify separately as follows:)
 cex.main=1.2 # plot title
 cex.lab=1.2 # axis labels
 cex.axis=1.2 # axis text
 
-#================
-# For multi-panel plotting:
-par(mfrow=c(2,1))
+#== customise plot MARGINS
+par()$mar # retrieve current margin settings
+# mar = a vector of bottom/left/top/right for no. lines of margin on each side of plot. 
+# Default is c(1,3,5.1,2)
+par(mar=c(5.1,4.1,4.1,2.1)) # default R margins - bottom/left/top/right
+par(mar=c(6,4,5,1)) # new ones  # mar = in number of lines
+par(mai=c(1.02,0.82,0.82,0.42)) # mai =in inches
 
-#================
+#== Custom axis labels with position specified by coordinates
+# Plot 4*1 panel
+par(mfrow=c(4,1))
+par(mar = c(3.5, 1.25, 1.5, 1.5), oma = c(2, 4, 1, 1)) # mar = margins, oma = outer margins.
+densityPlot(springdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, col="forestgreen", main="Spring")
+densityPlot(sumdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="darkorange", main="Summer", cex=1.5)
+densityPlot(autdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="red", main="Autumn", cex=1.5)
+densityPlot(wintdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="blue", main="Winter", cex=1.5)
+# add exis labels
+mtext("Density", side = 2, outer = TRUE, cex = 1, line = 2, col = "black")
+mtext("Time of day", side = 1, outer = TRUE, cex = 1., line = 0, col = "black") 
+
+
+# make text italic or bold in labels
+xlab=expression(italic("N")~"camera sites")
+xlab=expression(bold("N")~"camera sites")
+xlab=expression(bolditalic("N")~italic("camera sites"))
+
+#================#
+# Multi-panel plotting:
+par(mfrow=c(2,1))
+layout()
+split.screen()
+
+#================#
 # colours, symbols and line types
 http://www.statmethods.net/advgraphs/parameters.html
 
-#===============
+#===============#
 # Add model equations to plots
 plot(summary_attribs$DaysSeen, summary_attribs$NTrueAssocs, xlab="Number of days observed", ylab="Number of true associations")
 coef<-fixef(REDUCED.nb2)
@@ -2467,11 +3001,8 @@ sp.v <- sp.d$x[which.max(sp.d$y)] # x value at highest density (= the mode?)
 #dev.print(jpeg, "Rplot.jpeg", res=700, height=6, width=8, units="in") # save as jpeg
 #dev.print(tiff, "Rplot.tif", res=300, height=100, width=150, units="mm") # save as TIFF
 #dev.print(pdf, "RPlot.pdf") # Save as PDF
+# ggsave("diamonds.pdf") # Save as PDF via ggplot
 
-#=== Alternative way to save plots from ggplot (template code):
-ggsave(filename = default_name(plot), plot = last_plot(), device = default_device(filename), 
-       path = NULL, scale = 1, width = par("din")[1], height = par("din")[2], 
-       units = c("in", "cm", "mm"), dpi = 300, limitsize = TRUE, ...)
 
 
 #=== To save ggplot2 plots as emf file types for circus report graphic designer
@@ -2485,7 +3016,7 @@ ggsave("behav.emf", plot=plot, device=emf, path = NULL, scale = 1, width = 10, h
 # Should be able to open emf files in paint to check it saved OK but I cant on my lenovo. G.designer could 
 # open the emfs though so this code does seem to work.
 
-#================
+#=================#
 # Plot regression estimates
 library(coefplot2) 
 install.packages("coefplot2",repos="http://www.math.mcmaster.ca/bolker/R",
@@ -2694,7 +3225,7 @@ ggplot(model.res, aes(x=fSeason, y=10^(visregRes), fill=factor(Sex))) +
 
 
 # Predictions from model built in glmmADMB - dont need to specify random effects in pred.data (but do in lme4)
-#############################################################
+#=============================================#
 # 1. Create a 'newdata' object containing values of DaysSeen to predict contact rate for foxes at increasing numbers of days seen
 # expand.grid makes data frame with all combinations of the listed values: 
 # (has to have all model coefficients in, with same names, e.g. 'DaysFedPW_rounded', not shortened to 'DaysFed')
@@ -2776,7 +3307,7 @@ pred <- predict(sexstatfullnestmod_ziNB1, newdata=pred.data, na.action=na.pass, 
 
 
 #== CALCULATE CIs & PREDICTION INTERVALS USING A PREDICT()-LIKE METHOD using code from: http://glmm.wikidot.com/faq
-#####################################################################################################################
+#==================================================================================================================#
 # 1. Make data frame to calc predictions from: include levels of all FIXED EFFECTS included in the model (NO RANDOM EFFECTS)
 pred.data <- expand.grid(DaysSeen=c(10,20,30,40),
                          Sex=unique(EncounterRate_noNAs$Sex),
@@ -2815,7 +3346,7 @@ predsWithCIs <- newdata # save as new df incase overwrite
 
 
 #== CALC BOOTSTRAPPED CIs USING BOOTMER FUNCTION IN LME4 (the 'gold standard' for preds, but never works on my models: think it assumes normal distributions so maybe only useful for gaussian LMMs)
-##################################
+#===========================#
 # lme4::bootMer() quickly becomes time prohibitive because it involves re-estimating the model for each simulation
 # for my model: glmer(sex*status*season + DaysSeen + DaysFed + (1|ShortCode) + (1|Place), family=Poisson)
 # it didnt finish after 3.5 hours for nsim=100
@@ -2861,9 +3392,9 @@ lsm_preds <- lsmeans::lsmeans(finalmodel, "MeanMJperDay", # when have continuous
 lsmpreds <- data.frame(summary(lsm_preds))
 
 
-#===================================
+#===================================#
 ### PRINCIPAL COMPONENTS ANALYSIS ####
-#===================================
+#===================================#
 # Following Rob Thomas stats book p.119: to combine >1 variable into a single variable
 
 # combine DF & MJ into 1 variable for first patch selection model
@@ -3103,6 +3634,46 @@ r.squaredGLMM(fvmod_final)  # R2m = marginal r-squared (% variance in Y explaine
 # fixed effects explain 15% of variance in probability; random and fixed collectively explain 62%
 
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RStan ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#= Installing RStan
+# follow instructions on here VERY closely https://github.com/stan-dev/rstan/wiki/Installing-RStan-on-Windows#toolchain
+
+# set up toolchain by running (copied from website above)
+dotR <- file.path(Sys.getenv("HOME"), ".R")
+if (!file.exists(dotR)) 
+  dir.create(dotR)
+M <- file.path(dotR, "Makevars")
+if (!file.exists(M)) 
+  file.create(M)
+cat("\nCXXFLAGS=-O3 -Wno-unused-variable -Wno-unused-function", 
+    file = M, sep = "\n", append = TRUE)
+
+# modify path in this section to match your local setup:
+# cat('Sys.setenv(BINPREF = "<File path for ...mingw_32/bin from running <Sys.getenv('PATH')>")',
+#     file = file.path(Sys.getenv("HOME"), ".Rprofile"), 
+#     sep = "\n", append = TRUE)
+
+# i.e. on my Lenovo...
+cat('Sys.setenv(BINPREF = "C:\\RBuildTools\\3.4\\bin")',
+    file = file.path(Sys.getenv("HOME"), ".Rprofile"), 
+    sep = "\n", append = TRUE)
+
+# turn off irrelevant verbose warnings
+cat("\nCXXFLAGS += -Wno-ignored-attributes -Wno-deprecated-declarations", 
+    file = M, sep = "\n", append = TRUE)
+
+# verify configuration
+cat(readLines(M), sep = "\n")
+
+# view filepath for makevars file (for explantion of what this is, see website above).
+cat(M)
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Sort a data frame by a column ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3140,6 +3711,15 @@ MEANdailyPRT_sub <- subset(MEANdailyPRT, !(is.na(SocialStatus)))
 # subsetting a matrix (here the matrix is called T1sprB4_net)
 B4network_M <- T1sprB4_net[which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1), # select rows where individual is male & core
                            which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1)] # select cols where individual is male & core
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Time functions / code ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~#
+start.time <- Sys.time()
+#...functions or codes...#
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

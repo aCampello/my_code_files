@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import matplotlib.pyplot as plt
-cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\choose_your_own
+cd C:\Users\User\Documents\my_code_files\Udacity_Intro_to_Machine_Learning\ud120-projects\choose_your_own
 from prep_terrain_data import makeTerrainData
 from class_vis import prettyPicture
 
@@ -28,18 +28,35 @@ plt.show()
 
 ###############################################################################
 
-### K Nearest Neighbour Classifier
+### Random Forest Classifier
 
-# http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier
+# http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
 
 ###############################################################################
 ### your code here!  name your classifier object clf if you want the 
 ### visualization code (prettyPicture) to show you the decision boundary
 ###############################################################################
 
+""" 
+    Random forests produce multiple decision trees (on various sub-samples of 
+    the dataset) and select the most robust one (use averaging to improve the 
+    predictive accuracy and control over-fitting).
+    
+    The sub-sample size is always the same as the original input sample size 
+    but the samples are drawn with replacement if bootstrap=True (default).
+    
+    Very robust, popular, powerful algorithm. 
+    
+    There are versions of random forest algorithm in sklearn for both 
+    categorical and continuous/regression-type data.
+    
+"""
+
+
 ### Make a classifier function
 def classify(features_train, labels_train, n_neighbors, weights):
-    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn.ensemble import RandomForestClassifier
+    
     clf = KNeighborsClassifier(n_neighbors, weights)    
     clf.fit(features_train, labels_train)
     return clf

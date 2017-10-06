@@ -54,7 +54,13 @@ git log | grep -b5 -a5 billy	# filter search results to show the 5 lines before 
 
 git show HEAD # View the most recently made commit (and the changes made in that commit).
 
-<q>   to quit
+<q>   to quit the log
+
+git remote add origin <URL of remote repository>    # create new remote in github (manually) and get the URL to connect it to the local .git file here.
+
+git pull origin master		# pulls the README file from the new repository
+
+git push origin master		# adds local files to the remote repository.
 
 #------
 
