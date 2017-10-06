@@ -1,0 +1,103 @@
+---
+title: 'Forecasting energy consumption: exploratory data analysis'
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+As dataset is large, I did some initial data exploration to demonstrate proof of concept using the first 1 million rows.
+
+
+```{r}
+library(data.table)
+library(dplyr)
+library(prophet)
+```
+
+### Read in and prepare data
+```{r}
+# read in first csv file of 1 million rows
+csv_name = 'C:/Users/User/Documents/my_code_files/Exercises/Forecasting London energy consumption Oct 2017/smart_meter_data/separate_csvs/Power-Networks-LCL-June2015(withAcornGps)v2_2.csv'
+mydata <- fread(csv_name, drop = c("Acorn", "Acorn_grouped"))
+head(mydata)
+
+# Compute daily consumption per household  
+daily_kwh_per_household <- mydata %>%  
+  # use households on standard tariff only 
+  filter(stdorToU=="Std") %>%
+  # rename variables for ease of reference
+  rename(kwh = 'KWH/hh (per half hour)') %>%
+  # extract date from datetime
+  mutate(
+    dt = as.POSIXct(paste(DateTime)),
+    day = as.Date(strftime(dt, format = "%D"), "%m/%d/%y")) %>%
+  # compute total daily consumption for each household
+  group_by(day, LCLid) %>%
+  summarise(total_kwh = sum(as.numeric(kwh)))
+  
+str(daily_kwh_per_household)
+length(unique(daily_kwh_per_household$LCLid)) # 27 households
+
+# Save as CSV
+# fwrite(daily_kwh_per_household, file = "daily_kwh_per_household_csv2_2.csv")
+```
+
+### plots - by household
+```{r}
+ggplot(data = daily_kwh_per_household, 
+mapping = aes(x = day, y = total_kwh)) +
+  geom_smooth(aes(colour = LCLid), show.legend = FALSE)
+```
+
+### Get mean per day across households
+```{r}
+mpd <- summarise(daily_kwh_per_household, mean_kwh = mean(total_kwh))
+head(mpd)
+
+# plot means
+ggplot(data = mpd, 
+       mapping = aes(x = day, y = mean_kwh)) +
+  geom_point(show.legend = FALSE) + 
+  geom_smooth(show.legend = FALSE)
+```
+
+### Prepare df for time series analysis
+```{r}
+mdkwh <- select(ungroup(mpd), ds = day, y = mean_kwh)
+head(mdkwh)
+```
+
+### Fit additive regression model
+```{r}
+arm <- prophet(mdkwh, growth = "linear",
+               yearly.seasonality=TRUE, 
+               weekly.seasonality=FALSE)
+```
+
+### predict consumption for the next year
+```{r}
+# first make list of dates to predict for
+future <- make_future_dataframe(arm, periods = 365)
+tail(future) # view last dates
+
+# make the forecast
+forecast <- predict(arm, future)
+tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
+```
+
+### simple plot with raw data plus forecast 1y into future
+```{r}
+ggplot(data = arm$history, mapping = aes(x = ds, y = y)) +
+  geom_point() +
+  geom_smooth(data = forecast, mapping = aes(x = ds, y = yhat)) + 
+  geom_ribbon(data = forecast, mapping = aes(x = ds, y = yhat,
+                                             ymin = yhat_lower,
+                                             ymax = yhat_upper), alpha = 1/3) +
+  ylab("Consumption per household (kWh)") +
+  xlab("")
+```
+
+### plot seasonal components
+```{r}
+prophet_plot_components(arm, forecast)
+```

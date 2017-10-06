@@ -164,6 +164,8 @@
 
 # Repeatability & rptR
 
+# R notebooks
+
 # Robust SEs and p-values - package 'sandwich'
 
 # Round coefficients etc to nearest x number
@@ -3586,6 +3588,15 @@ c<-ICCest(ShortCode, cc, centrality_core) # removes NAs automatically
 iccs<-rbind(s,e,c) # save in df
 data.frame(s)$ICC
 # need to compare to random for networks using randomisations. Can report mean ICC from randomisations instead of 95% CIs
+
+
+#~~~~~~~~~~~~~~~~~
+# R notebooks ####
+#~~~~~~~~~~~~~~~~~
+
+# if notebook preview throws an error about a binary operator and won't update changes:
+# session > restart R and clear output
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
