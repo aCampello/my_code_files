@@ -1,8 +1,9 @@
 ---
 title: 'Forecasting energy consumption: exploratory data analysis'
 output:
-  html_notebook: default
   pdf_document: default
+  html_notebook: default
+  word_document: default
 ---
 
 As dataset is large, I did some initial data exploration to demonstrate proof of concept using the first 1 million rows.

@@ -1,4 +1,4 @@
-
+ 
 ##### Codecademy Command Line course notes 27/06/17 #####
 
 # Most of these commands don't work in the command prompt on my Lenovo Z50 (Windows 10)
@@ -260,6 +260,6 @@ notepad myfile.txt	# will launch the existing file called myfile.txt
 ### Compare two files
 diff file1.txt file2.txt	# will return which text is different between the two files.
 
-### PASTING in Git Bash
+### PASTING in Git Bash (can just use Ctrl+V in Lenovo z10 cmd)
 # The shortcut is <CtrlShift/Insert> # i.e. including the forward-slash.
 NOTE: put a < before typing the paste shortcut or else the pasted item will appear several spaces before where the cursor is (why?!).

@@ -16,6 +16,8 @@
 
 # Back-transformation
 
+# Big data
+
 # Binomial exact test
 
 # Categorise continuous variables - split into categories
@@ -302,6 +304,69 @@ summary(lsmeans(glmm3, ~ season | Origin), type = "response")
 # but SEs are not same from phia and lsmeans
 
 
+
+#============================#
+# Big Data computing in R ####
+#============================#
+""" Comments from R4DS thread on working with large datasets in R """
+
+### data.table::fread()
+
+
+### Package 'readr' (not as fast as data.table but can read files in chunks)
+# https://www.rdocumentation.org/packages/readr/versions/1.1.1/topics/read_delim_chunked
+library(readr)
+# can have read_delim_chunked(), read_csv_chunked() and others
+read_delim_chunked(csv_file, callback, delim = ",",
+                   skip = pre_process_size, 
+                   col_names = col_names, # to override automatic column naming
+                   col_types = spec(df),
+                   chunk_size = chunk_size,
+                   progress = FALSE) 
+
+# The CALLBACK argument tells the function what to do with each chunk
+# 3 types of callback function 
+# ChunkCallback - all callback functions inherit from this class.
+# SideEffectChunkCallback - used only for side effects, no results are returned.
+# DataFrameCallback - combines each result together at the end.
+# https://www.rdocumentation.org/packages/readr/versions/1.1.1/topics/callback
+
+# Used this read_delim_chunked() function in experimental code in file "RSQLite experiment_notworking.R"
+# callback function appended each chunk to SQLite database
+
+### Save data in a database and query the data you need: RSQLite or better MonetDB.R
+
+
+### Perform analysis on a random sample: read in chunks, save each chunk to same or new df.
+# This approach could take a *long* time, depending on how fast your access to disk is.
+# Save the random sample to disk periodically so you don't need to start again from row 1.
+# Print current job status to screen and/or to a log file, e.g. N chunks processed, N chunks left
+# To make sure computer didn't get stuck at some point during the data reading 
+# (might happen on Windows if it starts using virtual memory.)
+# RGui might be faster than RStudio for this
+
+
+
+### Packages for out of data computations - e.g. linear model can use a file 
+### connection rather than a df loaded into the workspace.
+# use function 'shglm' from package 'speedglm', which takes as argument a file connection
+# Also see packages in the *Large memory and out-of-memory data* section of:
+# https://cran.r-project.org/web/views/HighPerformanceComputing.html
+
+
+
+### AWS or Google Cloud
+# Free time-limited trials available for both.
+
+
+
+### Package 'pbdR'
+# Might be horrible to work with
+# Handling 100 Gb files should be possible
+# http://www.sciencedirect.com/science/article/pii/S221457961630065X
+
+
+
 #=======================#
 # Binomial exact test ####
 #======================#
@@ -392,12 +457,15 @@ paste(item1, item2, sep=c("", "-", "_", "."))
 # Concatenate rounded values in Excel
 =ROUND(A1,1) & " ? " & ROUND(A2,1) # use ROUND with '&' to combine rather than concatenate with commas
 
-
+# Drop all values for one level of a factor
+x <- x[x != "d"]
+# note if the level still appears in plots, just wrap it in factor() again
+x <- factor(x)
 
 #===========================================#
 # CLEAR WORKSPACE (deletes all objects)  ####
 #===========================================#
-rm(list=ls()) 
+rm(list = ls()) # object-nuking command
 
 
 #===========================================#
@@ -1525,10 +1593,39 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
 # Good coding practices ####
 #==========================#
 
-# Never include install.packages() or setwd() in a script that you share. 
-# - It’s very antisocial to change settings on someone else’s computer!
+## Project organisation
+
+# Use RStudio's RProj function to create new project directories
+
+# Set all paths relative to the root folder so whole tree can be copied elsewhere.
+
+# Root folder contains...
+  # the .RProj file
+  # all .R scripts
+  # data directory - contains raw and processed data 
+  # plot directory - contains plots
+  # img directory - contains other graphics R takes as input to build the results (e.g. logos)
+  # a .git, .here or .RProj file to label the project root
+
+
+## R Scripts
 
 # Always start scripts with the packages required
+
+# 'here' package
+# Never include install.packages() or setwd() in a script that you share. 
+# Better to use the here package to construct path to project files.
+# 'here()' finds your project's files by stepping up from the current wd until 
+# it finds a .git or .here file. Use here() as a drop-in replacement for 
+# 'file.path()', it will always locate the files relative to your project root.
+
+# example usage
+library(here)
+library(ggplot2)
+df <- read.delim(here("data", "raw_foofy_data.csv")) # see 
+p <- ggplot(df, aes(x, y)) + geom_point()
+ggsave(here("figs", "foofy_scatterplot.png"))
+getwd()
 
 
 #===============#
@@ -1834,8 +1931,12 @@ dimnames(matrixstack)[[3]] <- att$id
 #===================#
 # MERGE DATA FRAMES ####
 #===================#
-# merge all columns in 2 data frames
-merge_all <- merge(x=datacsv, y=attribs.NC, by = c("id", "SeasonID"))
+
+# merge all columns from both dfs
+a <- merge(x = offers_sent, y = offers_accepted, by="ApplianceID")
+
+# merge just Brand column
+a <- merge(x = offers_accepted, y = offers_sent[, c("ApplianceID", "Brand")], by="ApplianceID")
 
 
 # merge all columns from first df (x) and only certain ones from the second df (y) 
@@ -1844,6 +1945,9 @@ a <-merge(datacsv, attribs, by="id", all.x=TRUE)
 EncounterRate <- merge(x=EncounterRate_days, y=patchdata[ , c("SeasonID", "Place", "DaysFedPerWeek")], by.x=c("SeasonID", "Place"), all.x=T, all.y=F)
 # to avoid warnings when using merge convert factors to characters first
 # sometimes merge just won't work for no apparent reason - might be easier to merge all columns and then delete the unwante ones, or create a smaller data frame to use for merging.
+
+
+
 
 
 ### Extract valid rows:
@@ -2079,7 +2183,7 @@ require(car) # or use car if lmerTest won't work
 car::Anova(finalmodel)
 
 
-### Syntax for random effects # SEE: http://bit.ly/2a89fHF ####
+### Syntax for random effects # SEE: http://bit.ly/2a89fHF ###
 ###
 (1|Territory) # random intercept for territory
 # CROSSED (or partially crossed)
@@ -2142,6 +2246,46 @@ orimod3<-lmer(Count ~ seasfac * Origin + (1|oriT/seasfac), data=origins, REML=F)
 anova(orimod0, orimod1) # sequentially compare more complex models to see if adding predictors improves fit (i.e. reduces AIC - lower/smaller is better)
 anova(orimod1, orimod2)
 anova(orimod2, orimod3) # orimod3 has lowest AIC - indicates interaction is the best model
+
+
+#=====================#
+# LOOPING ####
+#=====================#
+
+## Speed
+# creating and updating a result vector with a loop:
+# it is faster to pre-define the object type and length with vector() and 
+# reference positions by index, than to add an extra digit after each loop - https://www.datacamp.com/community/tutorials/five-tips-r-code-improve
+n <- 5
+x <- vector("integer", n) # integer vector
+x <- vector("character", n) # character vector
+x
+
+
+#=====================#
+# MACHINE LEARNING ####
+#=====================#
+
+# Split data into 75% training and testing sets (caret package?)
+Train <- createDataPartition(modeldata$offer_accepted, p=0.75, list=FALSE)
+training <- modeldata[ Train, ]
+testing <- modeldata[ -Train, ]
+
+
+# Logistic regression - caret
+library(caret)
+lr <- glm(offer_accepted ~ ., family = binomial(link = 'logit'), data = training)
+
+# Logistic regression - e1071
+library(e1071)
+lr <- train(offer_accepted ~ .,  data=training, method="glm", family="binomial") # slow!
+
+
+# Random Forest
+library(randomForest)
+rf <- randomForest(offer_accepted ~ . , data = train)
+
+print(rf) # get confusion matrix, N trees made etc
 
 
 #================================================================================================#
@@ -2759,11 +2903,12 @@ shapiro.test(mydata$Number.of.transient.visitors)
 near(1/49 * 49, 1) # returns TRUE
 
 # Making sequences of numbers
-seq() # makes regular sequences of numbers 
+seq() # makes regular sequences of numbers starting from 1, e.g. seq(10) makes sequence from 1-10
 seq(0,60) # increments of 1
 seq(0,60,5) # increments of 5
 seq(0,60, length.out=3) # automatic number of increments to make 3 evenly spaced numbers)
 
+# NOTE: 'seq(n)' is more stable way to make sequence from 1-n than '1:n' - https://www.datacamp.com/community/tutorials/five-tips-r-code-improve
 
 
 #======================#
@@ -2835,6 +2980,13 @@ dailyPRT$totalPRT_z <- outliersZ(dailyPRT$totalPRT, zCutOff=3.0, replace=mean(da
 # Packages ####
 #===========================================#
 
+# install packages with dependencies
+# install.packages('installr', dependencies = TRUE) 
+# see if you need to update R and if so do it, and installr also installs 
+# all the packages you had in the earlier version of R.
+library(installr)
+updateR() 
+
 # view current working directory
 getwd() 
 
@@ -2873,7 +3025,7 @@ packageVersion("asnipe")
 
 sessionInfo() # view loaded packages, versions etc
 
-# detach package
+# detach package (unload package)
 detach("package:lme4")
 
 # check for package updates and optionally install them
@@ -3722,6 +3874,11 @@ MEANdailyPRT_sub <- subset(MEANdailyPRT, !(is.na(SocialStatus)))
 # subsetting a matrix (here the matrix is called T1sprB4_net)
 B4network_M <- T1sprB4_net[which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1), # select rows where individual is male & core
                            which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1)] # select cols where individual is male & core
+
+# Dropping factor levels - subsetting can remove some of the levels but
+
+
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Time functions / code ####

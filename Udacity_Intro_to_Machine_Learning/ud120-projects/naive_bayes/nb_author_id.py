@@ -3,7 +3,8 @@
 """
     This is the code to accompany the Lesson 1 (Naive Bayes) mini-project.
 
-    Project spec = "Create and train a Naive Bayes classifier in naive_bayes/nb_author_id.py. Use it to make predictions for the test set. What is the accuracy?"
+    Project spec = "Create and train a Naive Bayes classifier in naive_bayes/nb_author_id.py. 
+    Use it to make predictions for the test set. What is the accuracy?"
 
     Use a Naive Bayes Classifier to identify emails by their authors
 

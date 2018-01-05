@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 """ Processes raw email data ready for use in machine learning algorithms """
-    
+
 import os
 import pickle
 import re
 import sys
 
-cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\tools
+cd C:\Users\User\Documents\my_code_files\Udacity_Intro_to_Machine_Learning\ud120-projects\tools
 sys.path.append( "../tools/" ) # this line works intermittently
 from parse_out_email_text import parseOutText
 
@@ -26,7 +26,7 @@ from parse_out_email_text import parseOutText
 """
 
 # Get the data
-cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\text_learning
+cd C:\Users\User\Documents\my_code_files\Udacity_Intro_to_Machine_Learning\ud120-projects\text_learning
 from_sara  = open("from_sara.txt", "r")
 from_chris = open("from_chris.txt", "r")
 
@@ -47,27 +47,27 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
         ### once everything is working, remove this line to run over full dataset
         #temp_counter += 1
         #if temp_counter < 200:
-            
+
             """ Note failure to populate the from_data and word_data lists could be due
                 to incorrect path here - try restarting the kernel if so """
             path = os.path.join('..', path[:-1])
             print path
-            
+
             # open the email
-            email = open(path, "r")   
+            email = open(path, "r")
 
             ### use parseOutText to extract the text from the opened email
             stemmed_text = parseOutText(email)
-            
+
             ### use str.replace() to remove any instances of the words
             ### ["sara", "shackleton", "chris", "germani"]
             blacklist = ["sara", "shackleton", "chris", "germani", "sshacklensf", "cgermannsf"]  # NOTE added "sshacklensf" and "cgermannsf" for Lesson 12 Quiz 29+30.
             for word in blacklist:
                 stemmed_text = stemmed_text.replace(word, "")
-                
+
             ### append the text to word_data
             word_data.append(stemmed_text)
-            
+
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
             if name == "sara":
                 from_data.append(0)
@@ -79,12 +79,13 @@ print "emails processed"
 from_sara.close()
 from_chris.close()
 
-pickle.dump( word_data, open("your_word_data.pkl", "w") )
-pickle.dump( from_data, open("your_email_authors.pkl", "w") )
+# SAVE:
+# pickle.dump( word_data, open("your_word_data.pkl", "w") )
+# pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 
 
 # Retrieve the data at a later stage
-cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\text_learning
+cd C:\Users\User\Documents\my_code_files\Udacity_Intro_to_Machine_Learning\ud120-projects\text_learning
 word_data = pickle.load(open("your_word_data.pkl", "rb"))
 from_data = pickle.load(open("your_email_authors.pkl", "rb"))
 
@@ -99,29 +100,29 @@ word_data[152]  # = 'tjonesnsf stephani and sam need nymex calendar '
 
 ### Quiz 20 & 21: TfIdf vectorization
 
-""" Transform the word_data into a tf-idf matrix using the sklearn TfIdf 
+""" Transform the word_data into a tf-idf matrix using the sklearn TfIdf
     transformation. Use the tf-idf Vectorizer class for the transformation.
-    
+
     Remove english stopwords using the sklearn's stop word list (not NLTK).
-    
-    You can access the mapping between words and feature numbers using 
-    vectorizer.get_feature_names(), which returns a list of all the 
+
+    You can access the mapping between words and feature numbers using
+    vectorizer.get_feature_names(), which returns a list of all the
     words in the vocabulary. How many different words are there? """
 
-    
-from sklearn.feature_extraction.text import TfidfVectorizer    
+
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Create a vectorizer
 vectorizer = TfidfVectorizer(stop_words="english")  # remove english stopwords
 
 # Train and transform it
-tfidf = vectorizer.fit_transform(word_data)   # not sure if necessary to rename it tfidf or can it stay called vectorizer.
+vectorizer.fit_transform(word_data)   
 
 # Use get_feature_names applied to the VECTORIZER (not the matrix output)
 # to find number of words
-print "Num words:", len(vectorizer.get_feature_names())   
+print "Num words:", len(vectorizer.get_feature_names())
         # Num words: 3078 (on the max200 dataset; 38757 on the full dataset)
-        
+
 
 """ What is word number 34597 in your TfIdf? """
 vectorizer.get_feature_names()[34597]    # = 'stephaniethank'

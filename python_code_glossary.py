@@ -1,15 +1,14 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
                     ## -------------------------------- ##
                     """ Python - useful bits of code """
                     ## -------------------------------- ##
 
 # Make copy of new df
-new_dataframe = dataframe # sometimes this won't work in functions so can use <.copy()>:
 new_dataframe = dataframe.copy()
 
-# gGeneral things
-help(“FunctionName”) # get help on a python function
+# General things
+help(function_name) # get help on a python function
 
 # =============================================================================
 ###  """ BASIC MATHEMATICAL OPERATIONS """
@@ -28,6 +27,14 @@ help(“FunctionName”) # get help on a python function
 x ** 2  # x squared (x times x), e.g. 2 ** 2 = 4
 x ** 3  # x cubed (x times x times x), e.g. 2 ** 3 = 8
 2 ** 4  # 2 X 2 X 2 X 2 = 16
+
+
+#==========================
+### """ BIG DATA """
+#==========================
+# Out of memory computation (link sent via R4DS)
+# read posts by Tom Augspurger, especially the *Modern Pandas* and the *Scalable Machine Learning* series:
+# https://tomaugspurger.github.io
 
 
 
@@ -253,7 +260,10 @@ dataframe_clean['section'] = dataframe_clean['section'].map(to_replace)
 # value = 'other'
 # dataframe_clean['section'].replace(to_replace, value, inplace=True)
 
-
+# without using a function to make the dictionary...
+# rename column of financial year ranges, e.g. 2000-01, to the first year only.
+mapping = {'2000-01': 2000, '2001-02': 2001, '2002-03': 2002, '2003-04': 2003}
+veh_data['year_code'] = veh_data['FinancialYear'].map(mapping)
 
 
 # Create training and testing sets
@@ -264,13 +274,15 @@ y = cleaned_data['Survived']  # saves only the column of labels
 df.apply(lambda x: sum(x.isnull()),axis=0) # isnull() returns 1 if the value is null.
 
 
-# Replace nulls with a specific value...
+# Replace nulls (NaN) with specific values...
 
 # replace NAs with the mean
-df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace=True)
+df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace = True)
 
 # replace NAs with 'No'
- df['Self_Employed'].fillna('No',inplace=True)
+ df['Self_Employed'].fillna('No', inplace = True) # inplace means actually change the contents of df.
+
+
 
 # =============================================================================
 ### """ DATES & TIMES """
@@ -322,6 +334,7 @@ def insert_end_date_time_columns(input_data_frame):
 # =============================================================================
 ###  """ DICTIONARIES """
 # =============================================================================
+# some useful snippets in Kabi's python book (chapter 10)
 
 # (implemented like hash tables)
 
@@ -338,14 +351,33 @@ def insert_end_date_time_columns(input_data_frame):
 menu = {}
 
 ## Add new elements using an assignment, as with lists
-# NB if Chicken Alfredo is already in the dictionary, it will UPDATE the value.
+
+# each key will be a dish
+
+# NB if Chicken Alfredo is already in the dictionary, it will UPDATE the value (here the value is the meal price)
 menu['Chicken Alfredo'] = 14.50  # Adding new key-value pair
 menu['Chicken Calzone'] = 12.50  # Adding new key-value pair
 
-menu['Chicken Balti'] = 'Hot', 'Mild' # add multiple values to the same key - will be saved in () brackets.
-                                            # returns {'Chicken Balti': ('Hot', 'Mild')}
-menu['Chicken Balti'] = ['Hot', 'Mild'] # add multiple values to the same key, in a list.
-                                            # returns {'Chicken Balti': ['Hot', 'Mild']}
+# add multiple values to the same key - will be saved in () brackets.
+menu['Chicken Balti'] = 'Hot', 'Mild'
+# returns {'Chicken Balti': ('Hot', 'Mild')}
+
+# add multiple values to the same key, in a list.
+menu['Chicken Balti'] = ['Hot', 'Mild']
+# returns {'Chicken Balti': ['Hot', 'Mild']}
+
+# another example
+# dict values can be strings, numbers, booleans, lists or dictionaries
+dog_dict = {'name': 'Freddie',
+'age': 9,
+'is_vaccinated': True,
+'height': 1.1,
+'birth_year': 2001,
+'belongings': ['bone', 'little ball'],
+'walks': {'Monday': ['12:00', '18:00'],
+          'Tuesday': ['09:00', '18:00']
+          }
+}
 
 ## Accessing values in dictionaries
 print menu # view the whole dictionary
@@ -353,6 +385,13 @@ menu.keys()      # get all the keys
 menu.values()    # get all the values
 menu.items()     # get all the key/value pairs
 menu['Chicken Alfredo'] # view the value  for Chicken Alfredo.
+
+menu.clear() # delete everything from the dictionary
+
+# Nice print out of menu contents (key-value pairs) - in ascending order
+print("Dish\tPrice\n")
+for key, value in sorted(menu.items()):
+    print("{0}\t{1}".format(key, value))
 
 # alternative syntax to return the value associated with a key, or "XX" if the
 #   key doesn't exist:
@@ -432,6 +471,27 @@ for item in dic:
 [i[i["date"] == "2017-06-03"] for i in categorised_anomalies.values()]
 
 
+
+## Extract a Subset of a Dictionary
+# https://www.safaribooksonline.com/library/view/python-cookbook-3rd/9781449357337/ch01s17.html
+
+prices = {
+   'ACME': 45.23,
+   'AAPL': 612.78,
+   'IBM': 205.55,
+   'HPQ': 37.20,
+   'FB': 10.75
+}
+
+# Make a dictionary of all prices over 200
+p1 = { key:value for key, value in prices.items() if value > 200 }
+
+# Make a dictionary of tech stocks
+tech_names = { 'AAPL', 'IBM', 'HPQ', 'MSFT' }
+p2 = { key:value for key,value in prices.items() if key in tech_names }
+
+
+
 ## Searching within dictionaries
 'H' in elements  # will return True or False
 'Hydrogen' in elements['H']['name']  # will return True or False
@@ -489,9 +549,56 @@ print[i for i in d]  # prints in order
 
 
 
-# =============================================================================
+# ===============================================================
+### """ ENVIRONMENTS """
+# ===============================================================
+
+# copied from txt file "Using conda to create and manage Python 2.7 and 3.6 environments""
+
+# Create multiple python environments to use either Python 2 or Python 3 on the same computer.
+# Anaconda works with Python 2.7 or Python 3.6
+# So must use one environment to use Python 2.7 and a different one to use Python 3.6
+# NOTE creating new environments takes quite a while as there are a lot of programs/files to create.
+
+# See this website for details on how Python environments work in Anaconda:
+https://conda.io/docs/py2or3.html#create-a-python-2-7-environment
+
+
+### Can create/manage environments either using the cmd line or in the Anaconda Navigator.
+
+## Instructions to create a new environment in cmd line:
+<conda create -n ENVIRONAME python=2.7 anaconda>    # sets up a new environment called ENVIRONAME, that's configured to use Python 2.7 and includes all packages based on the anaconda package (=automatically installs all anaconda's dependencies, as anaconda is basically a collection of the most useful packages).
+e.g.
+<conda create -n py27 python=2.7 anaconda>    # creates an enviro called 'py27' that runs Python 2.7
+<conda create -n py36 python=3.6 anaconda>    # creates an enviro called 'py36' that runs Python 3.6
+
+# It's OK to use the default Path C:\Users\User\ (assuming it's been set to C:\Users\User\Anaconda3\Scripts as below)
+# If the conda command is not recognised:
+# Go to the ControlPanel\System\Advanced system settings\Environment Variables\Path
+#   Then hit edit and add <C:\Users\User\Anaconda3\Scripts> to the end (this changes the filepath associated with 'Path' in the cmd line).
+#   Then restart the cmd line.
+
+
+## Instructions to create a new environment in the Anaconda Navigator:
+# Start > Anaconda > Anaconda Navigator > Environments
+# Click 'Create' to create a new environment: select the version of Python to use and choose an appropriate name (not easy to change it afterwards!).
+# Select 'Not Installed' from the drop-down box above the right hand pane. Check the box by 'anaconda' and click Apply.
+# This lists all the dependencies (packages that anaconda depends on).
+# Click Apply and it will set up the new environment.
+
+
+# To rename an environment, e.g. from pythonenv27 to py27, change the directory name at the file location in Windows Explorer:
+C:\Users\User\Anaconda3\envs
+# NOTE this doesn't seem to rename all the shortcuts to various anaconda programs, so might break the links/filepaths.
+# Prob better to just name the file what you want to start with.
+
+# Anaconda will create a shortcut to all it's files/programs (Jupyter Notebook, IPython, Navigator...) for each environment.
+# So there will be a shortcut to "IPython" AND one to "IPython (py27)".
+
+
+# ===============================================================
 ###  """ ERRORS & BUGS """
-# =============================================================================
+# ===============================================================
 
 # When running commands make sure to test them thoroughly with different inputs including empty strings '' to avoid edge cases:
 
@@ -648,7 +755,7 @@ def total_enrollment(uni_list):
 
 
 # Return the index position of a certain value, rather than the actual value.
-<list>.index(<value>)   # returns the index of the FIRST position where the value is found.
+mylist.index(<value>)   # returns the index of the FIRST position where the value is found.
                         # returns an error if the value doesn't exist in the list.
 
 
@@ -656,13 +763,18 @@ def total_enrollment(uni_list):
 ###  """ FUNCTIONS """
 # =============================================================================
 
-# If you update a function in a .py file use reload() in the imp module to
+## Python functions vs Python methods:
+# functions work like function(object)
+# contrast to methods which work like object.method()
+# e.g. len(mylist) vs mylist.count('horse')
+
+## If you update a function in a .py file use reload() in the imp module to
 # refresh the function in a notebook that calls that function
 from imp import reload
 reload(time_series)   # reloads time_series.py without having to reload the kernel.
 
 
-###  basic in-built functions, e.g. len()
+## Basic in-built functions, e.g. len()
 
 len()    # length
 min(1, 2, 3)    # minimum
@@ -853,6 +965,94 @@ def hello():
 %reset
 
 
+# =======================================================================
+### """ LINEAR REGRESSION """
+# =======================================================================
+# http://www.learndatasci.com/predicting-housing-prices-linear-regression-using-python-pandas-statsmodels/
+
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+# Fit linear regression model - uses R-like formula
+condition_model = ols("ConditionScore ~ year_code + VehicleType + Manufacturer", data = veh_data).fit()
+
+
+# Dummy encoding categorical variables using the C() function in statsmodels package
+
+import statsmodels.formula.api as smf
+
+condition_model = ols("ConditionScore ~ year_code + C(VehicleType)", data = veh_data).fit()
+
+# can also use C() to change the reference level of categorical variables
+condition_model = ols("ConditionScore ~ year_code + C(VehicleType, Treatment(reference='Light Goods Vehicle'))", data = veh_data).fit()
+
+
+# model summary
+condition_model.summary()
+condition_model.params  # model coefficients
+condition_model.conf_int()  # confidence intervals
+condition_model.pvalues    # pvalues
+
+# R Squared
+
+condition_model.rsquared   # proportion of variance explained
+
+# NOTE:
+    # R-squared will always increase as you add more features to the model, even if they are unrelated to the response...
+
+    # Selecting the model with the highest R-squared is not a reliable approach for choosing the best linear model.
+
+
+## Diagnostic plots for regression
+
+# http://www.learndatasci.com/predicting-housing-prices-linear-regression-using-python-pandas-statsmodels/
+
+fig = plt.figure(figsize=(15,8))
+fig = sm.graphics.plot_regress_exog(condition_model, "year_code", fig=fig) # year_code = predictor variable
+
+# plot with confidence intervals
+from statsmodels.sandbox.regression.predstd import wls_prediction_std
+import numpy as np
+
+x = df[['total_unemployed']] # predictor variable
+y = df[['housing_price_index']] # dependent variable
+
+# get confidence intervals
+# _ is a dummy variable - we don't actually use it for plotting but need it as a placeholder since wls_prediction_std(housing_model) returns 3 values
+_, confidence_interval_lower, confidence_interval_upper = wls_prediction_std(housing_model)
+
+# select and run all the following lines at once
+fig, ax = plt.subplots(figsize=(10,7))
+ax.plot(x, y, 'o', label="data") # plot the dots
+ax.plot(x, housing_model.fittedvalues, 'g--.', label="OLS") # plot the trend line
+ax.plot(x, confidence_interval_upper, 'r--')
+ax.plot(x, confidence_interval_lower, 'r--')
+ax.legend(loc='best'); # plot legend
+
+
+## Post-hoc tests
+
+# http://jpktd.blogspot.co.uk/2013/03/multiple-comparison-and-tukey-hsd-or_25.html
+
+# https://stackoverflow.com/questions/16049552/what-statistics-module-for-python-supports-one-way-anova-with-post-hoc-tests-tu (where I got the code to calculate p-values with psturng from)
+
+# Pairwise comparisons (Tukey HSD) tests, corrected for multiple testing
+from scipy import stats
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+pairs = pairwise_tukeyhsd(data, group) # syntax, e.g...
+
+# see whether condition differs significantly between manufacturers
+pairs = pairwise_tukeyhsd(veh_data['ConditionScore'], veh_data['Manufacturer'], alpha=0.05) # default alpha = 0.05
+print(pairs)
+
+# note statsmodels doesn't compute p-values.
+
+# get p-values from res object
+from statsmodels.stats.libqsturng import psturng
+p = psturng(np.abs(res.meandiffs / res.std_pairs), len(res.groupsunique), res.df_total)
+print(p)
+
 
 # =============================================================================
 ###  """ LISTS """
@@ -880,8 +1080,8 @@ result  # returns ['a', 90]
 ### List comprehension
 
 # list comprehension to create lists
-my_list = [x ** 2 for x in range(1, 11)]  # makes a list of squared numbers (x**2) from 1 to 10 (range 1,11). Here, the list should be: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100].
-my_list[::-1]  # negative strides print the list backwards / traverses from right to left.
+mylist = [x ** 2 for x in range(1, 11)]  # makes a list of squared numbers (x**2) from 1 to 10 (range 1,11). Here, the list should be: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100].
+mylist[::-1]  # negative strides print the list backwards / traverses from right to left.
 
 # list comprehension to compare two lists (3 examples)
 
@@ -915,7 +1115,7 @@ print counter  # print the total.
 
 
 # length of list
-len(list)   # returns number of elements in the list (only counts outer elements, so in a list of two lists len = 2)
+len(mylist)   # returns number of elements in the list (only counts outer elements, so in a list of two lists len = 2)
 
 # Refer to elements in a list
 square_list[0]  # refers to the first item in the list (= index #0 - counting starts at 0)
@@ -932,13 +1132,14 @@ square_list.sort()  # sort list ascending
 
 # list slicing
 [start:end:stride]  # starting index = inclusive, default 0; ending index = exclusive, default end of list; stride = space between items, default 1, e.g. (::2) would select every other item in whole list).
-print(my_list[2:11:])   # prints ALL numbers between index positions 2 and 10.
-print(my_list[2:11:2])  # prints EVEN numbers between index positions 2 and 10.
+print(mylist[2:11:])   # prints ALL numbers between index positions 2 and 10.
+print(mylist[2:11:2])  # prints EVEN numbers between index positions 2 and 10.
 
 # Combine lists - using the plus operator
 # joins the contents of lists to create a new list, whereas 'append' (below) inserts a new list into a existing list.
 new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list (doesn't change the original two lists)
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
+
 
 ### List mutation: change/add/delete
 """ lists are mutable (can be changed/appended) unlike strings, e.g. can't
@@ -952,35 +1153,50 @@ square_list[1] = 70  # changes the item at index #1 to 70.
 square_list += "dog"  # Add "dog" to the list
 
 # Append (add) new values to lists
-<list_name>.append = <element_to_add>  # add a new element to the list
+mylist.append = <element_to_add>  # add a new element to the list
 # e.g.
 square_list.append("dog")  # append = add. Add "dog" to the end of the list ('append' mutates the old list, rather than creating a new list)
 list1.append([7, 8])    #[1,2,3,4,5,6,[7,8]]    # inserts the new list [7,8] as an element in list1
 square_list.append(2*round_list)  # append = add (not replace). This means multiply values in the round_list by 2 and add them to the square_list.
 
+
 ### Remove values from lists
-# using the Remove command .remove()
-<list>.remove()
+
+# using the -= command
 square_list -= "dog"  # Remove "dog" from the list
-square_list.remove(1)  # Removes the number 1 from the list n (if it contained 1) - NOT the item at index #1
+
+# using the remove command
+mylist.remove()
+# e.g.
+mylist = ['dogs', 1, 'cats', 3, 'horses', 0, 'fish', 10, 'horses']
+mylist.remove(1)  # Removes the number 1 from the list n (if it contained 1) - NOT the item at index #1
 
 # using the Pop command .pop()
-<list>.pop()    # mutates the list by removing and returning its last element (to show what it removed).
+mylist.pop()    # mutates the list by removing and returning its last element (to show what it removed).
                 # if the () parentheses are empty, it pops the LAST element in the list.
 x = square_list.pop(1)  # removes the element at index #1 in square_list (pops it out) and saves it as 'x'
 
-# Using the Delete command del()
-del(list[])
+# using the Delete command del()
+del(mylist[])
 del(square_list[1])  # removes the item at index 1 from list n but does not return anything.
+
+### Count number of occurences of an element in a list
+mylist = ['dog', 'cat', 'horse', 'fish', 'horse']
+mylist.count('horse') # number of occurences of the word 'horse'
+
+
+### Completely empty a list - remove all elements from it
+mylist.clear() # returns []
+
 
 ### Search in lists
 # In
-<value> in <list>
+myvalue in mylist
 print(3 in [1,2,3,4,5])    # will print True, as 3 appears in the list
 print(6 in [1,2,3,4,5])    # will print False, as 6 does not appear in the list
 
 # Not In
-<value> not in <list>
+myvalue not in mylist
 print(3 not in [1,2,3,4,5])    # will return False, as 3 appears in the list
 
 # Example: check whether an element appears in a list; if yes, return the first index of the element in the list; if no, return -1.
@@ -1009,7 +1225,7 @@ a.index([6])
 # sklearn requires all inputs to be numeric (no text)
 # and arranged in a NumPy array (it won't accept dictionaries)
 
-""" A python dictionary can’t be read directly into an sklearn classification
+""" A python dictionary can't be read directly into an sklearn classification
     or regression algorithm; instead, it needs a NUMPY ARRAY or a LIST OF
     LISTS (where each element of the list (itself a list) is a data point, and the
     elements of the smaller list are the features of that point).
@@ -1116,7 +1332,7 @@ labels_train = labels_train[:len(labels_train)/100]
     neighbours in the feature space.
 """
 
-### sklearn syntax for clasfrom sklearn import treesifier algorithms
+### sklearn syntax for classifier algorithms
 
 # 1) Import the algorithm / function
         from sklearn.naive_bayes import GaussianNB    # for naive Bayes
@@ -1385,6 +1601,59 @@ features_test_pca = pca.transform(features_test)   # transform testing set using
 pred = svc.predict(features_test_pca)  # use these to predict labels for
 
 
+### FEATURE ENGINEERING FOR MACHINE LEARNING IN SKLEARN
+
+# sklearn cant accept string features - convert to integers using transformers
+
+# LabelEncoder - transforms string categorical variables to integers (= still ordered)
+
+# DictVectorizer - transforms string categorical variables to binary matrix (binary one-hot encoding. Note DictVectorizer can only transform strings; if categorical features are represented as numeric values such as int, the DictVectorizer can be followed by OneHotEncoder to complete binary one-hot encoding.
+
+# OneHotEncoder - transforms string and/or integer categorical variables to binary matrix in a single step.
+
+
+# LabelEncoder: transform categorical strings to integers
+
+from sklearn.preprocessing import LabelEncoder
+
+label_encoder = LabelEncoder()
+views['encoded_date'] = label_encoder.fit_transform(views['date'])
+
+
+# DictVectorizer - binary onehot-encode categorical string variables
+
+from sklearn.feature_extraction import DictVectorizer
+
+def encode_onehot(df, cols):
+    """
+    Apply one-hot encoding to columns specified in a pandas DataFrame.
+
+    From: https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
+
+    Details:
+    http://en.wikipedia.org/wiki/One-hot
+    http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html
+
+    @param df pandas DataFrame
+    @param cols a list of columns to encode
+    @return a DataFrame with one-hot encoding
+    """
+    vec = DictVectorizer()
+
+    vec_data = pd.DataFrame(vec.fit_transform(df[cols].to_dict(orient='records')).toarray())
+    vec_data.columns = vec.get_feature_names()
+    vec_data.index = df.index
+
+    df = df.drop(cols, axis=1)
+    df = df.join(vec_data)
+
+    return df
+
+new_df = encode_onehot(df = user_profiles_complete, cols = ['mode_device', 'mode_channel', 'mode_language'])
+
+
+
+
 
 ### FEATURE SELECTION FOR MACHINE LEARNING
 """ Good algorithms employ the minimum number of features required to get as much info as possible.
@@ -1493,6 +1762,15 @@ from sklearn.model_selection import train_test_split
 X, y = features, labels
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+
+# OR
+
+y = veh_data.ConditionScore
+feature_list = ['year_code','VehicleType','Manufacturer']
+X = veh_data[feature_list]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+X_train.shape, y_train.shape, X_test.shape, y_test.shape
+
 # returns a list containing train-test split of inputs: list length = 2*len(arrays)
 """ default test_size = 0.25 (25% of data set). But can specify the test_size
     as an integer or float (= number or proportion of samples to put in the test set).
@@ -1620,9 +1898,9 @@ print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N
 
     # High precision/low recall = low false positives, risk of false negatives.
         e.g. "Whenever a POI gets flagged in my test set, I know with a lot of
-        confidence that it’s very likely to be a real POI and not a false alarm.
+        confidence that its very likely to be a real POI and not a false alarm.
         On the other hand, the price I pay for this is that I sometimes miss
-        real POIs, since I’m effectively reluctant to pull the trigger on edge cases.”
+        real POIs, since Im effectively reluctant to pull the trigger on edge cases.
 
     # Depends on project aims as to whether you want high precision or high recall.
       For Enron we want high recall/low precision as don't want to miss any POIs (false negs).
@@ -1672,64 +1950,89 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
 # =============================================================================
-###  """ MODULES """
+###  """ MODULES / PACKAGES / LIBRARIES """
 # =============================================================================
 
-# TO use a module you first need to install it via the cmd line / terminal / git bash:
-""" NOTE: open terminal via Anaconda Navigator and click play button next
-    to the environment you want to install the package/library in to. """
+# A module is a .py file containing Python definitions and statements.
 
+# First install module via terminal using conda or pip
+# advice: https://www.quora.com/How-do-I-install-Python-packages-in-Anaconda
 
-""" A module is a .py file containing Python definitions and statements.
-    use import module to access functions in that file, e.g. to import two
-    functions called featureFormat and targetFeatureSplit from a file called
-    feature_format.py, use this command:
+# Then import the module or specific functions from it into Python
 
-    from feature_format import featureFormat, targetFeatureSplit
+###
 
-    Then you can use those functions in the current file.
-"""
+# Installing modules
 
-# to resolve difficulty importing certain modules in bash:
+# If you want to use pip: in Anaconda Command Prompt, cd to C:\Anaconda\Scripts, and use pip from there.
+
+# To resolve difficulty importing certain modules in bash, do this in python:
 import pip
-package_name = "pytrends"
-pip.main(['install', package_name])
+pip.main(['install', "pytrends"])
 
 
-# to import a module into a specific python environment, e.g. one called 'py36':
-conda install --name py36 numpy
-# for info see: https://conda.io/docs/user-guide/tasks/manage-pkgs.html
-# or do it in the Anaconda Navigator (for common/official modules)
-
-# module cv2 = opencv
-
-# import entire module
-import math
-# then have to type math.function to specify where the function is from, e.g.:
-math.sqrt() # to run the square root function in the math module
-print(math.variable) # to print variable contained within the math module
-
-# can import all functions from math so don't have to type math.function, but shared function names can get confusing
-from math import *
-
-# But it's better to import a specific function from a module only, e.g. 'sqrt' from 'math'
-from math import sqrt
-
-# To see all functions contained in a module:
-import math             # Imports the math module
-everything = dir(math)  # Sets everything to a list of things from math
-print(everything)        # Prints the names of all the functions.
 
 # Download only the packages you want with the conda command (in Git Bash, not Spyder)
 conda install PACKAGENAME
 conda remove PACKAGENAME # to remove/uninstall it
 # e.g. conda install pyflux
 
-# can use pip instead of conda, but pip installs packages in a different place
-# to conda, so can cause problems when trying to import them in python (py looks
-# in the wrong place. Doesn't cause probs for all packages though, just textacy & spacy so far!)
+# can use pip instead of conda, but pip installs packages in a different place to conda, so can cause problems when trying to import them in python (py looks in the wrong place. Doesn't cause probs for all packages though, just textacy & spacy so far!)
 pip install PACKAGENAME
 pip uninstall PACKAGENAME
+
+
+# Import module into specific python environment
+# open cmd via the Anaconda Navigator (for common/official modules), by clicking play next to the required environment
+# or type
+conda install --name py36 numpy
+# for info see: https://conda.io/docs/user-guide/tasks/manage-pkgs.html
+
+# NOTE for reference
+# module cv2 = opencv
+
+
+### Using conda to manage packages in Python (copied from txt file with same name)
+
+# Conda is the package manager for Python in Anaconda
+# pip is the package manager for Python if don't have Anaconda installed
+# Use conda (and pip) commands on the cmd line
+
+# To install a new package:
+conda install PACKAGENAME		# enter this on the command line, not in Spyder/Anaconda.
+e.g. conda install pyflux
+
+# If it says 'invalid syntax' or the command is not recognised then conda needs updating.
+
+# Conda must be updated via the cmd line using:
+>>> conda update conda
+
+# If this command is not recognised:
+# Go to the ControlPanel\System\Advanced system settings\Environment Variables\Path
+#   Then hit edit and add <C:\Users\User\Anaconda3\Scripts> to the end (this changes the filepath associated with 'Path' in the cmd line).
+# Note the new path on S2DS laptop was: C:\Users\Client\Anaconda2\Scripts
+#   Then restart the cmd line.
+# I found these instructions on https://stackoverflow.com/questions/44515769/conda-is-not-recognized-as-internal-or-external-command.
+
+
+
+### Importing modules into Python
+
+# import entire module
+import math
+# possible conflicting function names between modules, so must type math.function to specify which module a function is from, e.g.
+math.sqrt() # square root function from math module
+
+# Better to import specific functions only
+
+# See all functions contained in a module:
+import math             # Imports the math module
+everything = dir(math)  # Sets everything to a list of things from math
+print(everything)        # Prints the names of all the functions.
+
+from math import sqrt # import a specific function
+from math import sqrt, log # import 2 functions
+
 
 # View module version
 import numpy as np
@@ -1745,7 +2048,12 @@ pip show packagename  # shows location, version and dependancies/dependents
 # =============================================================================
 # https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
 
-# NumPy’s array class is called ndarray.
+# NumPys array class is called ndarray.
+
+# Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
+# https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.random.normal.html
+numpy.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
+
 
 # Basic NumPy commands
 ndarray.ndim    # number of axes (dimensions) of the array, e.g. arrayname.ndim
@@ -1803,8 +2111,11 @@ numpy.reshape(a, newshape)  # reshape an array into a new shape without changing
 
 import pandas as pd
 
-# open a csv file as a pandas dataframe
-views_sun = pd.read_csv('file.csv',index_col=0) # tells pandas which column to index by
+# import a csv file as a pandas dataframe
+views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
+
+# import an xls/xlsx file
+veh_data = pd.read_excel('C:/Users/User/Documents/my_code_files/Exercises/Amey task/Data/VehicleData_2010.xlsx')
 
 # make empty pd dataframe
 df = pd.DataFrame([])
@@ -1816,10 +2127,35 @@ type(df)
 df.dtypes
 df['column'].dtype
 
+# copy dataframe and separate predictors and response
+X = veh_data.copy()
+y = X.pop('ConditionScore')
+
 # filter out / remove rows with a content_id containing " "
 views_df = views_df[views_df['content_id'].str.contains(' ') == False]
 
 
+## Remove NaNs
+
+# drop rows with NaN in ANY column
+views_notnans = views.dropna()
+views_notnans.shape
+
+# drop rows with NaN in a specific column only
+notnans = views['attribute_1'].notnull()
+views_notnans = views[notnans]
+views_notnans.shape
+
+# alternatively, view only rows with NaN in this column
+views_nans = views.loc[ ~ notnans].copy()
+views_nans.head()
+
+
+
+
+# change floats to binary
+threshold = 1.0
+views['attribute_1_bin'] = np.where(views['attribute_1'] > threshold, 1,0)
 
 # sort pandas df by date, hour and minute and reset the index column to save the order.
 views_sun = views_sun.sort_values(by=['date','hour','minute'])
@@ -1829,6 +2165,22 @@ views_sun = views_sun.reset_index(drop=True)
 ## aggregate / group by
 # info: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.aggregate.html
 # http://nbviewer.jupyter.org/github/jvns/pandas-cookbook/blob/v0.1/cookbook/Chapter%204%20-%20Find%20out%20on%20which%20weekday%20people%20bike%20the%20most%20with%20groupby%20and%20aggregate.ipynb
+
+
+
+# Examine mean condition per vehicle type
+
+# copy dataframe and separate predictors and response
+X = veh_data.copy()
+y = X.pop('ConditionScore')
+y.groupby(veh_data.Manufacturer).mean()
+
+# equivalent to
+veh_data['ConditionScore'].groupby(veh_data['VehicleType']).mean()
+# and/or
+veh_data.groupby('VehicleType').ConditionScore.mean()
+
+
 import numpy as np
 df = pd.DataFrame(np.random.randn(10, 3), columns=['A', 'B', 'C'],
                index=pd.date_range('1/1/2000', periods=10))
@@ -1850,9 +2202,14 @@ mean_daily_consumption = df.groupby(['day']).agg({'kwh': [min, max, sum, "mean",
 # Use ravel to create better names for the columns when using multiple aggregates
 mean_daily_consumption.columns = ["_".join(x) for x in mean_daily_consumption.columns.ravel()]
 
+# Get counts of unique values
 
-# group by one column and count the values of another column per this column value using value_counts
-df.groupby('name')['activity'].value_counts()
+# N unique vehicle IDs per year (ordered by Financial Year)
+df.groupby('FinancialYear').VehicleID.nunique()
+df['FinancialYear'].value_counts() # this gives same values but not ordered by year
+
+# N records per unique VehicleID per year
+df.groupby('FinancialYear')['VehicleID'].value_counts()
 
 # unstack: switches rows to columns (.fillna(0) fills missing values with 0)
 df.groupby('name')['activity'].value_counts().unstack().fillna(0)
@@ -1877,6 +2234,16 @@ df = df.drop('col_name', axis = 1)
 
 # select relevant columns
 df1 = df[['a','d']]
+
+# concatenate 2 dfs
+frames = [ds_content, sa_content]
+content_consumption = pd.concat(frames, keys=['ds', 'sa'], axis = 0) # keys are like a new index
+# count entries for each user group
+print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumption.loc['sa'])) # loc refers to named indexes, iloc refers to numbered indexes
+
+# join 2 dfs
+
+
 
 
 
@@ -2003,9 +2370,9 @@ myfile.write(text)
 myfile.close()
 
 
-# =============================================================================
+# ============================================================================
 ### """ SET WORKING DIRECTORY """
-# =============================================================================
+# ============================================================================
 
 # use <cd FILEPATH> (or select folder manually using top-right menu in Spyder)
 cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\
@@ -2013,7 +2380,14 @@ cd C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_
 # print current working directory
 pwd
 
+# probably better practice to organise files within Spyder projects
 
+
+### """ Spyder projects """
+
+# Projects > New Project (saves them in User/AnacondaProjects)
+# Manage files in Project explorer pane.
+# https://pythonhosted.org/spyder/projects.html
 # =============================================================================
 ###  """ Shortcuts for running / manipulating code """
 # =============================================================================
@@ -2034,6 +2408,36 @@ hello()
 
 ###  Moving code
 # Alt+<Up Arrow> moves the current line/selection up, same with down arrow
+
+
+# =============================================================================
+###  """ SQLite DATABASES """
+# =============================================================================
+# https://docs.python.org/2/library/sqlite3.html
+
+import sqlite3
+# connect to a database - if one called example.db doesnt already exist in
+# the working directory then this will create a new empty database.
+conn = sqlite3.connect('example.db')
+
+# create a cursor to execute on
+# need to call this to do anything to the database - add/get data, tables etc.
+c = conn.cursor()
+
+# Create table
+c.execute('''CREATE TABLE stocks
+             (date text, trans text, symbol text, qty real, price real)''')
+
+# Insert a row of data
+c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
+
+# Save (commit) the changes
+conn.commit()
+
+# We can also close the connection if we are done with it.
+# Just be sure any changes have been committed or they will be lost.
+conn.close()
+
 
 
 # =============================================================================
@@ -2064,6 +2468,12 @@ print sentence2   # = 'I have a dog cat'
 x = 5
 my_string = "My number is {}".format(x)
 print(my_string) # >>> My number is 5
+
+
+# convert to upper and lower case
+s.upper()
+s.lower()
+
 
 # Indexing strings
 'Joanne'[0]     # selects the 0th character in the string ('J').
@@ -2109,12 +2519,24 @@ end_quote = page.find('"', start_quote+1)  # finds the first quotation mark afte
 url = page[start_quote+1:end_quote]
 
 
-### Split strings
+### Split string into a list
 # This separates words in strings - not perfect as doesn't separate out punctuation such as ',' or '!'
 # so 'dog!' wouldn't show up if I searched for 'dog'.
 sentence = "I have a dog!"
-sentence.split() # returns ['I', 'have', 'a', 'dog!']
+sentence.split() # using the default delimiter, which is a space s.split(' ')
+# returns ['I', 'have', 'a', 'dog!']
 sentence.split()[0]  # view the first word in sentence
+
+### Join elements of a list into a string
+'delimiter'.join(a)
+# e.g. to join elements of list a
+a=['Hello', 'World']
+' '.join(a) # returns 'Hello World'
+
+
+### Strip whitespaces from strings
+a = ' Mug '
+a.strip() # returns 'Mug'
 
 
 # iterate through words in a string
@@ -2161,6 +2583,9 @@ views_GBR = views_sun_by_location[views_sun_by_location.location == "GBR"]
 # =============================================================================
 
 # Bag of Words (sklearn CountVectorizer) and Tf-idf (sklearn TfdfVectorizer) representations
+""" TF: Just counting the number of words in each document will give more
+    weight to longer documents. To avoid this, use Term Frequencies.
+    i.e. #count(word) / #Total words, in each document. """
 # Filtering out stopwords
 # Stemming
 

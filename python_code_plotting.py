@@ -9,7 +9,7 @@ From http://www.ast.uct.ac.za/~sarblyth/pythonGuide/PythonPlottingBeginnersGuide
 
 # Standard plotting packages
 import numpy as np
-import pylab as pl    
+import pylab as pl
 
 # more advanced plotting
 import matplotlib.pyplot as plt
@@ -78,16 +78,16 @@ pl.plot(x1, y1, 'r')
 pl.plot(x2, y2, 'go')
 
 
-# NOTE: plots are automatically shown after each cell of code is run, so to 
+# NOTE: plots are automatically shown after each cell of code is run, so to
 # add formatting, select and run all lines at once and include:
-pl.show() 
+pl.show()
 # at the end to display the completed plot, e.g...
 pl.plot(x1, y1, 'r')
 pl.plot(x2, y2, 'go')
 pl.title('My plot')
 pl.xlim(0.0, 7.0)
 pl.ylim(0.0, 30.)
-pl.show() 
+pl.show()
 
 
 ### Histogram
@@ -96,7 +96,8 @@ pl.show()
 data = np.random.normal(5.0, 3.0, 1000)
 
 pl.hist(data)       # make a histogram of the data array
-pl.xlabel(’data’)   # make plot labels
+pl.ylabel('ydata')   # make plot labels
+pl.xlabel('xdata')   # make plot labels
 pl.show()           # show the plot
 
 
@@ -105,3 +106,27 @@ pl.show()           # show the plot
 fig1 = pl.figure(1)
 pl.subplot(211)     # 211 creates a fig with 2 rows & 1 col, and draws in the top row.
 pl.subplot(212)     # 212 creates a fig with 2 rows & 1 col, and draws in the bottom row.
+
+
+# save as png
+fig.savefig('fig1.png', bbox_inches='tight')
+
+
+# add common axis labels to grid of subplots
+fig, ax = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True, figsize=(10, 8))
+fig.text(0.5, 0.06, 'Year', ha='center')
+fig.text(0.06, 0.5, '% Total annual investment (£)', va='center', rotation='vertical')
+
+
+
+
+# force axis labels to be integers not floats
+
+from  matplotlib.ticker import FuncFormatter
+
+# then paste this line after the plot code, e.g.
+fig, ax = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True, figsize=(10, 8))
+plt.subplot(321)
+plt.plot(spend_comms.year, spend_comms.spend_inflation_adj, label = "Communication")
+plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
+
