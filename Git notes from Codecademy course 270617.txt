@@ -190,7 +190,9 @@ git push origin localbranchname	# push changes made in local branch to the origi
 
 
 
-
+SELECT DISTINCT customdimensions_value
+  FROM google_analytics.ga_sessions_customdimensions
+WHERE customdimenstions_index = 2;
 
 
 
