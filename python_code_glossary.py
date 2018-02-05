@@ -2114,6 +2114,10 @@ import pandas as pd
 # import a csv file as a pandas dataframe
 views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
 
+# Read dataframe with specific column data types (dont have to specify type of every column)
+ visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv', dtype = {'converted': int, fullvisitorid': str, 'member_id': str}) 
+    
+
 # import an xls/xlsx file
 veh_data = pd.read_excel('C:/Users/User/Documents/my_code_files/Exercises/Amey task/Data/VehicleData_2010.xlsx')
 
