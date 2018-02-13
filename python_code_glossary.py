@@ -2183,6 +2183,10 @@ y.groupby(veh_data.Manufacturer).mean()
 veh_data['ConditionScore'].groupby(veh_data['VehicleType']).mean()
 # and/or
 veh_data.groupby('VehicleType').ConditionScore.mean()
+										
+# count users per visit date
+# https://stackoverflow.com/questions/19384532/how-to-count-number-of-rows-in-a-group-in-pandas-group-by-object
+visitor_profiles.groupby(['visit_date']).size().reset_index(name='num_users')									
 
 
 import numpy as np
