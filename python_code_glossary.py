@@ -1948,6 +1948,12 @@ print "prediction time:", round(time()-t0, 3), "s"   # use current clock time to
 # Display progress logs on stdout
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
+# progress bar
+# https://pypi.python.org/pypi/tqdm
+with tqdm(total=100) as pbar:
+    for i in range(10):
+        pbar.update(10)
+	
 
 # =============================================================================
 ###  """ MODULES / PACKAGES / LIBRARIES """
