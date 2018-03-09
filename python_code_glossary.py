@@ -2382,6 +2382,14 @@ myfile.write(headline)
 myfile.write("\n") # insert new line
 myfile.write(text)
 myfile.close()
+										
+# save models / python objects to disk
+# https://machinelearningmastery.com/save-load-machine-learning-models-python-scikit-learn/
+filename = 'my_model.sav'
+pickle.dump(model_object, open(filename, 'wb'))
+# load it back
+loaded_model = pickle.load(open(filename, 'rb'))
+
 
 
 # ============================================================================
