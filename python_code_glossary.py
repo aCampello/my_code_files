@@ -1140,6 +1140,10 @@ print(mylist[2:11:2])  # prints EVEN numbers between index positions 2 and 10.
 new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list (doesn't change the original two lists)
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 
+# Compare lists
+## get values in list_2 that are not in list_1
+main_list = np.setdiff1d(list_1, list_2)
+
 
 ### List mutation: change/add/delete
 """ lists are mutable (can be changed/appended) unlike strings, e.g. can't
