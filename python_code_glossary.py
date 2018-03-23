@@ -2371,6 +2371,7 @@ data = pd.read_csv('AirPassengers.csv')
 
 # save pandas dataframe as a csv file
 mydataframe.to_csv('my_data.csv')
+mydataframe.to_csv('my_data.csv', compression = 'gzip') # save as compressed file										
 
 # save certain columns to a csv
 # one column
