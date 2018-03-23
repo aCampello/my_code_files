@@ -1114,6 +1114,7 @@ print counter  # print the total.
 
 
 
+
 # length of list
 len(mylist)   # returns number of elements in the list (only counts outer elements, so in a list of two lists len = 2)
 
@@ -1143,6 +1144,12 @@ new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 # Compare lists
 ## get values in list_2 that are not in list_1
 main_list = np.setdiff1d(list_1, list_2)
+
+# Compare series in pandas dataframes
+# e.g. compare selected features (=true/false) between outputs from two models (default and tuned)
+a[a.selected_tuned == True | (a['selected_default'] == True)] # both true
+a[a.selected_default == a.selected_tuned] # true or false for both
+a[a.selected_default != a.selected_tuned] # not the same
 
 
 ### List mutation: change/add/delete
