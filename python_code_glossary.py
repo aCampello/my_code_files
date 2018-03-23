@@ -2301,8 +2301,20 @@ pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "sav
 fave_col_p = pickle.load(open("save.p", "rb"))
         # 'rb' = opens the file for reading in binary mode.
 
+# compress pickle files with gzip - saves lots of space! 
+import pickle
+import gzip
+										
+#save
+#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
+#pickle.dump(random_search, gzip.open(filename, 'wb'))
 
+#open
+#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
+#random_search = pickle.load(gzip.open(filename, 'rb'))
 
+										
+										
 # =============================================================================
 ### """ PLOTTING """
 # =============================================================================
