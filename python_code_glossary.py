@@ -895,8 +895,10 @@ for line in views_df['headline']:
 
 
 # =============================================================================
-###  """ IF / ELSE STATEMENTS """
+###  """ CONDITIONAL STATEMENTS """
 # =============================================================================
+
+### IF / ELSE ifelse
 
 # syntax
 if <test expression>:   # if the test expression is true, the block (procedure) below will execute.
@@ -943,6 +945,27 @@ True or False = True
 False or True = True
 False or False = False
 
+
+### Decision map dictionaries (the 'dispatch' method)
+# http://scottlobdell.me/2014/05/time-efficiency-statements-vs-python-dictionaries/
+# https://softwareengineering.stackexchange.com/questions/182093/why-store-a-function-inside-a-python-dictionary
+# much cleaner and faster than having many if statements inside a function.
+
+decision_map = {
+    '1': do_something,
+    '2': do_something_else,
+    '3': do_another_thing     
+}
+def decision_func(input_var):
+    func = decision_map[input_var]
+    func()
+
+# same as...
+decision_map[input_var]() # Gets the correct function from response_dict and calls it as a function using ()
+
+# safer than eval() 
+# Using a dispatch method is safer than other techniques, such as eval(), as it limits the commands allowable to 
+# what you defined beforehand, e.g. hackers can't sneak a <DROP TABLE Students;>  injection past a dispatch table.
 
 
 
