@@ -2156,7 +2156,10 @@ views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to 
 
 # Read dataframe with specific column data types (dont have to specify type of every column)
  visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv', dtype = {'converted': int, fullvisitorid': str, 'member_id': str}) 
-    
+
+# Import all files in a directory/folder and concat into single df (assuming they all have the same columns)
+import os, glob, pandas as pd										
+visitor_profiles = pd.concat(map(pd.read_csv, glob.glob(os.path.join('', "user_profile_csvs/training_data/*.csv"))))
 
 # import an xls/xlsx file
 veh_data = pd.read_excel('C:/Users/User/Documents/my_code_files/Exercises/Amey task/Data/VehicleData_2010.xlsx')
