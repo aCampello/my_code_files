@@ -1725,6 +1725,26 @@ See: Udacity Intro to Mach Learning. Lesson 12: Feature Selection
 and: find_signature.py in ..Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\feature_selection
 """
 
+### Examine feature importance from models
+feature_names = X.columns  
+importances = rf_default.feature_importances_
+
+importances_df = pd.DataFrame([i for i in zip(feature_names, importances)],
+                           columns=["features","importance"])
+# view list
+with pd.option_context('display.max_rows', None):
+    display(importances_df.sort_values(by = "importance", ascending = False))
+
+# plot and save (must put plt.show() after plt.savefig() to save)
+sns.set(font_scale=1.3)
+plt.subplots(figsize=(12,7))
+top5_features = sns.barplot(x = "importance", y = "features", 
+                            data = importances_df.sort_values('importance', ascending=False)[0:25])
+plt.tight_layout()
+#plt.savefig("rf_default_feature_importances_20180326.png", dpi=500)
+plt.show()
+
+
 ### sklearn (univariate) feature selection tools:
 
 ## 1. SelectKBest
@@ -1745,6 +1765,31 @@ selector.fit(features_train, labels_train)
 #   transform and save the results as new arrays
 features_train_selected = selector.transform(features_train).toarray()
 features_test_selected = selector.transform(features_test).toarray()
+
+
+
+## 3. SelectFromModel to select features with importance > median (or default is > mean)
+from sklearn.feature_selection import SelectFromModel
+
+# can select best features from a prefit model using prefit=True
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+rf_sfm = SelectFromModel(rf, prefit=True, threshold="median")
+X_train_sfm = rf_sfm.transform(X_train) # reduce X to the selected features
+
+# get df with feature names and whether they are selected/not
+feature_choices = pd.DataFrame( {'feature': list(X_train), 'selected_default': rf_sfm.get_support()})
+
+# view features that were not 'selected'
+feature_choices[feature_choices['selected_default'] == False].reset_index() 
+
+# save the selected features in df
+selected_features = feature_choices[feature_choices.selected_default == True]
+
+# subset original df to the selected features only
+mydata_sf = mydata[list(selected_features['feature'])]
+
+
 
 """"""
 ### max_df in TfIdf vectorizer also does feature selection
