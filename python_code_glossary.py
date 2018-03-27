@@ -758,6 +758,12 @@ def total_enrollment(uni_list):
 mylist.index(<value>)   # returns the index of the FIRST position where the value is found.
                         # returns an error if the value doesn't exist in the list.
 
+# use enumerate() to loop through lists automatically
+# optional argument 1 means start numbering the output list from 1 (default 0)
+my_list = ['apple', 'banana', 'grapes', 'pear']
+for i, value in enumerate(my_list, 1):
+    print(i, value)
+
 
 # =============================================================================
 ###  """ FUNCTIONS """
@@ -1165,8 +1171,10 @@ new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list 
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 
 # Compare lists
-## get values in list_2 that are not in list_1
+## get values in list_2 that are not in list_1 
 main_list = np.setdiff1d(list_1, list_2)
+## get values in list_2 that are also in list_1
+main_list = [item for i, item in enumerate(list_2) if item in list_1]
 
 # Compare series in pandas dataframes
 # e.g. compare selected features (=true/false) between outputs from two models (default and tuned)
