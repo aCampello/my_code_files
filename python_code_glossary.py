@@ -28,6 +28,9 @@ x ** 2  # x squared (x times x), e.g. 2 ** 2 = 4
 x ** 3  # x cubed (x times x times x), e.g. 2 ** 3 = 8
 2 ** 4  # 2 X 2 X 2 X 2 = 16
 
+# mean
+np.mean([0.70233333,  0.72133333,  0.72266667])
+
 
 #==========================
 ### """ BIG DATA """
