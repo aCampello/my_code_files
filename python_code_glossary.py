@@ -1895,6 +1895,23 @@ kf = KFold(len(authors), 2)  # add parameter shuffle=True if datapoints are orde
       and assign them to the training or testing sets. """
 
 
+## cross_validation (like cross_validation_score but allows >1 scoring method)
+
+from sklearn.model_selection import cross_validate
+from sklearn.model_selection import ShuffleSplit # to shuffle between folds (for ordered data) - note that random splits dont guarantee that all folds will be different, but this is still likely for large datasets 
+
+rf = RandomForestClassifier(n_estimators=50)
+scorers = ['accuracy', 'roc_auc']
+cv = ShuffleSplit(n_splits=3, test_size=0.25)
+scores = cross_validate(rf, X, y, cv=cv, scoring=scorers, return_train_score=True)
+scores # dict of train and test scores and times for each scorer
+
+# get mean and SD scores
+print('Accuracy \ntrain: ', round(scores['train_accuracy'].mean(),5), '+/-', round(scores['train_accuracy'].std(),5))
+print('test: ', round(scores['test_accuracy'].mean(),5), '+/-', round(scores['test_accuracy'].std(),5))
+
+
+
 ### GridSearchCV
 """ GridSearchCV is a way of systematically working through multiple
     combinations of parameter tunes (values), cross-validating as it goes to determine
