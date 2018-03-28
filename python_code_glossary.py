@@ -797,7 +797,9 @@ range(1, 6)  # 1,2,3,4,5 (excludes the STEP number)
 range(6)  # 0,1,2,3,4,5 (excludes the START and the STEP numbers - they default to 0 and 1) - can use this to create a list from 0-10 e.g.
 my_list = list(range(11))
 range(1, 6, 2)  # 1,3,5 (increases in steps of 2)
-
+# view the whole range
+for i in range(1,6,2):
+	print(i)
 
 ### More complex functions using def...():
 
