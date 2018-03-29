@@ -332,6 +332,24 @@ def insert_end_date_time_columns(input_data_frame):
     return input_data_frame
 
 
+# GET DATE OF THE LAST SATURDAY - from Edmond
+import datetime
+from dateutil import relativedelta
+today = datetime.datetime.now()
+start = today - datetime.timedelta((today.weekday() + 1) % 7)
+
+sat = start + relativedelta.relativedelta(weekday=relativedelta.SA(-1))
+last_week_sat = sat  - relativedelta.relativedelta(weeks=1)
+
+two_years_ago = sat - relativedelta.relativedelta(years=2)
+date_input_string =  two_years_ago.strftime("%Y%m%d")
+last_week_sat = last_week_sat.strftime("%Y%m%d")
+last_week_sat
+
+# get date from timestamp
+date_only = mydate.strftime("%Y%m%d")
+
+
 
 
 # =============================================================================
