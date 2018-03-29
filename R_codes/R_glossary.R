@@ -431,7 +431,7 @@ df$sex[df$sex==''] <- NA
 
 
 # NOTE: sometimes empty cells are treated as factor levels and no matter what I can't get rid of the empty factors (converting to NA or zero doesnt work)
-# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty 
+# avoid this problem by importing data with \sAsFactors = FALSE & then remove or rename the empty 
 # cells as NA before converting the variable to a factor.
 
 #== Adjust or rename datapoints, e.g. if some rows are 'Male' and some are 'male' convert them all to 'male'
@@ -3846,12 +3846,28 @@ mydataAllVisSORTED <- mydataAllVis[order(mydataAllVis$PropFoxesTagged),]
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# SPLIT CHARACTER VARIABLE NAMES using strsplit() ####
+# STRINGS                                          ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# SPLIT CHARACTER VARIABLE NAMES using strsplit() 
 # Need to split into territories using strsplit (this function only works with character vectors):
 a<-strsplit(rownames(spring_y1_SP), "_")
 b<-subset(a, "4")
+               
+               
+# Detect The Presence Or Absence Of A Pattern In A String
+str_detect(string, pattern)
+# e.g. to  search for words containing 'p'
+fruit <- c("apple", "banana", "pear", "pinapple")
+str_detect(fruit, "p") # returns: TRUE FALSE  TRUE  TRUE
+# return boolean for each letter of the alphabet, for if they appear in a string
+str_detect("abc", letters) # returns 3 TRUEs for a, b and c and the rest FALSEs
 
+# get index of each letter's location
+a = which(str_detect(fruit, "u"))
+a
+which(str_detect(fruit, "p"))
+               
 
 
 #~~~~~~~~~~~~~~~~
