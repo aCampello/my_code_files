@@ -2443,7 +2443,8 @@ import gzip
 										
 # Intended to be a replacement for Pickle, for objects containing large data. Works with sklearn models.
 # Add compress parameter between 0-9 to adjust compression; default = 0, more compression increases save/load time.
-
+# https://pythonhosted.org/joblib/generated/joblib.dump.html
+										
 from sklearn.externals import joblib
 										
 #save model without compression
