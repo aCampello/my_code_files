@@ -2392,23 +2392,27 @@ print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumpt
 
 
 # =============================================================================
-### """ PICKLE FILES """
+### """ SAVING PYTHON OBJECTS FOR LATER USE """
 # =============================================================================
 
-""" The Pickle module implements an algorithm for serializing and
+""" Saving models = object serialization (representing an object with a stream of bytes). 
+    Restoring the model is deserialization. """
+
+										
+## PICKLE	
+										
+""" Pickle module implements an algorithm for serializing and
     de-serializing a Python object structure (list, dict, etc.) so it can be
     saved on disk.
     Serializing means it converts the object into a character stream containing
     all the info necessary to reconstruct the object in the same layout/format
     in another python script.
 
-    Python pickle files are byte streams, so should be opened in binary mode:
+    Pickle files are byte streams, so should be opened in binary mode:
        use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
 """
 # official user guide https://docs.python.org/2/library/pickle.html
 # simpler quick ref guide https://wiki.python.org/moin/UsingPickle
-
-## EXAMPLE:
 
 import pickle
 
@@ -2430,9 +2434,31 @@ import gzip
 
 #open
 #filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
-#random_search = pickle.load(gzip.open(filename, 'rb'))
+#random_search = pickle.load(gzip.open(filename, 'rb'))										
 
+## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
+## Instead use sklearn's joblib library:
+
+## JOBLIB
 										
+# Intended to be a replacement for Pickle, for objects containing large data. Works with sklearn models.
+# Add compress parameter between 0-9 to adjust compression; default = 0, more compression increases save/load time.
+
+from sklearn.externals import joblib
+										
+#save model without compression
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180326-joblib'
+joblib.dump(rf_default, filename) 
+
+# save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
+joblib.dump(rf_default, filename, compress = 9)
+
+# open/load (same code for compressed and uncompressed files)										
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
+rf_default_test = joblib.load(open(filename, 'rb'))
+										
+					
 										
 # =============================================================================
 ### """ PLOTTING """
