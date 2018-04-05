@@ -2243,22 +2243,32 @@ numpy.reshape(a, newshape)  # reshape an array into a new shape without changing
 # pandas for data science tricks: https://medium.com/towards-data-science/pandas-tips-and-tricks-33bcc8a40bb9
 
 import pandas as pd
+										
+# make empty pd dataframe
+df = pd.DataFrame([])
 
 # import a csv file as a pandas dataframe
 views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
 
 # Read dataframe with specific column data types (dont have to specify type of every column)
- visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv', dtype = {'converted': int, fullvisitorid': str, 'member_id': str}) 
+ visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv', 
+				dtype = {'converted': int, 
+					 'fullvisitorid': str, 
+					 'member_id': str}) 
 
 # Import all files in a directory/folder and concat into single df (assuming they all have the same columns)
 import os, glob, pandas as pd										
 visitor_profiles = pd.concat(map(pd.read_csv, glob.glob(os.path.join('', "user_profile_csvs/training_data/*.csv"))))
 
-# import an xls/xlsx file
-veh_data = pd.read_excel('C:/Users/User/Documents/my_code_files/Exercises/Amey task/Data/VehicleData_2010.xlsx')
+# import an xls/xlsx file as a pd df - can specify sheet if you know which sheet you want
+mydata = pd.read_excel('test.xlsx')
+mydata = pd.read_excel('test.xlsx', sheet_name = 0) # default sheet_name=0 and imports the first sheet
 
-# make empty pd dataframe
-df = pd.DataFrame([])
+# to print the sheet names, first import as xl object and then convert to df
+xl = pd.ExcelFile('test.xlsx')
+print(xl.sheet_names)
+df1 = xl.parse('Sheet1')
+										
 
 # view data type of object (not specific to pandas)
 type(df)
