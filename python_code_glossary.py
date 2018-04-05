@@ -2268,7 +2268,57 @@ mydata = pd.read_excel('test.xlsx', sheet_name = 0) # default sheet_name=0 and i
 xl = pd.ExcelFile('test.xlsx')
 print(xl.sheet_names)
 df1 = xl.parse('Sheet1')
-										
+
+#----
+
+### To write pandas dfs to excel files
+from openpyxl import load_workbook
+
+## Create a brand new excel file
+
+# Specify a writer
+writer = pd.ExcelWriter('example.xlsx', engine = 'openpyxl')
+
+# Write your DataFrame to a file (in a tab labelled 'mydata')    
+mydata.to_excel(writer, 'mydata')
+
+# Save the result 
+writer.save()
+
+# load it
+mydata = pd.read_excel('example.xlsx', sheet_name='mydata')
+
+#----
+
+## Add a new sheet to an existing excel file
+
+# load the existing file
+book = load_workbook('example.xlsx')
+
+# make a new writer 
+#(optionally with the same name as existing file, prob safer to add suffix to prevent accidental file replacement!)
+writer = pd.ExcelWriter('example.xlsx', engine = 'openpyxl')
+
+# IMPORTANT - add the existing data to the writer so it's not overwritten!
+writer.book = book
+
+# get the new df to add to the excel file
+import numpy as np
+newdata = np.random.randn(100, 2)
+newdata_df = pd.DataFrame(newdata)
+
+# write the new data to a new sheet
+newdata_df.to_excel(writer, sheet_name = 'mynewdata')
+
+# save and close
+writer.save()
+writer.close()
+
+# load each sheet
+mydata_original_sheet = pd.read_excel('example.xlsx', sheet_name='mydata')
+mydata_new_sheet = pd.read_excel('example.xlsx', sheet_name='mynewdata')
+
+#----
 
 # view data type of object (not specific to pandas)
 type(df)
