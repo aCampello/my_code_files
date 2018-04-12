@@ -171,6 +171,7 @@ Ctrl + # increases font size in the editor
 
 
 
+
 ### Jupyter / iPython Notebook
 # ================================
 
@@ -216,6 +217,11 @@ Ctrl + # increases font size in the editor
 
     Print preview for printing with formatting.
 """
+
+# ipython magic for notebooks
+%precision 2 # custom floating point precision - print to 2 d.p.
+%matplotlib.inline # to plot inline
+
 
 
 # =============================================================================
@@ -290,6 +296,25 @@ df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace = True)
 # =============================================================================
 ### """ DATES & TIMES """
 # =============================================================================
+
+import datetime as dt
+import time as tm
+
+#time returns the current time in seconds since the Epoch. (January 1st, 1970)
+tm.time()
+#date.today returns the current local date.
+today = dt.date.today()
+
+#Convert the time timestamp to datetime.
+dtnow = dt.datetime.fromtimestamp(tm.time())
+# dtnow is: dtnow.year, dtnow.month, dtnow.day, dtnow.hour, dtnow.minute, dtnow.second # get year, month, day, etc.from a datetime
+
+#timedelta is a duration expressing the difference between two dates: 
+# to create sliding window, moving window, time window
+delta = dt.timedelta(days = 100) # create a timedelta of 100 days
+today - delta # subtract delta from today: the date 100 days ago
+today > today-delta # compare dates (returns True / False)
+
 import pandas as pd
 
 # Convert a string date to a date in a pandas dataframe
@@ -417,6 +442,27 @@ for val in menu.values()
 for key, val in menu.items():
     print(key)
     print(val)
+
+### lists of dicts
+
+# load csv file as a list of dicts: one dict per row (vehicle), with colnames as keys
+import csv
+with open('mpg.csv') as csvfile:
+    list_of_dicts = list(csv.DictReader(csvfile)) # list of dicts: colnames as keys
+
+list_of_dicts[:2] # the first 2 dicts in the list
+
+# print colnames and values dict (row) #25
+for dict in list_of_dicts[25]:
+    print(dict,':', list_of_dicts[25][dict])
+
+# access values in one column across all dicts in a list of dicts
+[print(float(dict['keyname'])) for dict in list_of_dicts]
+
+# unique values in one column in across all dicts: use set() - creates an unordered collection of uniwur elements.
+unique_levels = set(dict['keyname'] for dict in list_of_dicts)
+
+
 
 menu.clear() # delete everything from the dictionary
 
@@ -1192,7 +1238,11 @@ square_list[0][1]   # refers to the second element of the first list in square_l
 char = [row[0] for row in grid]    # here, 'grid' is a list of n lists of length n
 
 # Sorting lists
-square_list.sort()  # sort list ascending
+# ascending
+square_list.sort()  
+square_list.sort(key=lambda x: x[0]) 
+# descending
+square_list.sort(key=lambda x: x[1]) 
 
 # list slicing
 [start:end:stride]  # starting index = inclusive, default 0; ending index = exclusive, default end of list; stride = space between items, default 1, e.g. (::2) would select every other item in whole list).
