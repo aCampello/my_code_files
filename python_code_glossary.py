@@ -407,6 +407,17 @@ menu.values()    # get all the values
 menu.items()     # get all the key/value pairs
 menu['Chicken Alfredo'] # view the value  for Chicken Alfredo.
 
+# print all keys (dishes)
+for key in menu:
+    print(menu[key])
+# print all prices
+for val in menu.values()
+    print(val)
+# iterate over all items in dict
+for key, val in menu.items():
+    print(key)
+    print(val)
+
 menu.clear() # delete everything from the dictionary
 
 # Nice print out of menu contents (key-value pairs) - in ascending order
