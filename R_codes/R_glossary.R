@@ -1058,6 +1058,31 @@ perm <- 1000 # 'perm' is just the number 1000
 perm <- numeric(1000) # 'perm' is an empty vector containing 1000 spaces
 
 
+#== loop through list of object names and load the data associated with the name
+
+# list of dataset names
+datasets <- c("df1", "df2", "df3")
+
+# loop through the names of these datasets
+for (dataset in datasets){
+  
+  # load the named object
+  mydata <- get(dataset) # load the R object associated with the given name (otherwise it's just the string name)
+
+  # do stuff
+  #####
+}
+
+
+#== assign name to object or change name of object
+
+subset <- filter(predurpost_order_summary, aov_bucket == bucket)
+name <- paste0("orders_", bucket, "_bucket")
+# replace - with . as R doesnt like hyphens
+name <- gsub("-", '.', name, fixed = T)
+# name the subset
+assign(name, subset)
+
 
 #===========================#
 # ggplot2 visualisations ####
