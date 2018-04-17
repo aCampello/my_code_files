@@ -4,6 +4,49 @@
                     """ Python - useful bits of code """
                     ## -------------------------------- ##
 
+# CONTENTS
+# basic mathematical functions
+# big data
+# bigquery
+# classes
+# code formatting
+## code formatting in jupyter notebook
+# conditional statements: if/else, booleans, decision maps
+# data cleaning
+# dates and times
+# dictionaries
+# environments
+# errors and bugs
+# feature scaling
+# file input/output
+# for loops
+# functions
+# HTML & BeautifulSoup
+# Inspecting objects defined in the console
+# linear regression
+# lists
+# machine learning
+# numpy
+# outliers
+# package management
+# pandas
+# plotting
+# python 2 vs python 3
+# raw input
+# saving files as csv etc
+# saving python objects
+# set working directory
+# shortcuts for running code
+# SQLite DATABASES
+# strings
+# subsetting dfs
+# text processing
+# timing code
+# tuples
+# variables
+# while loops
+
+
 # Make copy of new df
 new_dataframe = dataframe.copy()
 
@@ -221,6 +264,80 @@ Ctrl + # increases font size in the editor
 # ipython magic for notebooks
 %precision 2 # custom floating point precision - print to 2 d.p.
 %matplotlib.inline # to plot inline
+
+
+# =============================================================================
+###  """ CONDITIONAL STATEMENTS """
+# =============================================================================
+
+### IF / ELSE ifelse
+
+# syntax
+if <test expression>:   # if the test expression is true, the block (procedure) below will execute.
+                        # if it's false, the block won't execute.
+    <block>             # the procedure to run if test expression is true (indented).
+
+# example test expressions using if:
+if x > y:           # if x is greater than y
+if not x > y:       # if x is not greater than y (equivalent to if x <= y)
+if not list_1:      # if list_1 is empty
+
+# if-else statement: will do something if the statement is true, or something else if it is false.
+# e.g. here, if x is divisible by 5 it will return True, otherwise return False
+# (without the else statement it'd return None instead of False):
+if x % 5 == 0:
+    return True
+else:
+    return False
+
+# elif statements are to create further if statements, e.g.
+if AgeClass == 1:
+    return "Adult"
+elif AgeClass == 2:
+    return "Subadult"
+elif AgeClass == 3:
+    return "Cub"
+else:
+    return "Unknown status"
+
+
+### """ Boolean expressions """
+### The 'and' expression
+# Returns True only if both expressions are True:
+True and True = True
+False and False = False
+True and False = False
+
+### The 'or' expression
+# Evaluates only what it needs to, e.g. for the expression:
+<expression_1> or <expression_2>    # if exp_1 is True, exp_2 is ignored and True is returned
+                                    # if exp_1 is False, the value of exp_2 is returned. So:
+True or True = True
+True or False = True
+False or True = True
+False or False = False
+
+
+### Decision map dictionaries (the 'dispatch' method)
+# http://scottlobdell.me/2014/05/time-efficiency-statements-vs-python-dictionaries/
+# https://softwareengineering.stackexchange.com/questions/182093/why-store-a-function-inside-a-python-dictionary
+# much cleaner and faster than having many if statements inside a function.
+
+decision_map = {
+    '1': do_something,
+    '2': do_something_else,
+    '3': do_another_thing     
+}
+def decision_func(input_var):
+    func = decision_map[input_var]
+    func()
+
+# same as...
+decision_map[input_var]() # Gets the correct function from response_dict and calls it as a function using ()
+
+# safer than eval() 
+# Using a dispatch method is safer than other techniques, such as eval(), as it limits the commands allowable to 
+# what you defined beforehand, e.g. hackers can't sneak a <DROP TABLE Students;>  injection past a dispatch table.
 
 
 
@@ -804,6 +921,16 @@ with open("text.txt", "w") as my_file:  # saves text.txt as variable 'my_file'
 my_file.closed  # will return True if it's closed and False if not.
 
 
+## finding files in directories
+
+import os
+# get list of files in folder
+query_list = os.listdir('/home/ubuntu/Jo/package/propensity_to_buy_model/propensity_to_buy_model/separated_queries') 
+# select only the .txt files
+query_list = [x for x in query_list if x.endswith(".txt")]
+# return sorted by filename
+query_list = sorted(query_list)
+
 
 # =============================================================================
 ###  """ FOR LOOPS """
@@ -979,79 +1106,6 @@ for line in views_df['headline']:
     line = bs.get_text(soup)
     soup.original_encoding    # to see what the original encoding of 'line' was.
 
-
-# =============================================================================
-###  """ CONDITIONAL STATEMENTS """
-# =============================================================================
-
-### IF / ELSE ifelse
-
-# syntax
-if <test expression>:   # if the test expression is true, the block (procedure) below will execute.
-                        # if it's false, the block won't execute.
-    <block>             # the procedure to run if test expression is true (indented).
-
-# example test expressions using if:
-if x > y:           # if x is greater than y
-if not x > y:       # if x is not greater than y (equivalent to if x <= y)
-if not list_1:      # if list_1 is empty
-
-# if-else statement: will do something if the statement is true, or something else if it is false.
-# e.g. here, if x is divisible by 5 it will return True, otherwise return False
-# (without the else statement it'd return None instead of False):
-if x % 5 == 0:
-    return True
-else:
-    return False
-
-# elif statements are to create further if statements, e.g.
-if AgeClass == 1:
-    return "Adult"
-elif AgeClass == 2:
-    return "Subadult"
-elif AgeClass == 3:
-    return "Cub"
-else:
-    return "Unknown status"
-
-
-### """ Boolean expressions """
-### The 'and' expression
-# Returns True only if both expressions are True:
-True and True = True
-False and False = False
-True and False = False
-
-### The 'or' expression
-# Evaluates only what it needs to, e.g. for the expression:
-<expression_1> or <expression_2>    # if exp_1 is True, exp_2 is ignored and True is returned
-                                    # if exp_1 is False, the value of exp_2 is returned. So:
-True or True = True
-True or False = True
-False or True = True
-False or False = False
-
-
-### Decision map dictionaries (the 'dispatch' method)
-# http://scottlobdell.me/2014/05/time-efficiency-statements-vs-python-dictionaries/
-# https://softwareengineering.stackexchange.com/questions/182093/why-store-a-function-inside-a-python-dictionary
-# much cleaner and faster than having many if statements inside a function.
-
-decision_map = {
-    '1': do_something,
-    '2': do_something_else,
-    '3': do_another_thing     
-}
-def decision_func(input_var):
-    func = decision_map[input_var]
-    func()
-
-# same as...
-decision_map[input_var]() # Gets the correct function from response_dict and calls it as a function using ()
-
-# safer than eval() 
-# Using a dispatch method is safer than other techniques, such as eval(), as it limits the commands allowable to 
-# what you defined beforehand, e.g. hackers can't sneak a <DROP TABLE Students;>  injection past a dispatch table.
 
 
 
@@ -2123,28 +2177,69 @@ y_pred = clf.predict(X_test)  # X = features, y = labels
 print classification_report(y_test, y_pred, target_names=target_names)
 
 
-# =============================================================================
-### """ MEASURE TIME TAKEN TO RUN CODE """
-# =============================================================================
 
-# E.g. to make predictions with a machine learning classifier
-from time import time    # import the time module
-t0 = time()              # show current clock time
-pred = clf.predict(features_test)       # run your code of interest
-print "prediction time:", round(time()-t0, 3), "s"   # use current clock time to calculate time elapsed
-
-# Display progress logs on stdout
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-
-# progress bar
-# https://pypi.python.org/pypi/tqdm
-with tqdm(total=100) as pbar:
-    for i in range(10):
-        pbar.update(10)
-	
 
 # =============================================================================
-###  """ MODULES / PACKAGES / LIBRARIES """
+###  """ NumPy """
+# =============================================================================
+# https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
+
+# NumPys array class is called ndarray.
+
+# Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
+# https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.random.normal.html
+numpy.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
+
+
+# Basic NumPy commands
+ndarray.ndim    # number of axes (dimensions) of the array, e.g. arrayname.ndim
+ndarray.shape   # dimensions of the array
+                # For a matrix with n rows and m columns, shape will be (n,m)
+
+numpy.reshape(a, newshape)  # reshape an array into a new shape without changing its data.
+                            # a = array to be reshaped
+                            # newshape = tuple of integers: (n_rows, n_columns).
+                            # If newshape is just one integer then the result
+                            # will be a 1D array of that length.
+
+
+
+# =============================================================================
+### """ OUTLIERS """
+# =============================================================================
+ """ See Udacity intro to machine learning: Lesson 8 Outliers.
+
+ To identify outliers:
+    # Plot the raw data as a scatterplot and use the raw data sheets to identify unusual values.
+    # Fit regression and plot scatterplot with reg line to check the fit visually
+    # Also check the r-squared value
+        - If there are outliers decide whether to accept (fraud etc) or reject them.
+
+ OUTLIER REJECTION
+    # Method for outlier detection in machine learning regression:
+    1. Train the regression algorithm (with the training dataset).
+    2. Remove the 10% values with the highest residual errors (distance from reg line)
+    3. Re-format the data (if necessary) and re-train the algorithm on the
+        reduced training set. The R-Sq should be higher and the line should fit better..
+    4. This train-remove-retrain procedure can be repeated.
+
+    # Function I wrote to clean data by removing values with large errors:
+        function outlierCleaner in the file outlier_cleaner.py in
+        C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
+
+    # For a small number of known data points, use dictionary.pop('KEY', 0) to
+    remove a key-value pair from a dictionary:
+        dictionary.pop(key, 0)
+
+    # Udacity code to re-train the regression using the cleaned data in the
+        file outlier_removal_regression.py in:
+        C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
+"""
+
+
+
+# =============================================================================
+###  """ PACKAGE MANAGEMENT """
 # =============================================================================
 
 # A module is a .py file containing Python definitions and statements.
@@ -2234,65 +2329,6 @@ np.__version__
 
 # can also do this in git bash using pip
 pip show packagename  # shows location, version and dependancies/dependents
-
-
-
-# =============================================================================
-###  """ NumPy """
-# =============================================================================
-# https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
-
-# NumPys array class is called ndarray.
-
-# Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
-# https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.random.normal.html
-numpy.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
-
-
-# Basic NumPy commands
-ndarray.ndim    # number of axes (dimensions) of the array, e.g. arrayname.ndim
-ndarray.shape   # dimensions of the array
-                # For a matrix with n rows and m columns, shape will be (n,m)
-
-numpy.reshape(a, newshape)  # reshape an array into a new shape without changing its data.
-                            # a = array to be reshaped
-                            # newshape = tuple of integers: (n_rows, n_columns).
-                            # If newshape is just one integer then the result
-                            # will be a 1D array of that length.
-
-
-
-# =============================================================================
-### """ OUTLIERS """
-# =============================================================================
- """ See Udacity intro to machine learning: Lesson 8 Outliers.
-
- To identify outliers:
-    # Plot the raw data as a scatterplot and use the raw data sheets to identify unusual values.
-    # Fit regression and plot scatterplot with reg line to check the fit visually
-    # Also check the r-squared value
-        - If there are outliers decide whether to accept (fraud etc) or reject them.
-
- OUTLIER REJECTION
-    # Method for outlier detection in machine learning regression:
-    1. Train the regression algorithm (with the training dataset).
-    2. Remove the 10% values with the highest residual errors (distance from reg line)
-    3. Re-format the data (if necessary) and re-train the algorithm on the
-        reduced training set. The R-Sq should be higher and the line should fit better..
-    4. This train-remove-retrain procedure can be repeated.
-
-    # Function I wrote to clean data by removing values with large errors:
-        function outlierCleaner in the file outlier_cleaner.py in
-        C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
-
-    # For a small number of known data points, use dictionary.pop('KEY', 0) to
-    remove a key-value pair from a dictionary:
-        dictionary.pop(key, 0)
-
-    # Udacity code to re-train the regression using the cleaned data in the
-        file outlier_removal_regression.py in:
-        C:\Users\User\Documents\S2DS_Bootcamp_2017\Online_course_notes\Udacity_Intro_to_Machine_Learning\ud120-projects\outliers
-"""
 
 
 
@@ -2507,79 +2543,7 @@ content_consumption = pd.concat(frames, keys=['ds', 'sa'], axis = 0) # keys are 
 print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumption.loc['sa'])) # loc refers to named indexes, iloc refers to numbered indexes
 
 # join 2 dfs
-
-
-
-
-
-# =============================================================================
-### """ SAVING PYTHON OBJECTS FOR LATER USE """
-# =============================================================================
-
-""" Saving models = object serialization (representing an object with a stream of bytes). 
-    Restoring the model is deserialization. """
-
-										
-## PICKLE	
-										
-""" Pickle module implements an algorithm for serializing and
-    de-serializing a Python object structure (list, dict, etc.) so it can be
-    saved on disk.
-    Serializing means it converts the object into a character stream containing
-    all the info necessary to reconstruct the object in the same layout/format
-    in another python script.
-
-    Pickle files are byte streams, so should be opened in binary mode:
-       use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
-"""
-# official user guide https://docs.python.org/2/library/pickle.html
-# simpler quick ref guide https://wiki.python.org/moin/UsingPickle
-
-import pickle
-
-# Save a dictionary into a pickle file.
-fave_col = {"lion": "yellow", "kitty": "red"}   # create dictionary
-pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "save.p"
-                                                # "wb" = write in binary mode
-# Load the dictionary back from the pickle file.
-fave_col_p = pickle.load(open("save.p", "rb"))
-        # 'rb' = opens the file for reading in binary mode.
-
-# compress pickle files with gzip - saves lots of space! 
-import pickle
-import gzip
-										
-#save
-#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
-#pickle.dump(random_search, gzip.open(filename, 'wb'))
-
-#open
-#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
-#random_search = pickle.load(gzip.open(filename, 'rb'))										
-
-## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
-## Instead use sklearn's joblib library:
-
-## JOBLIB
-										
-# Intended to be a replacement for Pickle, for objects containing large data. Works with sklearn models.
-# Add compress parameter between 0-9 to adjust compression; default = 0, more compression increases save/load time.
-# https://pythonhosted.org/joblib/generated/joblib.dump.html
-										
-from sklearn.externals import joblib
-										
-#save model without compression
-#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180326-joblib'
-joblib.dump(rf_default, filename) 
-
-# save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
-#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
-joblib.dump(rf_default, filename, compress = 9)
-
-# open/load (same code for compressed and uncompressed files)										
-#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
-rf_default_test = joblib.load(open(filename, 'rb'))
-										
+merge() or join()
 					
 										
 # =============================================================================
@@ -2682,7 +2646,76 @@ pickle.dump(model_object, open(filename, 'wb'))
 loaded_model = pickle.load(open(filename, 'rb'))
 
 
+# =============================================================================
+### """ SAVING PYTHON OBJECTS FOR LATER USE """
+# =============================================================================
 
+""" Saving models = object serialization (representing an object with a stream of bytes). 
+    Restoring the model is deserialization. """
+
+										
+## PICKLE	
+										
+""" Pickle module implements an algorithm for serializing and
+    de-serializing a Python object structure (list, dict, etc.) so it can be
+    saved on disk.
+    Serializing means it converts the object into a character stream containing
+    all the info necessary to reconstruct the object in the same layout/format
+    in another python script.
+
+    Pickle files are byte streams, so should be opened in binary mode:
+       use 'wb' ('b' for binary) during file writing and 'rb' during file opening.
+"""
+# official user guide https://docs.python.org/2/library/pickle.html
+# simpler quick ref guide https://wiki.python.org/moin/UsingPickle
+
+import pickle
+
+# Save a dictionary into a pickle file.
+fave_col = {"lion": "yellow", "kitty": "red"}   # create dictionary
+pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "save.p"
+                                                # "wb" = write in binary mode
+# Load the dictionary back from the pickle file.
+fave_col_p = pickle.load(open("save.p", "rb"))
+        # 'rb' = opens the file for reading in binary mode.
+
+# compress pickle files with gzip - saves lots of space! 
+import pickle
+import gzip
+										
+#save
+#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
+#pickle.dump(random_search, gzip.open(filename, 'wb'))
+
+#open
+#filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
+#random_search = pickle.load(gzip.open(filename, 'rb'))										
+
+## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
+## Instead use sklearn's joblib library:
+
+## JOBLIB
+										
+# Intended to be a replacement for Pickle, for objects containing large data. Works with sklearn models.
+# Add compress parameter between 0-9 to adjust compression; default = 0, more compression increases save/load time.
+# https://pythonhosted.org/joblib/generated/joblib.dump.html
+										
+from sklearn.externals import joblib
+										
+#save model without compression
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180326-joblib'
+joblib.dump(rf_default, filename) 
+
+# save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
+joblib.dump(rf_default, filename, compress = 9)
+
+# open/load (same code for compressed and uncompressed files)										
+#filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
+rf_default_test = joblib.load(open(filename, 'rb'))
+										
+
+	
 # ============================================================================
 ### """ SET WORKING DIRECTORY """
 # ============================================================================
@@ -2916,6 +2949,28 @@ conda install -c conda-forge textacy
     development kit  (and Windows C++ visual compiler, though not sure if this
     was required as I installed it before the SD kit and it wouldn't work
     without the kit too). """
+
+
+# =============================================================================
+### """ TIMING CODE """
+# =============================================================================
+
+# E.g. to make predictions with a machine learning classifier
+from time import time    # import the time module
+t0 = time()              # show current clock time
+pred = clf.predict(features_test)       # run your code of interest
+print "prediction time:", round(time()-t0, 3), "s"   # use current clock time to calculate time elapsed
+
+# Display progress logs on stdout
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+
+# progress bar
+# https://pypi.python.org/pypi/tqdm
+with tqdm(total=100) as pbar:
+    for i in range(10):
+        pbar.update(10)
+	
+
 
 # =============================================================================
 ###  """ TUPLES """
