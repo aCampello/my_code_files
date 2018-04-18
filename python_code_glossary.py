@@ -932,6 +932,19 @@ query_list = [x for x in query_list if x.endswith(".txt")]
 query_list = sorted(query_list)
 
 
+# get only filenames containing yesterdays date
+import fnmatch
+import os
+yesterday = date.today() - timedelta(1)
+yesterday_date = yesterday.strftime("%Y%m%d")
+
+# path = 'propensity_scores/'
+for file in os.listdir('propensity_scores/'):
+    if fnmatch.fnmatch(file, ("*" + yesterday_date + "*")):
+        print(file
+
+
+	      
 # =============================================================================
 ###  """ FOR LOOPS """
 # =============================================================================
