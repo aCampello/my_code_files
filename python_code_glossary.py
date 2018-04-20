@@ -2494,12 +2494,18 @@ veh_data.groupby('VehicleType').ConditionScore.mean()
 # https://stackoverflow.com/questions/19384532/how-to-count-number-of-rows-in-a-group-in-pandas-group-by-object
 visitor_profiles.groupby(['visit_date']).size().reset_index(name='num_users')									
 
-
+###  Access particular rows or values
+# make pandas dataframe and mark cells
 import numpy as np
 df = pd.DataFrame(np.random.randn(10, 3), columns=['A', 'B', 'C'],
                index=pd.date_range('1/1/2000', periods=10))
+              
 df.iloc[3:7] = np.nan   # marks cells in rows 4-8 as NaN
+              
+# access value in first row of first column
+df.iat[0,0] == 0
 
+              
 # aggregate (calc sum and min) across columns
 df.agg(['sum', 'min'])
 
