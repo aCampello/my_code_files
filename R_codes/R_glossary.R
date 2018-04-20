@@ -1972,7 +1972,8 @@ EncounterRate <- merge(x=EncounterRate_days, y=patchdata[ , c("SeasonID", "Place
 # sometimes merge just won't work for no apparent reason - might be easier to merge all columns and then delete the unwante ones, or create a smaller data frame to use for merging.
 
 
-
+# get particular column names from a df
+second_product_cols <- names(churn_percentages[,2:ncol(churn_percentages)]) 
 
 
 ### Extract valid rows:
