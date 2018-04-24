@@ -2194,15 +2194,18 @@ print classification_report(y_test, y_pred, target_names=target_names)
 
 
 # =============================================================================
-###  """ NumPy """
+###  """ NUMPY """
 # =============================================================================
 # https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
 
-# NumPys array class is called ndarray.
+# numpy array class is called ndarray.
 
 # Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
 # https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.random.normal.html
 numpy.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
+
+np.random.randint(0, 100, (3,4))) # 2d array of random numbers between 0-100
+
 
 
 # Basic NumPy commands
@@ -2216,7 +2219,32 @@ numpy.reshape(a, newshape)  # reshape an array into a new shape without changing
                             # If newshape is just one integer then the result
                             # will be a 1D array of that length.
 
+# make sequence with set number of evenly-spaced markers
+np.linespace(0, 5, 9) # 9 numbers between 0 and 5
 
+# to copy an array
+a2 = a.copy()
+# if don't use .copy() then any changes to the new array are also made to the original!!
+	      
+# iterate over arrays
+for i, row in enumerate(test):
+    print("row", i, "is", row)
+
+# iterate over multiple arrays: use zip()
+for i, j in zip(test1, test2):
+    print(i+j)
+
+# access values in np arrays
+#print every yth element from the list / array
+# e.g. every 3rd element 
+test2 = np.random.randint(0, 100, (3,4))
+print(test2[::3]) # iterate over rows (same as test2[::3,:]), starting from index 0 of each column
+print(test2[:,::3]) # iterate over columns, starting from index 0 of each row
+test2[0:3, ::3] # print every 3rd number in rows 0-3 
+
+# flatten the 2d array into a 1d array and print every 7th number
+a = test2.reshape(12)
+a[::7]
 
 # =============================================================================
 ### """ OUTLIERS """
