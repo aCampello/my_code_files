@@ -349,6 +349,11 @@ decision_map[input_var]() # Gets the correct function from response_dict and cal
 # To extract certain columns from a dataframe
 wanted_columns = data[['Sex', 'Age', 'Fare', 'Survived']]
 
+# python assigns empty values as NaN or None type values depending on their context:
+# NaN (not a number, a numeric type, e.g. empty value in list of numbers)
+# None (object type, e.g. empty value in list of strings)
+# NaN != None 
+
 # Drops rows that contain NaN in ANY field (sklearn models do not work with null values!)
 cleaned_wanted_columns = wanted_columns.dropna()
 
