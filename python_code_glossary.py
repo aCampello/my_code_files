@@ -32,6 +32,7 @@
 # pandas
 # plotting
 # python 2 vs python 3
+# randomising or finding all combinations of things
 # raw input
 # saving files as csv etc
 # saving python objects
@@ -2600,7 +2601,21 @@ print(something)  # requires parentheses as it's a function
 2to3 -w FILENAME.py	# this makes any necessary changes directly to the source file (and makes a backup copy of the original file version called FILENAME.py.bak).
 2to3 -w -n FILENAME.py	# this makes any necessary changes directly to the source file (WITHOUT making a backup of the original).
 
+	      
+# =============================================================================
+###  """ RANDOMISING or FINDING ALL COMBINATIONS OF THINGS """
+# =============================================================================
 
+	      
+# find all combos of two letters - using list comprehension
+lowercase = 'abcdefghijklmnopqrstuvwxyz'
+allcombos = [letter1+letter2 for letter1 in lowercase for letter2 in lowercase]
+
+# find all possible combos of two letters followed by 2 digits, e.g. member IDs	      
+lowercase = 'abcdefghijklmnopqrstuvwxyz'
+digits = '0123456789'
+allcombos = [a+b+c+d for a in lowercase for b in lowercase for c in digits for d in digits]
+	      
 
 # =============================================================================
 ###  """ RAW INPUT """
