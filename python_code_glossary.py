@@ -2688,6 +2688,7 @@ data = pd.read_csv('AirPassengers.csv')
 
 # save pandas dataframe as a csv file
 mydataframe.to_csv('my_data.csv')
+mydataframe.to_csv('my_data.csv', index=False) # index=False stops pandas adding an index column 'Unnamed: 0' to the df on save!
 mydataframe.to_csv('my_data.csv', compression = 'gzip') # save as compressed file										
 
 # save certain columns to a csv
