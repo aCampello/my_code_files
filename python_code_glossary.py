@@ -497,7 +497,8 @@ last_week_sat
 # get date from timestamp
 date_only = mydate.strftime("%Y%m%d")
 
-
+# get date from datetime in a pandas series
+df['just_date'] = df['dates'].dt.date
 
 
 # =============================================================================
