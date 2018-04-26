@@ -500,6 +500,13 @@ date_only = mydate.strftime("%Y%m%d")
 # get date from datetime in a pandas series
 df['just_date'] = df['dates'].dt.date
 
+# convert string date to date type (datetime.date)
+datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))
+
+# filter df by date
+emailed_18th = emailed.loc[emailed.date == datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))]
+
+
 
 # =============================================================================
 ###  """ DICTIONARIES """
@@ -2989,6 +2996,10 @@ print("%s" %query)
 
 # subset by location
 views_GBR = views_sun_by_location[views_sun_by_location.location == "GBR"]
+
+# subset by date
+emailed_18th = emailed.loc[emailed.date == datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))]
+
 
 
 
