@@ -2670,6 +2670,11 @@ df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
 df
 df = df.rename(index=str, columns={"A": "a", "B": "b"})
 
+# rename based on first 2 characters of colname
+for col in df.columns:
+    if col[:2] == '01':
+        df.rename[columns={col:'A'}, inplace=True)
+
 
 ## Drop function - doesn't work in place; returns a copy of the df
 # drop rows from a df
