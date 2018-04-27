@@ -262,9 +262,21 @@ Ctrl + # increases font size in the editor
     Print preview for printing with formatting.
 """
 
-# ipython magic for notebooks
+### ipython magic functions for notebooks
 %precision 2 # custom floating point precision - print to 2 d.p.
 %matplotlib.inline # to plot inline
+
+% <tab> to view available magic functions
+%% to use magic in current cell only
+
+# time code
+%%timeit -n 100    # run code in cell for 100 loops to see on average how long it takes
+
+
+### Use ! in Jupyter to communicate with local operating system
+
+# e.g. view a csv file 
+!cat filename.csv   
 
 
 # =============================================================================
@@ -2396,8 +2408,12 @@ pip show packagename  # shows location, version and dependancies/dependents
 
 import pandas as pd
 										
-# make empty pd dataframe
+# make empty pd dataframe (axis 1 = columns, axis 0 = rows)
 df = pd.DataFrame([])
+
+# combine 2 series s1-3 into a dataframe (e.g. 3 dictionaries each with one value per key, which will convert into
+# one series per row) and label the rows as A, B and C
+df = pd.DataFrame([s1, s2, s3], index=['A', 'B', 'C'])
 
 # import a csv file as a pandas dataframe
 views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
@@ -2479,6 +2495,9 @@ type(df)
 df.dtypes
 df['column'].dtype
 
+# transpose a df - turns colnames into indices to use .loc method for subsetting
+df.T
+
 # copy dataframe and separate predictors and response
 X = veh_data.copy()
 y = X.pop('ConditionScore')
@@ -2536,17 +2555,78 @@ veh_data.groupby('VehicleType').ConditionScore.mean()
 # https://stackoverflow.com/questions/19384532/how-to-count-number-of-rows-in-a-group-in-pandas-group-by-object
 visitor_profiles.groupby(['visit_date']).size().reset_index(name='num_users')									
 
-###  Access particular rows or values
-# make pandas dataframe and mark cells
-import numpy as np
-df = pd.DataFrame(np.random.randn(10, 3), columns=['A', 'B', 'C'],
-               index=pd.date_range('1/1/2000', periods=10))
-              
-df.iloc[3:7] = np.nan   # marks cells in rows 4-8 as NaN
-              
+
+###  Access particular rows or values in pandas objects using indexes
+
+# make pandas objects with explicit indexes (rownames) - if not specified pandas uses autonumber as index
+
+# series
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+# df
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
+
+
+### indexing operators -- .loc and .iloc -- for ROW selection
+# can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
+
+## .iloc to query by index
+
+# series
+purchase_1.iloc(3) = np.nan    # same as purchase_1[3]
+# df
+df.iloc[0:2] = np.nan    # marks cells in first 3 rows as NaN
+
+
+## .loc to query by label
+
+# series
+df.loc['Store 1']    # select whole row
+
+# df 
+df['Cost']    # select all rows in column
+df.loc[:, 'Cost']    # select all rows in column more explictly using .loc[row, column]
+df.loc[:, ['Name', 'Cost']]    # select all rows in both the Name and Cost columns
+
+# list indices: view all items purchased from Store 1
+df.loc['Store 1', 'Item Purchased']
+
+# use two inputs to select rows AND columns
+df.iloc(3)['Cost']    # get value in row 3 in the 'Cost' column
+# same as...
+df[3]['Cost']
+# note this is CHAINING, and is risky as causes pandas to return a copy of the df rather than a view OF the df
+# AVOID CHAINING
+
+
+
+# using .iloc and .loc attributes tells pandas more explicitly what to do: 
+# if the index you're querying by is a LIST of integers (instead of just one) pandas can't determine if you're intending 
+# to query by index or label, so you get an error.
+
+# .loc to add a new row
+# if you reference a value that doesn't exist in the series or df, a new row is created with that value, e.g.
+s = pd.Series = ([1,2,3])
+# series values are [1,2,3] and rownames are [0,1,2] (the indexes)
+s.loc['Animal'] = 'bear'
+# series values are now [1,2,3,'bear'] and rownames are [0,1,2,'Animal']
+
+
+### PANDAS SERIES - have values in rows and label/index as row names: can be unique or not unique
+
+# appending new values to a series (doesnt append in place, so save as a new series object!)
+s2 = s.append([1])
+
+
 # access value in first row of first column
 df.iat[0,0] == 0
-
               
 # aggregate (calc sum and min) across columns
 df.agg(['sum', 'min'])
@@ -2591,11 +2671,27 @@ df
 df = df.rename(index=str, columns={"A": "a", "B": "b"})
 
 
-# drop irrelevant columns
+## Drop function - doesn't work in place; returns a copy of the df
+# drop rows from a df
+df = df.drop('row_name', axis = 0)    # note axis=0 by default, so must state axis=1 for column drops to work!
+
+# drop columns from a df
 df = df.drop('col_name', axis = 1)
 
-# select relevant columns
-df1 = df[['a','d']]
+# can also delete columns with del
+del df['col_name']    # happens in place and doesn't return a view of the df!
+
+
+## reduce number in col by 20% (in place) - and will modify the original df too unless you make a .copy()
+df['Cost'] *= 0.8    # changes values in df
+
+cost = df['Cost']
+cost *= 0.8    # also changes values in df['Cost']
+
+cost = df['Cost'].copy()
+cost *= 0.8    # does not change values in df['Cost']
+
+
 
 # concatenate 2 dfs
 frames = [ds_content, sa_content]
