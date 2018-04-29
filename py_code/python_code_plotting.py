@@ -5,14 +5,32 @@ Created on Tue Jul 25 14:42:38 2017
 PLOTTING HELP
 
 From http://www.ast.uct.ac.za/~sarblyth/pythonGuide/PythonPlottingBeginnersGuide.pdf
+
+
+# see also:
+
+http://nbviewer.jupyter.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb
+
+http://www.labri.fr/perso/nrougier/teaching/matplotlib/#simple-plot
+
+https://s3.amazonaws.com/assets.datacamp.com/blog_assets/Python_Matplotlib_Cheat_Sheet.pdf
+
+https://matplotlib.org/api/pyplot_summary.html
+
+https://matplotlib.org/users/recipes.html
+
 """
 
 # Standard plotting packages
 import numpy as np
+import seaborn as sns # for prettier plots
 import pylab as pl
+import matplotlib.pyplot as plt   # recommended as is object-orientated, for more advanced plotting
 
-# more advanced plotting
-import matplotlib.pyplot as plt
+# You can use matplotlib's  MATLAB-like API to plot simple, single panel figures
+# But matplotlib's object-orientated API is recommended (where you define fig and ax and run operations on those variables, rather than using global objects/program states), because it gives more control - especially for more advanced plots and subplotting
+# explained here: http://nbviewer.jupyter.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb
+
 
 # Example data
 x = [1, 2, 3, 4, 5]
@@ -21,6 +39,7 @@ y = [1, 4, 9, 16, 25]
 
 ### lineplot
 pl.plot(x, y)   # use pylab to plot x and y
+plt.plot(x, y)
 
 
 ### scatterplot: just add an extra parameter to specify the point type
