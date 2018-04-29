@@ -10,39 +10,41 @@
 # bigquery
 # classes
 # code formatting
-## code formatting in jupyter notebook
-# conditional statements: if/else, booleans, decision maps
+# conditional statements: if/else, booleans, decision maps
 # data cleaning
 # dates and times
 # dictionaries
 # environments
-# errors and bugs
+# errors and bugs
 # feature scaling
-# file input/output
+# file input/output                    
 # for loops
 # functions
 # HTML & BeautifulSoup
 # Inspecting objects defined in the console
+# jupyter notebook                    
 # linear regression
 # lists
 # machine learning
+# missing values                    
 # numpy
 # outliers
-# package management
+# package management
 # pandas
+## querying, indexing                    
 # plotting
-# python 2 vs python 3
+# python 2 vs python 3
 # randomising or finding all combinations of things
 # raw input
 # saving files as csv etc
 # saving python objects
 # set working directory
-# shortcuts for running code
+# shortcuts for running code
 # SQLite DATABASES
 # strings
 # subsetting dfs
 # text processing
-# timing code
+# timing code
 # tuples
 # variables
 # while loops
@@ -216,68 +218,6 @@ Ctrl + # increases font size in the editor
 
 
 
-### Jupyter / iPython Notebook
-# ================================
-
-# https://ipython.org/ipython-doc/3/notebook/nbformat.html
-
-""" Jupyter (né IPython) notebook files are simple JSON documents, containing
-    text, source code, rich media output, and metadata. each segment of the
-    document is stored in a cell.
-
-    Works like the python interpreter in spyder, but with more menu-driven
-    features for annotating code.
-
-    Useful on computers without Python or Spyder installed on the hard drive.
-
-    Open Jupyter Notebook via the start menu or from Git Bash, but if you have
-    set up different environments in Anaconda it's best to open it via Anaconda
-    Navigator: right click the PLAY button on the environment and open Jupyter
-    Notebook from there.
-
-    # best practice is not to have multiple jupyter notebook terminals open/running
-    at the same time as can cause problems.
-
-    This opens http://localhost:8888/tree in the web browser and lists all my
-    local files.
-
-    Keep Git Bash open on the desktop to keep the browser session connected.
-    Can set it to work for Python 2 or 3.
-
-    Click New on top right to create a new Notebook.
-
-    Can drag and drop text or content from desktop programs into cells.
-
-    Set the working directory using cd C:\User\... the same as in Spyder.
-
-    Displays output below the cell containing the code (can toggle output on/off
-    or just clear it).
-
-    Can rearrange cells.
-
-    Can tag cells with keywords (new feature April 2017: not yet searchable).
-
-    Can create both code cells and rich text cells to display notes
-
-    Print preview for printing with formatting.
-"""
-
-### ipython magic functions for notebooks
-%precision 2 # custom floating point precision - print to 2 d.p.
-%matplotlib.inline # to plot inline
-
-% <tab> to view available magic functions
-%% to use magic in current cell only
-
-# time code
-%%timeit -n 100    # run code in cell for 100 loops to see on average how long it takes
-
-
-### Use ! in Jupyter to communicate with local operating system
-
-# e.g. view a csv file 
-!cat filename.csv   
-
 
 # =============================================================================
 ###  """ CONDITIONAL STATEMENTS """
@@ -361,13 +301,6 @@ decision_map[input_var]() # Gets the correct function from response_dict and cal
 # To extract certain columns from a dataframe
 wanted_columns = data[['Sex', 'Age', 'Fare', 'Survived']]
 
-# python assigns empty values as NaN or None type values depending on their context:
-# NaN (not a number, a numeric type, e.g. empty value in list of numbers)
-# None (object type, e.g. empty value in list of strings)
-# NaN != None 
-
-# Drops rows that contain NaN in ANY field (sklearn models do not work with null values!)
-cleaned_wanted_columns = wanted_columns.dropna()
 
 # create a copy of the data
 cleaned_data = cleaned_wanted_columns.copy()
@@ -414,17 +347,6 @@ veh_data['year_code'] = veh_data['FinancialYear'].map(mapping)
 X = cleaned_data.drop('Survived', axis=1)  # drops the labels from the dataframe
 y = cleaned_data['Survived']  # saves only the column of labels
 
-# count NAs (null values) in a dataframe
-df.apply(lambda x: sum(x.isnull()),axis=0) # isnull() returns 1 if the value is null.
-
-
-# Replace nulls (NaN) with specific values...
-
-# replace NAs with the mean
-df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace = True)
-
-# replace NAs with 'No'
- df['Self_Employed'].fillna('No', inplace = True) # inplace means actually change the contents of df.
 
 
 
@@ -515,7 +437,7 @@ df['just_date'] = df['dates'].dt.date
 # convert string date to date type (datetime.date)
 datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))
 
-# filter df by date
+# filter df by date
 emailed_18th = emailed.loc[emailed.date == datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))]
 
 
@@ -591,7 +513,7 @@ for key, val in menu.items():
 # load csv file as a list of dicts: one dict per row (vehicle), with colnames as keys
 import csv
 with open('mpg.csv') as csvfile:
-    list_of_dicts = list(csv.DictReader(csvfile)) # list of dicts: colnames as keys
+    list_of_dicts = list(csv.DictReader(csvfile)) # list of dicts: colnames as keys
 
 list_of_dicts[:2] # the first 2 dicts in the list
 
@@ -1002,7 +924,7 @@ def total_enrollment(uni_list):
 mylist.index(<value>)   # returns the index of the FIRST position where the value is found.
                         # returns an error if the value doesn't exist in the list.
 
-# use enumerate() to loop through lists automatically
+# use enumerate() to loop through lists automatically
 # optional argument 1 means start numbering the output list from 1 (default 0)
 my_list = ['apple', 'banana', 'grapes', 'pear']
 for i, value in enumerate(my_list, 1):
@@ -1165,6 +1087,74 @@ def hello():
 
 # Clear the name space
 %reset
+
+
+
+### Jupyter Notebook
+# ================================
+
+# https://ipython.org/ipython-doc/3/notebook/nbformat.html
+
+""" Jupyter (né IPython) notebook files are simple JSON documents, containing
+    text, source code, rich media output, and metadata. each segment of the
+    document is stored in a cell.
+
+    Works like the python interpreter in spyder, but with more menu-driven
+    features for annotating code.
+
+    Useful on computers without Python or Spyder installed on the hard drive.
+
+    Open Jupyter Notebook via the start menu or from Git Bash, but if you have
+    set up different environments in Anaconda it's best to open it via Anaconda
+    Navigator: right click the PLAY button on the environment and open Jupyter
+    Notebook from there.
+
+    # best practice is not to have multiple jupyter notebook terminals open/running
+    at the same time as can cause problems.
+
+    This opens http://localhost:8888/tree in the web browser and lists all my
+    local files.
+
+    Keep Git Bash open on the desktop to keep the browser session connected.
+    Can set it to work for Python 2 or 3.
+
+    Click New on top right to create a new Notebook.
+
+    Can drag and drop text or content from desktop programs into cells.
+
+    Set the working directory using cd C:\User\... the same as in Spyder.
+
+    Displays output below the cell containing the code (can toggle output on/off
+    or just clear it).
+
+    Can rearrange cells.
+
+    Can tag cells with keywords (new feature April 2017: not yet searchable).
+
+    Can create both code cells and rich text cells to display notes
+
+    Print preview for printing with formatting.
+"""
+
+### ipython magic functions for notebooks
+%precision 2 # custom floating point precision - print to 2 d.p.
+%matplotlib.inline # to plot inline
+
+% <tab> to view available magic functions
+%% to use magic in current cell only
+
+# time code
+%%timeit -n 100    # run code in cell for 100 loops to see on average how long it takes
+
+
+### Use ! in Jupyter to communicate with local operating system
+
+# e.g. view a csv file 
+!cat filename.csv  
+
+# view information about a function - use ?
+df.fillna? 
+
 
 
 # =======================================================================
@@ -2217,6 +2207,35 @@ print classification_report(y_test, y_pred, target_names=target_names)
 
 
 
+# =============================================================================
+###  """ MISSING VALUES """
+# =============================================================================
+
+# python assigns empty values as NaN or None type values depending on their context:
+# NaN (not a number, a numeric type, e.g. empty value in list of numbers)
+# None (object type, e.g. empty value in list of strings)
+# NaN != None 
+
+# Drops rows that contain NaN in ANY field (sklearn models do not work with null values!)
+cleaned_wanted_columns = wanted_columns.dropna()
+
+# count NAs (null values) in a dataframe
+df.apply(lambda x: sum(x.isnull()),axis=0) # isnull() returns 1 if the value is null.
+
+
+# Replace nulls (NaN) with specific values...
+df.fillna?
+
+# replace NAs with the mean
+df['LoanAmount'].fillna(df['LoanAmount'].mean(), inplace = True)
+
+# replace NAs with 'No'
+df['Self_Employed'].fillna('No', inplace = True) # inplace means actually change the contents of df.
+
+# forward filling / backwards filling - fill NaNs based on value in neighbouring rows
+# requires data to be sorted first!
+df = df.sort_index()
+
 
 # =============================================================================
 ###  """ NUMPY """
@@ -2482,7 +2501,7 @@ newdata_df.to_excel(writer, sheet_name = 'mynewdata')
 writer.save()
 writer.close()
 
-# load each sheet
+# load each sheet
 mydata_original_sheet = pd.read_excel('example.xlsx', sheet_name='mydata')
 mydata_new_sheet = pd.read_excel('example.xlsx', sheet_name='mynewdata')
 
@@ -2502,29 +2521,46 @@ df.T
 X = veh_data.copy()
 y = X.pop('ConditionScore')
 
-# filter out / remove rows with a content_id containing " "
-views_df = views_df[views_df['content_id'].str.contains(' ') == False]
 
 
 ## Remove NaNs
 
 # drop rows with NaN in ANY column
-views_notnans = views.dropna()
-views_notnans.shape
+views_notnans = views.dropna(axis=0)
 
 # drop rows with NaN in a specific column only
 notnans = views['attribute_1'].notnull()
 views_notnans = views[notnans]
-views_notnans.shape
 
 # alternatively, view only rows with NaN in this column
 views_nans = views.loc[ ~ notnans].copy()
-views_nans.head()
+
+
+### Indexing dfs
+
+# copy current index to a new column
+df['country'] = df.index
+
+# set the index to the entries in the member_id column
+df = df.set_index('member_id')
+# note in jupyter the df.head() output will show a new blank row for member_id 
+# at the top of the df: this isnt really part of the df but is jupyter's way of
+# showing that the index has a name (here it'll be member_id').
+
+# reset the index to autonumbers (this also promotes the current index into a new column)
+df = df.reset_index()
+
+# multi-level index (hierarchical index) - add new index level to existing index
+df = df.set_index([df.index, 'Name']) # add a Name index (from the 'Name' column) to the existing index
+df.index.names = ['Location', 'Name'] # rename the existing index as 'Location'
+
+# multi-level index (hierarchical index) - from scratch
+df = df.set_index(['member_id', 'country'])
 
 
 
 
-# change floats to binary
+### change floats to binary
 threshold = 1.0
 views['attribute_1_bin'] = np.where(views['attribute_1'] > threshold, 1,0)
 
@@ -2533,11 +2569,121 @@ views_sun = views_sun.sort_values(by=['date','hour','minute'])
 views_sun = views_sun.reset_index(drop=True)
 
 
-## aggregate / group by
+### Pandas series have values in rows and label/index as row names: can be unique or not unique
+# appending new values to a series (doesnt append in place, so save as a new series object!)
+s2 = s.append([1])
+
+# access value in first row of first column
+df.iat[0,0] == 0
+              
+
+
+### Indexing operators -- .loc and .iloc -- for ROW selection
+# can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
+
+## .iloc to query by (row) index
+
+# series
+purchase_1.iloc(3) = np.nan    # same as purchase_1[3]
+# df
+df.iloc[0:2] = np.nan    # marks cells in first 3 rows as NaN
+
+
+## .loc to query by label
+
+# series
+df.loc['Store 1']    # select whole row
+
+# df 
+df['Cost']    # select all rows in column
+df.loc[:, 'Cost']    # select all rows in column more explictly using .loc[row, column]
+df.loc[:, ['Name', 'Cost']]    # select all rows in both the Name and Cost columns
+
+# list indices: view all items purchased from Store 1
+df.loc['Store 1', 'Item Purchased']
+
+# use two inputs to select rows AND columns
+df.iloc(3)['Cost']    # get value in row 3 in the 'Cost' column
+# same as...
+df[3]['Cost']
+# note this is CHAINING, and is risky as causes pandas to return a copy of the df rather than a view OF the df
+# AVOID CHAINING
+
+
+# using .iloc and .loc attributes tells pandas more explicitly what to do: 
+# if the index you're querying by is a LIST of integers (instead of just one) pandas can't determine if you're intending 
+# to query by index or label, so you get an error.
+
+# .loc to add a new row
+# if you reference a value that doesn't exist in the series or df, a new row is created with that value, e.g.
+s = pd.Series = ([1,2,3])
+# series values are [1,2,3] and rownames are [0,1,2] (the indexes)
+s.loc['Animal'] = 'bear'
+# series values are now [1,2,3,'bear'] and rownames are [0,1,2,'Animal']
+
+# add new row to pandas df
+df.index.names = ['Location']
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, 
+                         name=('Store 2')))
+
+# add new row to pandas df with hierarchical multi index
+df.index.names = ['Location', 'Name']
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, 
+                         name=('Store 2', 'Kevyn')))
+
+
+
+### Querying / subsetting dfs - pandas uses Boolean Masks
+
+# To subset a df, Pandas first creates a boolean mask (series of True/False 
+# for whether each value meets a given criterion) and overlays this on the 
+# original series via the where clause: this returns a df of the same shape
+# but with NaN in place of values that didn't meet the criterion 
+# (can then exclude NaNs from subsequent analyses)
+# E.g. get rows with speed over 20mph only
+df_over20 = df.where[df['speed'] > 20]
+df_over20 = df_over20.dropna(axis=0) # drop rows containing NaN in any column (change axis=1 to drop columns)
+# same as:
+df_over20 = df[df['speed'] > 20]
+
+# filter out / remove rows with a content_id containing " "
+views_df = views_df[views_df['content_id'].str.contains(' ') == False]
+
+### to query on multiple conditions: make multiple boolean masks
+# encase each mask in parentheses!
+df_over20_under40 = df[(df['speed'] > 20) & (df['speed'] < 40)]
+df_prints = df[(df['first_prod'] == 'print') | (df['second_prod'] == 'print')]
+# get just the member_ids of those customers
+prints_members = df['member_id'][df['first_prod'] == 'print']
+
+# keep key columns 
+cols_to_keep = ['member_id', 'country', 'device']
+df = df[cols_to_keep]
+
+
+# query dfs with multi-level indexes
+# e.g. for find records for bristol in a df indexed by country AND county
+# specify both country and county in the filtering list
+df = df.set_index(['country', 'town'])
+df_bristol = df.loc['UK', 'Bristol']
+
+# compare two towns: pass list of tuples as the filtering list
+df_bristol_birm = df.loc[('UK', 'Bristol'), ('UK', 'Birmingham')]
+
+
+### summarising series
+
+# max speed (numeric output)
+max_speed = df['speed'].max()
+
+# row with highest speed
+answer = df[df['speed'] == df['speed'].max()]
+
+
+### Group By & Aggregation
+
 # info: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.aggregate.html
 # http://nbviewer.jupyter.org/github/jvns/pandas-cookbook/blob/v0.1/cookbook/Chapter%204%20-%20Find%20out%20on%20which%20weekday%20people%20bike%20the%20most%20with%20groupby%20and%20aggregate.ipynb
-
-
 
 # Examine mean condition per vehicle type
 
@@ -2574,60 +2720,7 @@ purchase_3 = pd.Series({'Name': 'Vinod',
 df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
 
 
-### indexing operators -- .loc and .iloc -- for ROW selection
-# can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
 
-## .iloc to query by index
-
-# series
-purchase_1.iloc(3) = np.nan    # same as purchase_1[3]
-# df
-df.iloc[0:2] = np.nan    # marks cells in first 3 rows as NaN
-
-
-## .loc to query by label
-
-# series
-df.loc['Store 1']    # select whole row
-
-# df 
-df['Cost']    # select all rows in column
-df.loc[:, 'Cost']    # select all rows in column more explictly using .loc[row, column]
-df.loc[:, ['Name', 'Cost']]    # select all rows in both the Name and Cost columns
-
-# list indices: view all items purchased from Store 1
-df.loc['Store 1', 'Item Purchased']
-
-# use two inputs to select rows AND columns
-df.iloc(3)['Cost']    # get value in row 3 in the 'Cost' column
-# same as...
-df[3]['Cost']
-# note this is CHAINING, and is risky as causes pandas to return a copy of the df rather than a view OF the df
-# AVOID CHAINING
-
-
-
-# using .iloc and .loc attributes tells pandas more explicitly what to do: 
-# if the index you're querying by is a LIST of integers (instead of just one) pandas can't determine if you're intending 
-# to query by index or label, so you get an error.
-
-# .loc to add a new row
-# if you reference a value that doesn't exist in the series or df, a new row is created with that value, e.g.
-s = pd.Series = ([1,2,3])
-# series values are [1,2,3] and rownames are [0,1,2] (the indexes)
-s.loc['Animal'] = 'bear'
-# series values are now [1,2,3,'bear'] and rownames are [0,1,2,'Animal']
-
-
-### PANDAS SERIES - have values in rows and label/index as row names: can be unique or not unique
-
-# appending new values to a series (doesnt append in place, so save as a new series object!)
-s2 = s.append([1])
-
-
-# access value in first row of first column
-df.iat[0,0] == 0
-              
 # aggregate (calc sum and min) across columns
 df.agg(['sum', 'min'])
 
@@ -2644,7 +2737,8 @@ mean_daily_consumption = df.groupby(['day']).agg({'kwh': [min, max, sum, "mean",
 # Use ravel to create better names for the columns when using multiple aggregates
 mean_daily_consumption.columns = ["_".join(x) for x in mean_daily_consumption.columns.ravel()]
 
-# Get counts of unique values
+
+## Get counts of unique values
 
 # N unique vehicle IDs per year (ordered by Financial Year)
 df.groupby('FinancialYear').VehicleID.nunique()
@@ -2664,8 +2758,7 @@ df.groupby('name')['activity'].value_counts().unstack().fillna(0)
 df = df.sort_values(by=['name','timestamp'])
 df['time_diff'] = df.groupby('name')['timestamp'].diff()
 
-# rename columns
-import pandas as pd
+# rename columns (pandas rename function)
 df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
 df
 df = df.rename(index=str, columns={"A": "a", "B": "b"})
@@ -2676,14 +2769,15 @@ for col in df.columns:
         df.rename[columns={col:'A'}, inplace=True)
 
 
-## Drop function - doesn't work in place; returns a copy of the df
+### Drop function - doesn't work in place; returns a copy of the df
+    
 # drop rows from a df
 df = df.drop('row_name', axis = 0)    # note axis=0 by default, so must state axis=1 for column drops to work!
 
 # drop columns from a df
 df = df.drop('col_name', axis = 1)
 
-# can also delete columns with del
+# can also delete columns with del
 del df['col_name']    # happens in place and doesn't return a view of the df!
 
 
@@ -2868,8 +2962,8 @@ import gzip
 #filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
 #random_search = pickle.load(gzip.open(filename, 'rb'))										
 
-## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
-## Instead use sklearn's joblib library:
+## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
+## Instead use sklearn's joblib library:
 
 ## JOBLIB
 										
@@ -2883,7 +2977,7 @@ from sklearn.externals import joblib
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180326-joblib'
 joblib.dump(rf_default, filename) 
 
-# save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
+# save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
 joblib.dump(rf_default, filename, compress = 9)
 
@@ -3282,5 +3376,3 @@ while a < b:
     <block>
 while a not in b:
     <block>
-
-
