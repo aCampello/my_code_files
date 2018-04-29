@@ -468,6 +468,7 @@ menu = {}
 # NB if Chicken Alfredo is already in the dictionary, it will UPDATE the value (here the value is the meal price)
 menu['Chicken Alfredo'] = 14.50  # Adding new key-value pair
 menu['Chicken Calzone'] = 12.50  # Adding new key-value pair
+menu.update({'Steak': 17.00}) # alternative syntax to add new data
 
 # add multiple values to the same key - will be saved in () brackets.
 menu['Chicken Balti'] = 'Hot', 'Mild'
@@ -532,7 +533,7 @@ unique_levels = set(dict['keyname'] for dict in list_of_dicts)
 menu.clear() # delete everything from the dictionary
 
 # Nice print out of menu contents (key-value pairs) - in ascending order
-print("Dish\tPrice\n")
+print("Dish\tPrice\n-----\t-----")
 for key, value in sorted(menu.items()):
     print("{0}\t{1}".format(key, value))
 
@@ -575,7 +576,7 @@ elements['O'] = {'name': 'Oxygen',
 
 ## Print name and atomic number from elements
 for key in elements:
-    print elements[key]["name"], elements[key]["number"]
+    print(elements[key]["name"], elements[key]["number"])
 
 """ prints:
     Hydrogen 1
@@ -583,19 +584,18 @@ for key in elements:
 in some order """
 
 # print all the keys
-for key in categorised_time_series_device.keys():
+for key in elements.keys():
     print(key)
 
 
 # Another example of accessing specific values in dictionaries:
 
-dic = {"apple":(1,2,3), "banana":(4,5,6), "carrot":(7,8,9)}
-
-for item in dic:
+dict = {"apple":(1,2,3), "banana":(4,5,6), "carrot":(7,8,9)}
+for key in dict:
     """ print every 3rd element in a tuple, for each key """
-    print item          # print the key (name)
-    print dic[item][2]
-    print "--"
+    print(key)          # print the key (name)
+    print(dic[key][2])
+    print("--")
 
     """ prints:
         carrot
@@ -1529,7 +1529,14 @@ labels_train = labels_train[:len(labels_train)/100]
     - Important to measure how well you're doing and stop the tree at the appropriate time.
     - Also play with the variance-bias tradeoff and the split criterion (entropy, gini...)
 """
+	      
+	      
+# Random forests note
+	      
+# can view features in order of importance (where X is the dataset of features)
+print(sorted(zip(map(lambda x: round(x, 4), clf.feature_importances_), X.columns), reverse=True))
 
+	      
 ### (4) K NEAREST NEIGHBOUR (KNN)
 """ Widely used classification technique
     (Can also be used for regression).
@@ -1548,12 +1555,14 @@ labels_train = labels_train[:len(labels_train)/100]
         from sklearn import svm                       # for SVM
         from sklearn import tree                      # for decision trees
         from sklearn.neighbors import KNeighborsClassifier    # for K nearest neighbour
-
+	from sklearn.ensemble import RandomForestClassifier
+	      
 # 2) Create the classifier
         clf = GaussianNB()      # for naive Bayes
         clf = svm.SVC()         # for SVM (svms are called SVC in sklearn)
         clf = tree.DecisionTreeClassifier()     # for decision trees
         clf = KNeighborsClassifier(n_neighbors=5, weights="uniform")   # for KNN
+	clf = RandomForestClassifier(n_estimators = 500, min_samples_leaf = 50)
 
 # 3) Train/fit the classifier using the training features/labels
         clf.fit(features_train, labels_train)   # i.e. clf.fit(X, y)
@@ -1860,7 +1869,11 @@ def encode_onehot(df, cols):
 
 new_df = encode_onehot(df = user_profiles_complete, cols = ['mode_device', 'mode_channel', 'mode_language'])
 
+	  
+# OneHotEncoder - binary one-hot encode both categorical and numeric features
 
+# http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html
+from sklearn.preprocessing import OneHotEncoder
 
 
 
@@ -2101,6 +2114,15 @@ clf.fit(iris.data, iris.target) # fit() tries each parameter combo, assesses the
 # access the parameter values
 clf.best_params_
 
+# photobox interview task example
+from sklearn.linear_model import LogisticRegression
+lr = LogisticRegression()
+param_grid = {'C': [0.001, 0.01, 0.1, 1, 10]}
+lr_mod = GridSearchCV(lr, param_grid)
+lr_mod.fit(X_train, y_train)
+print("best params: ", lr_mod.best_params_, "\naccuracy score: ", accuracy_score(y_test, lr_mod.predict(X_test)))
+	      
+	      
 
 ### Accuracy Score
 """ accuracy = [N items (datapoints) in a class that are labelled correctly /
@@ -2113,12 +2135,42 @@ clf.best_params_
 
     Accuracy is also less reliable if you want to err on the side of caution
     of a yes/no answer, e.g. cancer tests - prefer a false positive than a false neg.
+
+
+    ### Alternatives to accuracy for unbalanced data
+    
+    # From this very GOOD BLOG POST: https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/
+
+        - get more data
+
+        - use different metrics, e.g.
+            - confusion matrix, precision, recall and F1 score
+            - Kappa - accuracy normalised by the imbalance of classes in the data
+            - ROC curves: divides accuracy into sensitivity/specificity so models can be chosen based on the balance thresholds of these values.
+
+        - resample:
+            - oversampling: for smallish datasets add copies of instances from the under-represented class (aka sampling-with-replacement)
+            - undersampling: for large datasets (tens- or hundreds of thousands of instances or more) delete instances of the over-represented class.
+
+        - generate syntheric samples
+
+        - try other algorithms
+
+        - try penalised models
+
+        - try another approach e.g. anomaly detection or change detection
+
+        - decompose large class into smaller classes
 """
+	      
 from sklearn.metrics import accuracy_score
 accuracy_score(pred, labels_test)
 clf.score(features_test, labels_test)
 
+# compare training and testing accuracy to check for overfitting
+print('training accuracy: ', clf.score(X_train, y_train), '\ntesting accuracy: ', clf.score(X_test, y_test))
 
+	      
 ## Confusion matrix
 """ shows N datapoints predicted to be in each class and whether the prediction
     was correct (+ve) or incorrect (-ve), as a matrix.
@@ -2128,7 +2180,7 @@ clf.score(features_test, labels_test)
 from sklearn.metrics import confusion_matrix
 y_pred = clf.predict(X_test)  # X = features, y = labels
 
-print confusion_matrix(y_test, y_pred, labels=range(n_classes))  # n_classes = N unique labels/classes, e.g 7 people (see lesson13_pca.py code)
+print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))  # n_classes = N unique labels/classes, e.g 7 people (see lesson13_pca.py code) - labels argument is optional
 
 """ e.g. confusion matrix
          Ariel  [13  4   1]
@@ -2203,7 +2255,7 @@ recall = recall_score(y_true, y_pred)
 """ shows precision, recall, F1-score snd support for each classification """
 from sklearn.metrics import classification_report
 y_pred = clf.predict(X_test)  # X = features, y = labels
-print classification_report(y_test, y_pred, target_names=target_names)
+print(classification_report(y_test, y_pred, target_names=target_names)) # target names argument is optional and just for labelling
 
 
 
@@ -2795,6 +2847,7 @@ cost *= 0.8    # does not change values in df['Cost']
 # concatenate 2 dfs
 frames = [ds_content, sa_content]
 content_consumption = pd.concat(frames, keys=['ds', 'sa'], axis = 0) # keys are like a new index
+		  
 # count entries for each user group
 print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumption.loc['sa'])) # loc refers to named indexes, iloc refers to numbered indexes
 
@@ -3241,6 +3294,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 # progress bar
 # https://pypi.python.org/pypi/tqdm
+import tqdm
 with tqdm(total=100) as pbar:
     for i in range(10):
         pbar.update(10)
@@ -3348,13 +3402,13 @@ if result:  # this means if the result is True, exists or is anything other than
 ###  """ WHILE LOOPS """
 # =============================================================================
 
-# While means 'as long as', so will continue to loop while the statement is true
+# Permits code to execute repeatedly until a certain condition is / not met.
 # syntax:
-while <TestExpression>:
+while condition:
     <block>     # keeps going as long as the TestExpression is True
                 # as soon as the TestExpression is False, Python goes to the next expression.
 
-# Instead of a test expression such as <while result = True>, can just say:
+# Instead of a condition such as <while result = True>, can just say:
 while True:     # this keeps the while loop going as long as the if statement in the block below is True.
     if blah > 5:
         return x
@@ -3365,7 +3419,7 @@ while True:     # this keeps the while loop going as long as the if statement in
 # E.g. the loop below will run forever, because i will never equal 10:
 # i = 1
 # while i != 10:    # = as long as i is not equal to 10, run the block below
-#     i=i+2         # adds 2 to i each time, so returns 3,5,7,9,11 and skips 10.
+#     i=i+2         # adds 2 to i each time, so return odd numbers only
 #     print(i)
 
 # Example while loops
