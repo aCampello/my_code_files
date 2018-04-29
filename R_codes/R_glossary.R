@@ -87,6 +87,10 @@
 
 # Loops
 
+# Mantel tests
+
+# Maps
+
 # Match - to populate columns conditioned on values in other rows (package plyr)
 
 # Matrices
@@ -431,7 +435,7 @@ df$sex[df$sex==''] <- NA
 
 
 # NOTE: sometimes empty cells are treated as factor levels and no matter what I can't get rid of the empty factors (converting to NA or zero doesnt work)
-# avoid this problem by importing data with \sAsFactors = FALSE & then remove or rename the empty 
+# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty 
 # cells as NA before converting the variable to a factor.
 
 #== Adjust or rename datapoints, e.g. if some rows are 'Male' and some are 'male' convert them all to 'male'
@@ -1912,12 +1916,27 @@ library(vegan)
 mantel(network_binary,sex_sim)# no clear relationship if 0.025<p<0.975
 
 
+#=================#
+# MAPPING IN R ####
+#=================#
+# very basic ggmap mapping tutorial
+# http://sharpsightlabs.com/blog/basic-maps-ggmap/?utm_source=ssl_email_primary&utm_medium=email&utm_campaign=newsletter
+
+# tidyverse mapping tutorial
+# http://sharpsightlabs.com/blog/mapping-world-cities/?utm_source=ssl_email_primary&utm_medium=email&utm_campaign=newsletter
+
+library(ggmap)
+library(tidyverse)
+get_map("London", zoom = 14) %>% ggmap()   # higher numbers mean more zoom
+
+
 #===================#
 # MATCH (plyr) - to populate new column in dataframe based on other row values ####
 #===================#
 datacsv$ShortCode<-attribs[match(datacsv$id, attribs$id),2] 
 # '2' means 'use info from column 2 in unique_attribs to populate the new column in datacsv'
 ### the order matters: (put target dataframe first, then the one the info is coming from)
+
 
 #========================#
 # MAKE MATRIX / MATRICES ####
