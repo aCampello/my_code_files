@@ -17,21 +17,21 @@
 # environments
 # errors and bugs
 # feature scaling
-# file input/output                    
+# file input/output
 # for loops
 # functions
 # HTML & BeautifulSoup
 # Inspecting objects defined in the console
-# jupyter notebook                    
+# jupyter notebook
 # linear regression
 # lists
 # machine learning
-# missing values                    
+# missing values
 # numpy
 # outliers
 # package management
 # pandas
-## querying, indexing                    
+## querying, indexing
 # plotting
 # python 2 vs python 3
 # randomising or finding all combinations of things
@@ -216,6 +216,53 @@ Ctrl + # increases font size in the editor
 #  Indentation is important: a tab is equivalent to 4 spaces.
 
 
+### Pandas idioms
+
+## Pandas method chaining - like %>% in R
+# start line with parentheses to run multiple lines in one call,
+
+# e.g. drop NaNs where species = fox, set the index and rename a column...
+(df.where(df['species'] == 'fox')
+    .dropna()
+    .set_index(['species', 'animalid'])
+    .rename(columns={'individuals': 'n_foxes'}))
+
+# e.g. drop entries where quantity = 0 and rename the weight column
+(df.drop(df[df['Quantity'] == 0].index).rename(columns={'Weight': 'Weight (oz.)'}))
+
+
+## Pandas apply function
+# applies a function across rows of a df
+# typically used with lambdas, but can also be run with long functions as below
+
+# 1. First create a function that returns the value to use as a replacement
+def min_max(row):
+    data = row[['spring', 'summer', 'autumn', 'winter']]
+    return pd.Series({'min': np.min(data), 'max': np.max(data)})
+
+# 2. Then apply the function across columns using axis=1
+df_new = df.apply(min_max, axis=1)
+
+
+# Alternatively, have the function add new columns to existing df (useful when merging dfs)
+def min_max(row):
+    data = row[['spring', 'summer', 'autumn', 'winter']]
+    row['max'] = np.max(data)
+    row['min'] = np.min(data)
+    return row
+df = df.apply(min_max, axis=1)
+
+# as a lambda function: much cleaner!
+rows = ['spring', 'summer', 'autumn', 'winter']
+df.apply(lambda x: np.max(x[rows]), axis=1)
+
+# strip parentheses from country names in each row of df (e.g. 'China (Republic of)' -> 'China')
+# apply to run func on each row, [0] to return words on LHS of the opening parenthesis only.
+energy['Country'] = energy['Country'].apply(lambda x: x.split('(')[0])
+
+# lambda syntax
+df.apply(function, input1, input2, input3...)
+
 
 
 
@@ -279,7 +326,7 @@ False or False = False
 decision_map = {
     '1': do_something,
     '2': do_something_else,
-    '3': do_another_thing     
+    '3': do_another_thing
 }
 def decision_func(input_var):
     func = decision_map[input_var]
@@ -288,8 +335,8 @@ def decision_func(input_var):
 # same as...
 decision_map[input_var]() # Gets the correct function from response_dict and calls it as a function using ()
 
-# safer than eval() 
-# Using a dispatch method is safer than other techniques, such as eval(), as it limits the commands allowable to 
+# safer than eval()
+# Using a dispatch method is safer than other techniques, such as eval(), as it limits the commands allowable to
 # what you defined beforehand, e.g. hackers can't sneak a <DROP TABLE Students;>  injection past a dispatch table.
 
 
@@ -366,16 +413,63 @@ today = dt.date.today()
 dtnow = dt.datetime.fromtimestamp(tm.time())
 # dtnow is: dtnow.year, dtnow.month, dtnow.day, dtnow.hour, dtnow.minute, dtnow.second # get year, month, day, etc.from a datetime
 
-#timedelta is a duration expressing the difference between two dates: 
+#timedelta is a duration expressing the difference between two dates:
 # to create sliding window, moving window, time window
 delta = dt.timedelta(days = 100) # create a timedelta of 100 days
 today - delta # subtract delta from today: the date 100 days ago
 today > today-delta # compare dates (returns True / False)
 
-import pandas as pd
+
+
+### Date Functionality in pandas
+
+# Pandas has 4 main time related classes:
+# Timestamp, DatetimeIndex, Period and PeriodIndex.
+
+pd.Timestamp('2016-03-01 10:05:00')
+
+# periods are ranges / timespans e.g. week or month
+pd.Period('2016-03', 'M') # month period
+pd.Period('2016-03-01', 'D') # day period
+
+# the index of a timestamp is DatetimeIndex
+# the index of a period is PeriodIndex
+
+# time differences
+# get timestamp 5 days and 3 hours earlier
+pd.Timestamp('2016-03-01 10:05AM') - pd.Timedelta('5D 3H')
+
+# get series of dates
+# 10 measurements taken every two weeks on a sunday, starting on 2016-03-01
+dates = pd.date_range('2016-03-01', periods = 10, freq = '2W-SUN')
+
+# set date as index in df
+df = pd.DataFrame({'Count1': np.random.randint(0,50,10),
+                   'Count2': np.random.randint(0,50,10)}, index=dates)
+
+# get info about dates
+df.index.weekday_name    # monday, tuesday etc
+
+# diff between count 1 and 2 for each date (as there are only 2 cols)
+df.diff()
+
+# mean count1 and count2 per month
+df.resample('M').mean()    # index is first date from each month that appears in the dataset
+
+# filter by date
+df['2017']      # only data from 2017
+df['2017-03']   # only data from march 2017
+df['2017-03':]  # data from march 2017 onwards
+
+# change frequency of date index from biweekly ('2W') to weekly ('W')
+df.asfreq('W', method=ffill())   # ffill = forward-fill to fill missing values with values from the previous row
+
+
+#--- different example df used from here down
 
 # Convert a string date to a date in a pandas dataframe
 df["activity_date"] = pd.to_datetime(df["activity_date"])
+
 
 # Can now sort by date
 df.sort_values(by="activity_date", inplace=True)
@@ -533,7 +627,7 @@ unique_levels = set(dict['keyname'] for dict in list_of_dicts)
 menu.clear() # delete everything from the dictionary
 
 # Nice print out of menu contents (key-value pairs) - in ascending order
-print("Dish\tPrice\n-----\t-----")
+print("Dish\tPrice\n")
 for key, value in sorted(menu.items()):
     print("{0}\t{1}".format(key, value))
 
@@ -591,6 +685,7 @@ for key in elements.keys():
 # Another example of accessing specific values in dictionaries:
 
 dict = {"apple":(1,2,3), "banana":(4,5,6), "carrot":(7,8,9)}
+
 for key in dict:
     """ print every 3rd element in a tuple, for each key """
     print(key)          # print the key (name)
@@ -873,7 +968,7 @@ my_file.closed  # will return True if it's closed and False if not.
 
 import os
 # get list of files in folder
-query_list = os.listdir('/home/ubuntu/Jo/package/propensity_to_buy_model/propensity_to_buy_model/separated_queries') 
+query_list = os.listdir('/home/ubuntu/Jo/package/propensity_to_buy_model/propensity_to_buy_model/separated_queries')
 # select only the .txt files
 query_list = [x for x in query_list if x.endswith(".txt")]
 # return sorted by filename
@@ -892,7 +987,7 @@ for file in os.listdir('propensity_scores/'):
         print(file
 
 
-	      
+
 # =============================================================================
 ###  """ FOR LOOPS """
 # =============================================================================
@@ -1149,11 +1244,11 @@ def hello():
 
 ### Use ! in Jupyter to communicate with local operating system
 
-# e.g. view a csv file 
-!cat filename.csv  
+# e.g. view a csv file
+!cat filename.csv
 
 # view information about a function - use ?
-df.fillna? 
+df.fillna?
 
 
 
@@ -1322,10 +1417,10 @@ char = [row[0] for row in grid]    # here, 'grid' is a list of n lists of length
 
 # Sorting lists
 # ascending
-square_list.sort()  
-square_list.sort(key=lambda x: x[0]) 
+square_list.sort()
+square_list.sort(key=lambda x: x[0])
 # descending
-square_list.sort(key=lambda x: x[1]) 
+square_list.sort(key=lambda x: x[1])
 
 # list slicing
 [start:end:stride]  # starting index = inclusive, default 0; ending index = exclusive, default end of list; stride = space between items, default 1, e.g. (::2) would select every other item in whole list).
@@ -1338,7 +1433,7 @@ new_list = list_1 + list_2    # concatenates list1 and list2 to make a new list 
 new_list = list1 + [5, 6]  # [1,2,3,4,5,6]      # concatenates the two lists
 
 # Compare lists
-## get values in list_2 that are not in list_1 
+## get values in list_2 that are not in list_1
 main_list = np.setdiff1d(list_1, list_2)
 ## get values in list_2 that are also in list_1
 main_list = [item for i, item in enumerate(list_2) if item in list_1]
@@ -1529,14 +1624,11 @@ labels_train = labels_train[:len(labels_train)/100]
     - Important to measure how well you're doing and stop the tree at the appropriate time.
     - Also play with the variance-bias tradeoff and the split criterion (entropy, gini...)
 """
-	      
-	      
+
 # Random forests note
-	      
+
 # can view features in order of importance (where X is the dataset of features)
 print(sorted(zip(map(lambda x: round(x, 4), clf.feature_importances_), X.columns), reverse=True))
-
-	      
 ### (4) K NEAREST NEIGHBOUR (KNN)
 """ Widely used classification technique
     (Can also be used for regression).
@@ -1555,14 +1647,13 @@ print(sorted(zip(map(lambda x: round(x, 4), clf.feature_importances_), X.columns
         from sklearn import svm                       # for SVM
         from sklearn import tree                      # for decision trees
         from sklearn.neighbors import KNeighborsClassifier    # for K nearest neighbour
-	from sklearn.ensemble import RandomForestClassifier
-	      
+        from sklearn.ensemble import RandomForestClassifier
 # 2) Create the classifier
         clf = GaussianNB()      # for naive Bayes
         clf = svm.SVC()         # for SVM (svms are called SVC in sklearn)
         clf = tree.DecisionTreeClassifier()     # for decision trees
         clf = KNeighborsClassifier(n_neighbors=5, weights="uniform")   # for KNN
-	clf = RandomForestClassifier(n_estimators = 500, min_samples_leaf = 50)
+	    clf = RandomForestClassifier(n_estimators = 500, min_samples_leaf = 50)
 
 # 3) Train/fit the classifier using the training features/labels
         clf.fit(features_train, labels_train)   # i.e. clf.fit(X, y)
@@ -1869,7 +1960,7 @@ def encode_onehot(df, cols):
 
 new_df = encode_onehot(df = user_profiles_complete, cols = ['mode_device', 'mode_channel', 'mode_language'])
 
-	  
+
 # OneHotEncoder - binary one-hot encode both categorical and numeric features
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html
@@ -1906,7 +1997,7 @@ and: find_signature.py in ..Online_course_notes\Udacity_Intro_to_Machine_Learnin
 """
 
 ### Examine feature importance from models
-feature_names = X.columns  
+feature_names = X.columns
 importances = rf_default.feature_importances_
 
 importances_df = pd.DataFrame([i for i in zip(feature_names, importances)],
@@ -1918,7 +2009,7 @@ with pd.option_context('display.max_rows', None):
 # plot and save (must put plt.show() after plt.savefig() to save)
 sns.set(font_scale=1.3)
 plt.subplots(figsize=(12,7))
-top5_features = sns.barplot(x = "importance", y = "features", 
+top5_features = sns.barplot(x = "importance", y = "features",
                             data = importances_df.sort_values('importance', ascending=False)[0:25])
 plt.tight_layout()
 #plt.savefig("rf_default_feature_importances_20180326.png", dpi=500)
@@ -1961,7 +2052,7 @@ X_train_sfm = rf_sfm.transform(X_train) # reduce X to the selected features
 feature_choices = pd.DataFrame( {'feature': list(X_train), 'selected_default': rf_sfm.get_support()})
 
 # view features that were not 'selected'
-feature_choices[feature_choices['selected_default'] == False].reset_index() 
+feature_choices[feature_choices['selected_default'] == False].reset_index()
 
 # save the selected features in df
 selected_features = feature_choices[feature_choices.selected_default == True]
@@ -2075,7 +2166,7 @@ kf = KFold(len(authors), 2)  # add parameter shuffle=True if datapoints are orde
 ## cross_validation (like cross_validation_score but allows >1 scoring method)
 
 from sklearn.model_selection import cross_validate
-from sklearn.model_selection import ShuffleSplit # to shuffle between folds (for ordered data) - note that random splits dont guarantee that all folds will be different, but this is still likely for large datasets 
+from sklearn.model_selection import ShuffleSplit # to shuffle between folds (for ordered data) - note that random splits dont guarantee that all folds will be different, but this is still likely for large datasets
 
 rf = RandomForestClassifier(n_estimators=50)
 scorers = ['accuracy', 'roc_auc']
@@ -2121,8 +2212,6 @@ param_grid = {'C': [0.001, 0.01, 0.1, 1, 10]}
 lr_mod = GridSearchCV(lr, param_grid)
 lr_mod.fit(X_train, y_train)
 print("best params: ", lr_mod.best_params_, "\naccuracy score: ", accuracy_score(y_test, lr_mod.predict(X_test)))
-	      
-	      
 
 ### Accuracy Score
 """ accuracy = [N items (datapoints) in a class that are labelled correctly /
@@ -2135,34 +2224,23 @@ print("best params: ", lr_mod.best_params_, "\naccuracy score: ", accuracy_score
 
     Accuracy is also less reliable if you want to err on the side of caution
     of a yes/no answer, e.g. cancer tests - prefer a false positive than a false neg.
-
-
     ### Alternatives to accuracy for unbalanced data
-    
+
     # From this very GOOD BLOG POST: https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/
-
         - get more data
-
         - use different metrics, e.g.
             - confusion matrix, precision, recall and F1 score
             - Kappa - accuracy normalised by the imbalance of classes in the data
             - ROC curves: divides accuracy into sensitivity/specificity so models can be chosen based on the balance thresholds of these values.
-
         - resample:
             - oversampling: for smallish datasets add copies of instances from the under-represented class (aka sampling-with-replacement)
             - undersampling: for large datasets (tens- or hundreds of thousands of instances or more) delete instances of the over-represented class.
-
         - generate syntheric samples
-
         - try other algorithms
-
         - try penalised models
-
         - try another approach e.g. anomaly detection or change detection
-
         - decompose large class into smaller classes
 """
-	      
 from sklearn.metrics import accuracy_score
 accuracy_score(pred, labels_test)
 clf.score(features_test, labels_test)
@@ -2170,7 +2248,7 @@ clf.score(features_test, labels_test)
 # compare training and testing accuracy to check for overfitting
 print('training accuracy: ', clf.score(X_train, y_train), '\ntesting accuracy: ', clf.score(X_test, y_test))
 
-	      
+
 ## Confusion matrix
 """ shows N datapoints predicted to be in each class and whether the prediction
     was correct (+ve) or incorrect (-ve), as a matrix.
@@ -2180,7 +2258,7 @@ print('training accuracy: ', clf.score(X_train, y_train), '\ntesting accuracy: '
 from sklearn.metrics import confusion_matrix
 y_pred = clf.predict(X_test)  # X = features, y = labels
 
-print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))  # n_classes = N unique labels/classes, e.g 7 people (see lesson13_pca.py code) - labels argument is optional
+print(confusion_matrix(y_test, y_pred, labels=range(n_classes)))  # n_classes = N unique labels/classes, e.g 7 people (see lesson13_pca.py code)
 
 """ e.g. confusion matrix
          Ariel  [13  4   1]
@@ -2255,7 +2333,7 @@ recall = recall_score(y_true, y_pred)
 """ shows precision, recall, F1-score snd support for each classification """
 from sklearn.metrics import classification_report
 y_pred = clf.predict(X_test)  # X = features, y = labels
-print(classification_report(y_test, y_pred, target_names=target_names)) # target names argument is optional and just for labelling
+print(classification_report(y_test, y_pred, target_names=target_names))
 
 
 
@@ -2266,7 +2344,7 @@ print(classification_report(y_test, y_pred, target_names=target_names)) # target
 # python assigns empty values as NaN or None type values depending on their context:
 # NaN (not a number, a numeric type, e.g. empty value in list of numbers)
 # None (object type, e.g. empty value in list of strings)
-# NaN != None 
+# NaN != None
 
 # Drops rows that contain NaN in ANY field (sklearn models do not work with null values!)
 cleaned_wanted_columns = wanted_columns.dropna()
@@ -2287,6 +2365,8 @@ df['Self_Employed'].fillna('No', inplace = True) # inplace means actually change
 # forward filling / backwards filling - fill NaNs based on value in neighbouring rows
 # requires data to be sorted first!
 df = df.sort_index()
+df.fillna(method=ffill())   # ffill = forward-fill to fill missing values with values from the previous row
+
 
 
 # =============================================================================
@@ -2321,7 +2401,7 @@ np.linespace(0, 5, 9) # 9 numbers between 0 and 5
 # to copy an array
 a2 = a.copy()
 # if don't use .copy() then any changes to the new array are also made to the original!!
-	      
+
 # iterate over arrays
 for i, row in enumerate(test):
     print("row", i, "is", row)
@@ -2332,11 +2412,11 @@ for i, j in zip(test1, test2):
 
 # access values in np arrays
 #print every yth element from the list / array
-# e.g. every 3rd element 
+# e.g. every 3rd element
 test2 = np.random.randint(0, 100, (3,4))
 print(test2[::3]) # iterate over rows (same as test2[::3,:]), starting from index 0 of each column
 print(test2[:,::3]) # iterate over columns, starting from index 0 of each row
-test2[0:3, ::3] # print every 3rd number in rows 0-3 
+test2[0:3, ::3] # print every 3rd number in rows 0-3
 
 # flatten the 2d array into a 1d array and print every 7th number
 a = test2.reshape(12)
@@ -2478,7 +2558,7 @@ pip show packagename  # shows location, version and dependancies/dependents
 # pandas for data science tricks: https://medium.com/towards-data-science/pandas-tips-and-tricks-33bcc8a40bb9
 
 import pandas as pd
-										
+
 # make empty pd dataframe (axis 1 = columns, axis 0 = rows)
 df = pd.DataFrame([])
 
@@ -2490,13 +2570,13 @@ df = pd.DataFrame([s1, s2, s3], index=['A', 'B', 'C'])
 views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
 
 # Read dataframe with specific column data types (dont have to specify type of every column)
- visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv', 
-				dtype = {'converted': int, 
-					 'fullvisitorid': str, 
-					 'member_id': str}) 
+ visitor_profiles = pd.read_csv('visitor_profiles_for_2017-05-01.csv',
+				dtype = {'converted': int,
+					 'fullvisitorid': str,
+					 'member_id': str})
 
 # Import all files in a directory/folder and concat into single df (assuming they all have the same columns)
-import os, glob, pandas as pd										
+import os, glob, pandas as pd
 visitor_profiles = pd.concat(map(pd.read_csv, glob.glob(os.path.join('', "user_profile_csvs/training_data/*.csv"))))
 
 # import an xls/xlsx file as a pd df - can specify sheet if you know which sheet you want
@@ -2518,10 +2598,10 @@ from openpyxl import load_workbook
 # Specify a writer
 writer = pd.ExcelWriter('example.xlsx', engine = 'openpyxl')
 
-# Write your DataFrame to a file (in a tab labelled 'mydata')    
+# Write your DataFrame to a file (in a tab labelled 'mydata')
 mydata.to_excel(writer, 'mydata')
 
-# Save the result 
+# Save the result
 writer.save()
 
 # load it
@@ -2534,7 +2614,7 @@ mydata = pd.read_excel('example.xlsx', sheet_name='mydata')
 # load the existing file
 book = load_workbook('example.xlsx')
 
-# make a new writer 
+# make a new writer
 #(optionally with the same name as existing file, prob safer to add suffix to prevent accidental file replacement!)
 writer = pd.ExcelWriter('example.xlsx', engine = 'openpyxl')
 
@@ -2559,6 +2639,8 @@ mydata_new_sheet = pd.read_excel('example.xlsx', sheet_name='mynewdata')
 
 #----
 
+## data types
+
 # view data type of object (not specific to pandas)
 type(df)
 
@@ -2566,14 +2648,30 @@ type(df)
 df.dtypes
 df['column'].dtype
 
-# transpose a df - turns colnames into indices to use .loc method for subsetting
+# change dtype (don't have to specify every cat in the categories list if not all cats are required in output)
+df['Grades'] = ['A', 'A-', 'B', 'B+', 'C']
+grades = df['Grades'].astype('category', categories = ['A', 'B', 'C'], ordered=True)
+
+# change floats to binary
+threshold = 1.0
+views['attribute_1_bin'] = np.where(views['attribute_1'] > threshold, 1,0)
+
+# cut: group continuous feature into buckets or bins
+s = pd.Series([168, 180, 174, 190, 170, 185, 179, 181, 175, 169, 182, 177, 180, 171])
+pd.cut(s, 3)    # groups scores into 3 equally-spaced bins (labelled with the bin range)
+
+#----
+
+## transpose a df - turns colnames into indices to use .loc method for subsetting
 df.T
 
-# copy dataframe and separate predictors and response
+## copy dataframe and separate predictors and response
 X = veh_data.copy()
 y = X.pop('ConditionScore')
 
 
+
+#----
 
 ## Remove NaNs
 
@@ -2587,6 +2685,7 @@ views_notnans = views[notnans]
 # alternatively, view only rows with NaN in this column
 views_nans = views.loc[ ~ notnans].copy()
 
+#----
 
 ### Indexing dfs
 
@@ -2595,7 +2694,7 @@ df['country'] = df.index
 
 # set the index to the entries in the member_id column
 df = df.set_index('member_id')
-# note in jupyter the df.head() output will show a new blank row for member_id 
+# note in jupyter the df.head() output will show a new blank row for member_id
 # at the top of the df: this isnt really part of the df but is jupyter's way of
 # showing that the index has a name (here it'll be member_id').
 
@@ -2609,12 +2708,7 @@ df.index.names = ['Location', 'Name'] # rename the existing index as 'Location'
 # multi-level index (hierarchical index) - from scratch
 df = df.set_index(['member_id', 'country'])
 
-
-
-
-### change floats to binary
-threshold = 1.0
-views['attribute_1_bin'] = np.where(views['attribute_1'] > threshold, 1,0)
+#----
 
 # sort pandas df by date, hour and minute and reset the index column to save the order.
 views_sun = views_sun.sort_values(by=['date','hour','minute'])
@@ -2627,13 +2721,14 @@ s2 = s.append([1])
 
 # access value in first row of first column
 df.iat[0,0] == 0
-              
 
 
-### Indexing operators -- .loc and .iloc -- for ROW selection
+
+### Indexing operators: .loc and .iloc for row-based querying, [] for column-based querying
+
+
+# .iloc / .loc
 # can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
-
-## .iloc to query by (row) index
 
 # series
 purchase_1.iloc(3) = np.nan    # same as purchase_1[3]
@@ -2646,7 +2741,7 @@ df.iloc[0:2] = np.nan    # marks cells in first 3 rows as NaN
 # series
 df.loc['Store 1']    # select whole row
 
-# df 
+# df
 df['Cost']    # select all rows in column
 df.loc[:, 'Cost']    # select all rows in column more explictly using .loc[row, column]
 df.loc[:, ['Name', 'Cost']]    # select all rows in both the Name and Cost columns
@@ -2662,8 +2757,8 @@ df[3]['Cost']
 # AVOID CHAINING
 
 
-# using .iloc and .loc attributes tells pandas more explicitly what to do: 
-# if the index you're querying by is a LIST of integers (instead of just one) pandas can't determine if you're intending 
+# using .iloc and .loc attributes tells pandas more explicitly what to do:
+# if the index you're querying by is a LIST of integers (instead of just one) pandas can't determine if you're intending
 # to query by index or label, so you get an error.
 
 # .loc to add a new row
@@ -2675,22 +2770,78 @@ s.loc['Animal'] = 'bear'
 
 # add new row to pandas df
 df.index.names = ['Location']
-df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, 
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'},
                          name=('Store 2')))
 
 # add new row to pandas df with hierarchical multi index
 df.index.names = ['Location', 'Name']
-df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, 
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'},
                          name=('Store 2', 'Kevyn')))
+
+# add new column (with partial data) to df
+# first ensure you know what the index is
+df = df.reset_index()
+# populate rows for indexes 0 and 2 but add None (automatically) for index 1
+df['newcol'] = pd.Series({0: 'dog', 2: 'cat'})
+# (alternative is make a list with same length as df)
+
+
+
+### Drop function - doesn't work in place; returns a copy of the df
+
+# drop rows from a df
+df = df.drop('row_name', axis = 0)    # note axis=0 by default, so must state axis=1 for column drops to work!
+
+# drop columns from a df
+df = df.drop('col_name', axis = 1)
+
+# can also delete columns with del
+del df['col_name']    # happens in place and doesn't return a view of the df!
+
+
+## reduce number in col by 20% (in place) - and will modify the original df too unless you make a .copy()
+df['Cost'] *= 0.8    # changes values in df
+
+cost = df['Cost']
+cost *= 0.8    # also changes values in df['Cost']
+
+cost = df['Cost'].copy()
+cost *= 0.8    # does not change values in df['Cost']
+
+
+
+### Join or Concatenate 2 dfs
+frames = [ds_content, sa_content]
+content_consumption = pd.concat(frames, keys=['ds', 'sa'], axis = 0) # keys are like a new index
+# count entries for each user group
+print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumption.loc['sa'])) # loc refers to named indexes, iloc refers to numbered indexes
+
+
+## join 2 dfs
+# join types = outer, inner, left, right
+
+# to join dfs on their indices: specify left_index=True, right_index=True
+pd.merge(df1, df2, how="outer", left_index=True, right_index=True)
+
+# join dfs on specific columns
+pd.merge(df1, df2, how="left", left_on='species_id', right_on='species_id')
+
+# join on multiple columns
+pd.merge(df1, df2, how="left", left_on=['species_id', 'animal_id'], right_on=['species_id', 'animal_id'])
+
+# join on index in one df and column in the other
+pd.merge(df1, df2, how="left", left_index=True, right_on='species_id')
+
+pd.join(df1, df2)
 
 
 
 ### Querying / subsetting dfs - pandas uses Boolean Masks
 
-# To subset a df, Pandas first creates a boolean mask (series of True/False 
-# for whether each value meets a given criterion) and overlays this on the 
+# To subset a df, Pandas first creates a boolean mask (series of True/False
+# for whether each value meets a given criterion) and overlays this on the
 # original series via the where clause: this returns a df of the same shape
-# but with NaN in place of values that didn't meet the criterion 
+# but with NaN in place of values that didn't meet the criterion
 # (can then exclude NaNs from subsequent analyses)
 # E.g. get rows with speed over 20mph only
 df_over20 = df.where[df['speed'] > 20]
@@ -2708,7 +2859,7 @@ df_prints = df[(df['first_prod'] == 'print') | (df['second_prod'] == 'print')]
 # get just the member_ids of those customers
 prints_members = df['member_id'][df['first_prod'] == 'print']
 
-# keep key columns 
+# keep key columns
 cols_to_keep = ['member_id', 'country', 'device']
 df = df[cols_to_keep]
 
@@ -2732,26 +2883,86 @@ max_speed = df['speed'].max()
 answer = df[df['speed'] == df['speed'].max()]
 
 
+
 ### Group By & Aggregation
 
 # info: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.aggregate.html
 # http://nbviewer.jupyter.org/github/jvns/pandas-cookbook/blob/v0.1/cookbook/Chapter%204%20-%20Find%20out%20on%20which%20weekday%20people%20bike%20the%20most%20with%20groupby%20and%20aggregate.ipynb
 
+# splits df into chunks and returns a df.groupby object (that can be iterated upon)
+# and a tuple of 2 objects: 2. the group condition, 2. the df reduced by that grouping.
+
+# output is:
+# a pandas.core.groupby.DataFrame object if you group by >1 column
+# or a pandas.core.groupby.Series object if you only group by one column
+# these types behave differently when using with .agg function
+
+# uses a split-apply-combine pattern to split the data, apply a func and return the combined results.
+# e.g.
+for animal, frame in df.groupby('animal_id'):
+    avg = np.average(frame['n_visits'])
+    print('Fox' + animal + 'made on average' + str(avg) + 'visits')
+
+# use level to group by the index
+df.groupby(level=0)
+
+
+# handy usecase: split a large df into groups to distribute processing between PCs / users
+
+# first set index !
+df = df.set_index('surname')
+
+# assign surnames A-M as group 1 and N-Z as group 2.
+def fun(item):
+    if item[0] < 'M':
+        return 1
+    else:
+        return 2
+
+# split the df into groups
+for group, frame in df.groupby(fun):
+    print('There are ' + str(len(frame))) + 'records in group' + str(group))
+
+
+## .agg function
+# applies a function(s) to column(s) of data in the group and returns the results
+# .agg requires a dict of colnames and the function you want to apply
+
+# e.g. to return mean pop per country (for a df with those columns)
+df.groupby('country')['population'].agg({'avg': np.average, 'sum': np.sum})
+# returns 1 col with avg  and 1 with sum
+
+df.groupby('country')['pop_2010']['pop_2011'].agg({'avg': np.average})
+# returns two nested cols with avg pop 2010 and avg pop 2011
+
+# pass same colname to the dict to overwrite the existing column with the aggregated values
+ df.groupby('country')['pop_2010'].agg({'pop_2010': np.average})
+
+
+# to perform calcs on a df grouped by >1 column
+df.groupby('country')['population'].agg({'avg': np.average})
+
+
+
+# calc total weight per category (weight and quantity are the input cols)
+df.groupby('Category').apply(lambda df, a, b: sum(df[a] * df[b]), 'Weight', 'Quantity')
+# same as:
+def totalweight(df, w, q):
+    return sum(df[w] * df[q])
+df.groupby('Category').apply(totalweight, 'Weight', 'Quantity')
+
+
+
 # Examine mean condition per vehicle type
 
 # copy dataframe and separate predictors and response
-X = veh_data.copy()
-y = X.pop('ConditionScore')
-y.groupby(veh_data.Manufacturer).mean()
-
-# equivalent to
 veh_data['ConditionScore'].groupby(veh_data['VehicleType']).mean()
-# and/or
-veh_data.groupby('VehicleType').ConditionScore.mean()
-										
+# same as
+veh_data.groupby('VehicleType').['ConditionScore'].mean()
+
 # count users per visit date
 # https://stackoverflow.com/questions/19384532/how-to-count-number-of-rows-in-a-group-in-pandas-group-by-object
-visitor_profiles.groupby(['visit_date']).size().reset_index(name='num_users')									
+visitor_profiles.groupby(['visit_date']).size().reset_index(name='num_users')
 
 
 ###  Access particular rows or values in pandas objects using indexes
@@ -2803,7 +3014,7 @@ df.groupby('FinancialYear')['VehicleID'].value_counts()
 df.groupby('name')['activity'].value_counts().unstack().fillna(0)
 
 
-## working with time differences / durations:
+### Time differences / durations:
 # see page on pandas for data science tricks: https://medium.com/towards-data-science/pandas-tips-and-tricks-33bcc8a40bb9
 
 # calculate time differences between consecutive events by the same person (name)
@@ -2821,40 +3032,26 @@ for col in df.columns:
         df.rename[columns={col:'A'}, inplace=True)
 
 
-### Drop function - doesn't work in place; returns a copy of the df
-    
-# drop rows from a df
-df = df.drop('row_name', axis = 0)    # note axis=0 by default, so must state axis=1 for column drops to work!
 
-# drop columns from a df
-df = df.drop('col_name', axis = 1)
+### Pivot Tables --pandas
 
-# can also delete columns with del
-del df['col_name']    # happens in place and doesn't return a view of the df!
+# get summary table with mean kwh per manufacturer (row) and year (col)
+df.pivot_table(values='kwh', index='manufacturer', columns='year', aggfunc=np.mean)
 
+# get mean of all columns by manufacturer and year (default aggfunc='mean')
+print(pd.pivot_table(Bikes, index=['manufacturer','year']))
 
-## reduce number in col by 20% (in place) - and will modify the original df too unless you make a .copy()
-df['Cost'] *= 0.8    # changes values in df
+# 2+ summary statistics
+# adds an 'all' row and column to show mean per year across all manufacturers and mean per manufacturer across all years
 
-cost = df['Cost']
-cost *= 0.8    # also changes values in df['Cost']
+# e.g. get min and max
+print(pd.pivot_table(Bikes, index=['manufacturer','year'], aggfunc=[np.min, np.max]),
+      margins=True)	# margins=True outputs an All row/col
 
-cost = df['Cost'].copy()
-cost *= 0.8    # does not change values in df['Cost']
+# can also pass self-defined functions to the aggfunc
 
 
 
-# concatenate 2 dfs
-frames = [ds_content, sa_content]
-content_consumption = pd.concat(frames, keys=['ds', 'sa'], axis = 0) # keys are like a new index
-		  
-# count entries for each user group
-print("ds: ", len(content_consumption.loc['ds']), "\nsa: ", len(content_consumption.loc['sa'])) # loc refers to named indexes, iloc refers to numbered indexes
-
-# join 2 dfs
-merge() or join()
-					
-										
 # =============================================================================
 ### """ PLOTTING """
 # =============================================================================
@@ -2890,21 +3087,21 @@ print(something)  # requires parentheses as it's a function
 2to3 -w FILENAME.py	# this makes any necessary changes directly to the source file (and makes a backup copy of the original file version called FILENAME.py.bak).
 2to3 -w -n FILENAME.py	# this makes any necessary changes directly to the source file (WITHOUT making a backup of the original).
 
-	      
+
 # =============================================================================
 ###  """ RANDOMISING or FINDING ALL COMBINATIONS OF THINGS """
 # =============================================================================
 
-	      
+
 # find all combos of two letters - using list comprehension
 lowercase = 'abcdefghijklmnopqrstuvwxyz'
 allcombos = [letter1+letter2 for letter1 in lowercase for letter2 in lowercase]
 
-# find all possible combos of two letters followed by 2 digits, e.g. member IDs	      
+# find all possible combos of two letters followed by 2 digits, e.g. member IDs
 lowercase = 'abcdefghijklmnopqrstuvwxyz'
 digits = '0123456789'
 allcombos = [a+b+c+d for a in lowercase for b in lowercase for c in digits for d in digits]
-	      
+
 
 # =============================================================================
 ###  """ RAW INPUT """
@@ -2945,7 +3142,7 @@ data = pd.read_csv('AirPassengers.csv')
 # save pandas dataframe as a csv file
 mydataframe.to_csv('my_data.csv')
 mydataframe.to_csv('my_data.csv', index=False) # index=False stops pandas adding an index column 'Unnamed: 0' to the df on save!
-mydataframe.to_csv('my_data.csv', compression = 'gzip') # save as compressed file										
+mydataframe.to_csv('my_data.csv', compression = 'gzip') # save as compressed file
 
 # save certain columns to a csv
 # one column
@@ -2961,7 +3158,7 @@ myfile.write(headline)
 myfile.write("\n") # insert new line
 myfile.write(text)
 myfile.close()
-										
+
 # save models / python objects to disk
 # https://machinelearningmastery.com/save-load-machine-learning-models-python-scikit-learn/
 filename = 'my_model.sav'
@@ -2974,12 +3171,12 @@ loaded_model = pickle.load(open(filename, 'rb'))
 ### """ SAVING PYTHON OBJECTS FOR LATER USE """
 # =============================================================================
 
-""" Saving models = object serialization (representing an object with a stream of bytes). 
+""" Saving models = object serialization (representing an object with a stream of bytes).
     Restoring the model is deserialization. """
 
-										
-## PICKLE	
-										
+
+## PICKLE
+
 """ Pickle module implements an algorithm for serializing and
     de-serializing a Python object structure (list, dict, etc.) so it can be
     saved on disk.
@@ -3003,43 +3200,43 @@ pickle.dump(fave_col, open("save.p", "wb"))     # pickle fave_col & save as "sav
 fave_col_p = pickle.load(open("save.p", "rb"))
         # 'rb' = opens the file for reading in binary mode.
 
-# compress pickle files with gzip - saves lots of space! 
+# compress pickle files with gzip - saves lots of space!
 import pickle
 import gzip
-										
+
 #save
 #filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
 #pickle.dump(random_search, gzip.open(filename, 'wb'))
 
 #open
 #filename = 'saved_models/p2b_rf_rscv_343dates_20180323.sav'
-#random_search = pickle.load(gzip.open(filename, 'rb'))										
+#random_search = pickle.load(gzip.open(filename, 'rb'))
 
-## NOTE: pickle can't save (or gzip compress) objects > 1GB...			
+## NOTE: pickle can't save (or gzip compress) objects > 1GB...
 ## Instead use sklearn's joblib library:
 
 ## JOBLIB
-										
+
 # Intended to be a replacement for Pickle, for objects containing large data. Works with sklearn models.
 # Add compress parameter between 0-9 to adjust compression; default = 0, more compression increases save/load time.
 # https://pythonhosted.org/joblib/generated/joblib.dump.html
-										
+
 from sklearn.externals import joblib
-										
+
 #save model without compression
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180326-joblib'
-joblib.dump(rf_default, filename) 
+joblib.dump(rf_default, filename)
 
 # save with compression (compress=0-9, where 9 is highest compression but also slowest to save/load)
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
 joblib.dump(rf_default, filename, compress = 9)
 
-# open/load (same code for compressed and uncompressed files)										
+# open/load (same code for compressed and uncompressed files)
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
 rf_default_test = joblib.load(open(filename, 'rb'))
-										
 
-	
+
+
 # ============================================================================
 ### """ SET WORKING DIRECTORY """
 # ============================================================================
@@ -3235,6 +3432,9 @@ chr(<number>)  # converts a number to a one-letter string
 # to print a string in a nice format
 print("%s" %query)
 
+# strip numbers from end of country names ('\d+' means numbers matching 0-9)
+energy['Country'] = energy['Country'].str.replace('\d+', '')
+
 
 
 
@@ -3298,7 +3498,7 @@ import tqdm
 with tqdm(total=100) as pbar:
     for i in range(10):
         pbar.update(10)
-	
+
 
 
 # =============================================================================
@@ -3419,7 +3619,7 @@ while True:     # this keeps the while loop going as long as the if statement in
 # E.g. the loop below will run forever, because i will never equal 10:
 # i = 1
 # while i != 10:    # = as long as i is not equal to 10, run the block below
-#     i=i+2         # adds 2 to i each time, so return odd numbers only
+#     i=i+2         # adds 2 to i each time, so returns odd numbers only.
 #     print(i)
 
 # Example while loops
