@@ -20,6 +20,7 @@
 # file input/output
 # for loops
 # functions
+# get name of python objects
 # HTML & BeautifulSoup
 # Inspecting objects defined in the console
 # jupyter notebook
@@ -619,7 +620,8 @@ for dict in list_of_dicts[25]:
 # access values in one column across all dicts in a list of dicts
 [print(float(dict['keyname'])) for dict in list_of_dicts]
 
-# unique values in one column in across all dicts: use set() - creates an unordered collection of uniwur elements.
+# set() - get uniwue values in a list --unique() only works for np.arrays
+# unique values in one column in across all dicts: use set() - creates an unordered collection of unique elements.
 unique_levels = set(dict['keyname'] for dict in list_of_dicts)
 
 
@@ -1145,6 +1147,39 @@ from email_preprocess import preprocess   # imports the function preprocess from
 """ NOTE if I make changes to the function in the email_preprocess file, might
     need to restart the kernel (and reload in all the data/modules) for the
     changes to be recognised. Otherwise Python will work from the cache. """
+
+
+# =============================================================================
+###  """ Get name of Python object
+# =============================================================================
+
+# search for the object in list of all local objects (stored as key-value pairs)
+# https://www.tutorialspoint.com/How-to-get-a-variable-name-as-a-string-in-Python
+# where my_object = contents of the object, e.g. “SELECT * FROM table” - only works if unique, or will return a random object name from all possibilities.
+object_name = [k for k,v in locals().items() if v == my_object][0]
+
+### Make dictionary of object names (keys) and object contents (values), e.g. query names and queries
+ def get_query_list(path):
+    """
+    List the names of queries saved as .txt files in a directory.
+    Requires os
+    """
+    query_list = os.listdir(path) 
+    query_list = [x for x in query_list if x.endswith(".txt")]
+    # sort so they run in order!
+    return sorted(query_list) 
+
+path = '/home/jo/projects/p2b/package/propensity_to_buy_model/propensity_to_buy_model/separated_queries/'
+query_list = get_query_list(path)
+query_list # e.g. [q1.txt, q2.txt, q3.txt]
+
+# convert to dictionary
+query_dict = {}
+for query_name in query_list:
+    query = open(path + query_name, 'r').read()
+    query_dict[query_name] = query
+# optional: convert to ordered dictionary so queries run in order
+query_dict = OrderedDict(sorted(query_dict.items(), key=lambda x: x[0]))   
 
 
 # =============================================================================
@@ -2376,12 +2411,18 @@ df.fillna(method=ffill())   # ffill = forward-fill to fill missing values with v
 
 # numpy array class is called ndarray.
 
+# get array of numbers from 1 to length of df, and then shuffle these indexes
+idx = np.arange(len(X_test_np))
+np.random.shuffle(idx)
+
+# convert pandas df to np array 
+X_test_np = X_test.values
+
 # Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
 # https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.random.normal.html
-numpy.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
+np.random.normal(loc=0.0, scale=1.0, size=None) # loc = mean, scale = SD
 
 np.random.randint(0, 100, (3,4))) # 2d array of random numbers between 0-100
-
 
 
 # Basic NumPy commands
@@ -2389,7 +2430,7 @@ ndarray.ndim    # number of axes (dimensions) of the array, e.g. arrayname.ndim
 ndarray.shape   # dimensions of the array
                 # For a matrix with n rows and m columns, shape will be (n,m)
 
-numpy.reshape(a, newshape)  # reshape an array into a new shape without changing its data.
+np.reshape(a, newshape)  # reshape an array into a new shape without changing its data.
                             # a = array to be reshaped
                             # newshape = tuple of integers: (n_rows, n_columns).
                             # If newshape is just one integer then the result
@@ -2418,9 +2459,28 @@ print(test2[::3]) # iterate over rows (same as test2[::3,:]), starting from inde
 print(test2[:,::3]) # iterate over columns, starting from index 0 of each row
 test2[0:3, ::3] # print every 3rd number in rows 0-3
 
+# select the 100th index from the shuffled array
+instance = X_test_np[idx][100:101]
+
 # flatten the 2d array into a 1d array and print every 7th number
 a = test2.reshape(12)
 a[::7]
+
+
+### np.corrcoef
+
+# interpreting np.corrcoef
+# np.corrcoef returns a correlation matrix, where position:
+# [0,0] is the correlation between variable x and itself (x,x), which will be 1. 
+# [1,1] is the correlation between variable y and itself (y,y), which will be 1. 
+# [0,1] is the correlation between variable x and y (x,y), which is the value of interest (and the same as [1,0]) 
+np.corrcoef(df['converted'], df['lifetime_num_orders'])[0,1]
+
+
+### Modify a sequence in-place by shuffling its contents.
+arr = np.arange(10)
+np.random.shuffle(arr)
+
 
 # =============================================================================
 ### """ OUTLIERS """
@@ -2668,6 +2728,14 @@ df.T
 ## copy dataframe and separate predictors and response
 X = veh_data.copy()
 y = X.pop('ConditionScore')
+
+
+## Pandas Shift
+# shifts the rows (or columns) up or down by x amount
+# get date from next/last 'period' in sequence (assumes df is in order), for each customer
+# can integrate with time module, e.g. to use timedelta
+t['next_order_date'] = t.groupby('cust')['date'].shift(periods = -1)
+t['last_order_date'] = t.groupby('cust')['date'].shift(periods = 1)
 
 
 
@@ -3234,6 +3302,7 @@ joblib.dump(rf_default, filename, compress = 9)
 # open/load (same code for compressed and uncompressed files)
 #filename = 'saved_models/p2b_rf_default_363dates_200estimators_20180404_c9'
 rf_default_test = joblib.load(open(filename, 'rb'))
+
 
 
 

@@ -48,7 +48,7 @@
 
 # Distributions
 
-# ddply - organising data
+# ddply dplyr - organising data
 ### remove duplicate rows
 ### combine two columns using tidyr
 
@@ -707,7 +707,7 @@ wide_dat_new <- spread(long_dat, weight_time, measurement_grams)
 
 
 #================================#
-# ddply - organising datasets ####
+# ddply dplyr - organising datasets ####
 #================================#
 # POSIXCT data type messes with plyr so don't convert date
 
@@ -736,6 +736,36 @@ rownames(net) <- attribs$ShortCode # rename rows: must be in same order as matri
 
 ### Use mutate to count number of unique values without grouping
 a <-ddply(mydata, .(AnimalID, ShortCode, SeasonID), mutate, Nterritories = length(unique(Territory))) # counts number of different territories visited per territory for each fox
+
+
+### Translating dplyr into data.table
+
+# data.table - the comma at the end means [row, column]
+ data_between_dates <- churn_data[first_order_date >= start_date & first_order_date <= end_date & first_no_product_types == 1,]
+
+# dplyr
+ data_between_dates <- subset(churn_data, first_order_date >= start_date & first_order_date <= end_date & first_no_product_types == 1)
+ 
+
+# data.table
+data_between_dates[,.(n_first_time_buyers = length(unique(member_id)),
+                      # = share of customers: n_customers_this_product / n_customers_all_products
+                      percentage_first_time_buyers = round(100*(length(unique(member_id))/length(unique(data_between_dates$member_id))), 2),
+                      n_retained = sum(churn_flag == 0),
+                      n_churned = sum(churn_flag == 1),
+                      yoy_churn_as_perc = round(100*sum(churn_flag == 1)/length(unique(member_id)), 2)),by=c('first_order_product')]
+
+# dplyr
+data_between_dates %>%
+  group_by(first_order_product) %>%
+  summarize(n_first_time_buyers = n(),
+            # = share of customers: n_customers_this_product / n_customers_all_products
+            percentage_first_time_buyers = round(100*(n()/nrow(.)), 2),
+            n_retained = sum(churn_flag == 0),
+            n_churned = sum(churn_flag == 1),
+            yoy_churn_as_perc = round(100*sum(churn_flag == 1)/n(), 2))
+  
+#plot_data <- as.data.frame(newData()[[2]]) # churn_percentages is 2nd item in mydata ()
 
 
 #===========================================#
