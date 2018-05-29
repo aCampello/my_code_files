@@ -26,6 +26,9 @@ import numpy as np
 import seaborn as sns # for prettier plots
 import pylab as pl
 import matplotlib.pyplot as plt   # recommended as is object-orientated, for more advanced plotting
+%matplotlib inline    # to plot inline in jupyter notebooks
+plt.style.use('ggplot')    # use ggplot style
+import seaborn as sns    # alternative to ggplot for pretty plots
 
 # You can use matplotlib's  MATLAB-like API to plot simple, single panel figures
 # But matplotlib's object-orientated API is recommended (where you define fig and ax and run operations on those variables, rather than using global objects/program states), because it gives more control - especially for more advanced plots and subplotting
@@ -148,4 +151,3 @@ fig, ax = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True, figsize=(10, 
 plt.subplot(321)
 plt.plot(spend_comms.year, spend_comms.spend_inflation_adj, label = "Communication")
 plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
-

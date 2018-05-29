@@ -14,6 +14,7 @@
 # data cleaning
 # dates and times
 # dictionaries
+# distributions (numpy)
 # environments
 # errors and bugs
 # feature scaling
@@ -39,6 +40,7 @@
 # raw input
 # saving files as csv etc
 # saving python objects
+# scipy (for hypothesis testing in python)
 # set working directory
 # shortcuts for running code
 # SQLite DATABASES
@@ -790,6 +792,72 @@ print[i for i in d]  # prints in order
 
 
 # ===============================================================
+### """ DISTRIBUTIONS (Numpy) """
+# ===============================================================
+
+## Measures of a distribution
+# most 'common' values: mean, mode etc
+# variability: standard deviation
+# shape of the tails: kurtosis
+
+## Sampling distributions
+# e.g. a sample from a binomial distribution will be either 0 or 1
+np.random.binomial(n, p, size)
+np.random.binomial(1, 0.5)    # takes 1 sample, with a 0.5 probability of getting a zero
+# 1000 coin flips: probability of getting a zero number
+np.random.binomial(1000, 0.5)/1000
+# 10 x 'simulations' of 1000 coin flips: probability of getting a zero number
+x = np.random.binomial(1000, 0.5, 10)    # returns array of n/1000 that were zero
+print((x>=500).mean())    # proportion of times when 0 was more likely than 1
+
+# simulate the chance of having a tornado on any given day - based on 200 simulated days of data
+chance_of_tornado = 0.1    # 1% chance of tornado e.g. 1 in every 10 days
+tornado_events = np.random.binomial(1, chance_of_tornado, 200)
+print((tornado_events>0).mean())
+
+# other distributions
+np.random.gaussian(0.75)
+np.random.uniform(0,1)
+
+## Standard deviation
+distribution = np.random.normal(0.75,size=1000)
+np.std(distribution)
+# exact formula: (gives same result)
+np.sqrt(np.sum((np.mean(distribution)-distribution)**2)/len(distribution))
+
+## Kurtosis
+# negative value: curve is flatter than a normal distribution
+# positive value: curve is more peaky than a normal distribution
+# the closer to 0 the better
+import scipy.stats as stats
+stats.kurtosis(distribution)
+
+## Chi_squared distribution
+# left-skewed, with just one parameter: degrees of freedom
+# increasing df reduces the left skew (but it will never become right skewed)
+# e.g...
+# more left skew
+chi_squared_df2 = np.random.chisquare(2, size=10000)
+stats.skew(chi_squared_df2)
+# slightly less left skew
+chi_squared_df5 = np.random.chisquare(5, size=10000)
+stats.skew(chi_squared_df5)
+
+import matplotlib.pyplot as plt
+output = plt.hist([chi_squared_df2, chi_squared_df5], bins=50, histtype='step',
+                  label=['2 degrees of freedom','5 degrees of freedom'])
+plt.legend(loc='upper right')
+
+## Bimodal distributions
+# have >1 peak
+# can model them using two normal distributions with different parameters: Gaussian mixture models
+# Gaussian mixture models are useful for clustering data
+
+
+
+
+
+# ===============================================================
 ### """ ENVIRONMENTS """
 # ===============================================================
 
@@ -1027,6 +1095,17 @@ my_list = ['apple', 'banana', 'grapes', 'pear']
 for i, value in enumerate(my_list, 1):
     print(i, value)
 
+## For Else loops
+# http://book.pythontips.com/en/latest/for_-_else.html
+# acts like a 'then' statement, so if you dont break out of a for loop it will run whatever is in the else statement.
+for item in container:
+    if search_something(item):
+        # Found it!
+        process(item)
+        break
+else:
+    # Didn't find anything..
+    not_found_in_container()
 
 # =============================================================================
 ###  """ FUNCTIONS """
@@ -1164,10 +1243,10 @@ object_name = [k for k,v in locals().items() if v == my_object][0]
     List the names of queries saved as .txt files in a directory.
     Requires os
     """
-    query_list = os.listdir(path) 
+    query_list = os.listdir(path)
     query_list = [x for x in query_list if x.endswith(".txt")]
     # sort so they run in order!
-    return sorted(query_list) 
+    return sorted(query_list)
 
 path = '/home/jo/projects/p2b/package/propensity_to_buy_model/propensity_to_buy_model/separated_queries/'
 query_list = get_query_list(path)
@@ -1179,7 +1258,7 @@ for query_name in query_list:
     query = open(path + query_name, 'r').read()
     query_dict[query_name] = query
 # optional: convert to ordered dictionary so queries run in order
-query_dict = OrderedDict(sorted(query_dict.items(), key=lambda x: x[0]))   
+query_dict = OrderedDict(sorted(query_dict.items(), key=lambda x: x[0]))
 
 
 # =============================================================================
@@ -1229,42 +1308,26 @@ def hello():
     text, source code, rich media output, and metadata. each segment of the
     document is stored in a cell.
 
-    Works like the python interpreter in spyder, but with more menu-driven
-    features for annotating code.
-
     Useful on computers without Python or Spyder installed on the hard drive.
 
     Open Jupyter Notebook via the start menu or from Git Bash, but if you have
     set up different environments in Anaconda it's best to open it via Anaconda
     Navigator: right click the PLAY button on the environment and open Jupyter
-    Notebook from there.
-
-    # best practice is not to have multiple jupyter notebook terminals open/running
-    at the same time as can cause problems.
+    Notebook from there. Best practice is not to have multiple jupyter notebook
+    terminals open/running at the same time as can cause problems.
 
     This opens http://localhost:8888/tree in the web browser and lists all my
     local files.
-
-    Keep Git Bash open on the desktop to keep the browser session connected.
-    Can set it to work for Python 2 or 3.
-
-    Click New on top right to create a new Notebook.
 
     Can drag and drop text or content from desktop programs into cells.
 
     Set the working directory using cd C:\User\... the same as in Spyder.
 
-    Displays output below the cell containing the code (can toggle output on/off
-    or just clear it).
-
-    Can rearrange cells.
-
     Can tag cells with keywords (new feature April 2017: not yet searchable).
-
-    Can create both code cells and rich text cells to display notes
-
-    Print preview for printing with formatting.
 """
+# ? to get more info on functions
+from scipy import stats
+stats.ttest_ind?
 
 ### ipython magic functions for notebooks
 %precision 2 # custom floating point precision - print to 2 d.p.
@@ -2415,7 +2478,7 @@ df.fillna(method=ffill())   # ffill = forward-fill to fill missing values with v
 idx = np.arange(len(X_test_np))
 np.random.shuffle(idx)
 
-# convert pandas df to np array 
+# convert pandas df to np array
 X_test_np = X_test.values
 
 # Create numpy array containing samples from a normal distribution (mean=0.0, SD=1.0)
@@ -2471,9 +2534,9 @@ a[::7]
 
 # interpreting np.corrcoef
 # np.corrcoef returns a correlation matrix, where position:
-# [0,0] is the correlation between variable x and itself (x,x), which will be 1. 
-# [1,1] is the correlation between variable y and itself (y,y), which will be 1. 
-# [0,1] is the correlation between variable x and y (x,y), which is the value of interest (and the same as [1,0]) 
+# [0,0] is the correlation between variable x and itself (x,x), which will be 1.
+# [1,1] is the correlation between variable y and itself (y,y), which will be 1.
+# [0,1] is the correlation between variable x and y (x,y), which is the value of interest (and the same as [1,0])
 np.corrcoef(df['converted'], df['lifetime_num_orders'])[0,1]
 
 
@@ -2716,7 +2779,9 @@ grades = df['Grades'].astype('category', categories = ['A', 'B', 'C'], ordered=T
 threshold = 1.0
 views['attribute_1_bin'] = np.where(views['attribute_1'] > threshold, 1,0)
 
-# cut: group continuous feature into buckets or bins
+### cut
+# converts continuous data to categorical data
+# by grouping data into buckets or bins; produces interval data, with equal spacing between categories.
 s = pd.Series([168, 180, 174, 190, 170, 185, 179, 181, 175, 169, 182, 177, 180, 171])
 pd.cut(s, 3)    # groups scores into 3 equally-spaced bins (labelled with the bin range)
 
@@ -2794,9 +2859,9 @@ df.iat[0,0] == 0
 
 ### Indexing operators: .loc and .iloc for row-based querying, [] for column-based querying
 
-
-# .iloc / .loc
-# can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
+# iloc[], for querying based on index position
+# loc[], for querying rows based on label
+# .iloc and .loc can take up to two inputs, the row index and a list of colnames (df.loc[(row), (col)])
 
 # series
 purchase_1.iloc(3) = np.nan    # same as purchase_1[3]
@@ -3304,6 +3369,29 @@ joblib.dump(rf_default, filename, compress = 9)
 rf_default_test = joblib.load(open(filename, 'rb'))
 
 
+# ============================================================================
+### """ SCIPY: hypothesis testing in Python """
+# ============================================================================
+from scipy import stats
+
+## t-test
+# compare the means of 2 independent samples (h0 = no difference; if p<0.05 (or whatever alpha you set) then h0=false)
+stats.ttest_ind() # takes as input two series
+stats.ttest_ind(early['assignment1_grade'], late['assignment1_grade'])
+# output is a tuple with a t-value and p-value
+
+## multiple testing ('p-hacking')
+
+# bonferroni correction: very conservative
+# adjust p-values if running multiple t-tests by the number of tests run, e.g
+# if run 3 t-tests, multiple all p-values by 1/3
+
+## cross-fold validation
+# run tests on a sample of data, e.g. 80%
+# make some hypotheses based on these test results
+# test the new hypotheses (SMALLer number of tests) on the remaining 20% data
+
+
 
 
 # ============================================================================
@@ -3512,7 +3600,7 @@ energy['Country'] = energy['Country'].str.replace('\d+', '')
 # =============================================================================
 
 # subset by location
-views_GBR = views_sun_by_location[views_sun_by_location.location == "GBR"]
+views_GBR = views_sun_by_location[views_sun_by_location['location'] == "GBR"]
 
 # subset by date
 emailed_18th = emailed.loc[emailed.date == datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))]

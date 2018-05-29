@@ -3318,7 +3318,9 @@ scale_shape_manual=c(1,2,3,4,6,12) # to specify shape type for different levels 
 # "Pairwise Tukey tests revealed that summer groups were larger than spring (z = -0.56, p = 0.045)"
 
 # Adjust p-values for multiple comparisons - though most packages do this automatically
-p.adjust(p, method = p.adjust.methods, n = length(p))
+p.adjust(p, method = p.adjust.methods)
+# e.g.
+p.adjust(p_value_list, method="bonferroni")
 
 
 library(multcomp) # for glht method: just for models with no interaction (or interaction as a single column of combined variables, e.g. "seasXorigin")
