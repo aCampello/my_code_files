@@ -40,6 +40,8 @@
 
 # Data frames
 
+# Datatable
+
 # Datetime formats in Excel
 
 # Datetime formats in R
@@ -70,6 +72,8 @@
 # For loops
 
 # Functions
+
+# Gender
 
 # General useful code
 
@@ -134,6 +138,8 @@
 
 # Packages
 ## versions, citing, updating etc
+
+# Percentages
 
 # Pipes
 
@@ -228,7 +234,7 @@ text(x, y, expression(hat(Delta)[4]== paste("0.91 (0.80-0.90)"))), cex=1.1)
 # Add tabs using \t
 
 # bquote() is used to add symbols to equations in axis titles and headings:
-text(x,y, bquote(paste("QP: ",sigma^2==.(round(modelA,1))*mu)), col=2) 
+text(x,y, bquote(paste("QP: ",sigma^2==.(round(modelA,1))*mu)), col=2)
 plot(billy, main=bquote(paste(bold("Autumn "), hat(Delta)[4]==0.89 (0.88-0.90))))
 
 bold("text") # to make text bold
@@ -241,7 +247,7 @@ title("Spring", adj=0) # adj=0 means left-justify, adj=1 means right-justify, ot
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Analysis of variance to run a linear regression model
 anova.model<-(aov(mydata$Group.size~mydata$T))
-summary(anova.model) 
+summary(anova.model)
 
 # anova to compare the fit of two nested models - test the significance of a predictor by comparing model with and without it
 anova(model1, model2) # gives a chi-sq goodness of fit if model includes categorical predictors, or an F-test for continuous predictors
@@ -261,11 +267,11 @@ a <- apply(shortest.paths(T1winB4_net_graph), 1, sum) # get sum per node of shor
 #=================================================================================#
 
 # Parameter values returned by coef() or summary() are on the scale of the link
-# function, not the untransformed predictor variables.  Use the inverse of the link 
-# function to get parameter values back on the scale of x, or use the function 
+# function, not the untransformed predictor variables.  Use the inverse of the link
+# function to get parameter values back on the scale of x, or use the function
 # predict with the type="response" argument.
 
-# Back-transform model coefficients and save in new table: 
+# Back-transform model coefficients and save in new table:
 # can't inverse-log negative values so the meaning of coefficients (-/+) disappeared as
 # they were all positive after transformation:-
 
@@ -277,7 +283,7 @@ mod<-coef(summary(glm1)) # add chisq, df and p-values from anova() likelihood ra
 # view particular random effects:
 coef(erateMOD_full_intranef)$Place
 coef(erateMOD_full_intranef)$`Place:ShortCode` # for interaction random effects put in apostrophes
-ranef(erateMOD_full_intranef)$`Place:ShortCode` 
+ranef(erateMOD_full_intranef)$`Place:ShortCode`
 # plot random effects
 lattice::dotplot(ranef(strength_model_full,condVar=TRUE)) # have to scroll between plots if have multiple random effects. Condvar adds CI (?) bars
 
@@ -290,7 +296,7 @@ inverse.mod<-exp(mod)
 
 
 # to get parameter values back on the scale of X:
-predict(glm1, type="response") # better!! Use for plotting. 
+predict(glm1, type="response") # better!! Use for plotting.
 
 # Error family:	  Default link:	 Inverse of link:	  Use for:
 # Gaussian	      identity	     1		              Normally distributed error
@@ -302,8 +308,8 @@ predict(glm1, type="response") # better!! Use for plotting.
 # To back-transform means in groups use lsmeans (detach lmerTest if get probs or use lsmeans::)
 lsmeans(glmm3, ~ season * Origin) # least squares means on log scale (as model = glmer poisson with log-link)
 lsmeans(glmm3, ~ season | Origin) # use vertical line separator to display in clearer table
-summary(lsmeans(glmm3, ~ season | Origin), type = "response") 
-# 'rate' = least sq mean backtransformed from the log scale = equal to 
+summary(lsmeans(glmm3, ~ season | Origin), type = "response")
+# 'rate' = least sq mean backtransformed from the log scale = equal to
 # 'the adjusted mean' from package phia command InteractionsMeans
 # but SEs are not same from phia and lsmeans
 
@@ -322,14 +328,14 @@ summary(lsmeans(glmm3, ~ season | Origin), type = "response")
 library(readr)
 # can have read_delim_chunked(), read_csv_chunked() and others
 read_delim_chunked(csv_file, callback, delim = ",",
-                   skip = pre_process_size, 
+                   skip = pre_process_size,
                    col_names = col_names, # to override automatic column naming
                    col_types = spec(df),
                    chunk_size = chunk_size,
-                   progress = FALSE) 
+                   progress = FALSE)
 
 # The CALLBACK argument tells the function what to do with each chunk
-# 3 types of callback function 
+# 3 types of callback function
 # ChunkCallback - all callback functions inherit from this class.
 # SideEffectChunkCallback - used only for side effects, no results are returned.
 # DataFrameCallback - combines each result together at the end.
@@ -345,13 +351,13 @@ read_delim_chunked(csv_file, callback, delim = ",",
 # This approach could take a *long* time, depending on how fast your access to disk is.
 # Save the random sample to disk periodically so you don't need to start again from row 1.
 # Print current job status to screen and/or to a log file, e.g. N chunks processed, N chunks left
-# To make sure computer didn't get stuck at some point during the data reading 
+# To make sure computer didn't get stuck at some point during the data reading
 # (might happen on Windows if it starts using virtual memory.)
 # RGui might be faster than RStudio for this
 
 
 
-### Packages for out of data computations - e.g. linear model can use a file 
+### Packages for out of data computations - e.g. linear model can use a file
 ### connection rather than a df loaded into the workspace.
 # use function 'shglm' from package 'speedglm', which takes as argument a file connection
 # Also see packages in the *Large memory and out-of-memory data* section of:
@@ -391,13 +397,13 @@ binom.test(2442, sum(sum_status_sub$freq), 0.5) # see p.37 Rob Thomas' R book
 # ggplot2::cut_number() & Hmisc::cut2() split by quartiles so equal observations in diff categories.
 
 # Split into categories with EQUAL number of obs
-patchdata$MJcateg <- as.numeric(cut_number(patchdata$MeanMJperDay,2)) 
+patchdata$MJcateg <- as.numeric(cut_number(patchdata$MeanMJperDay,2))
 # see n observations in each category
 table(patchdata$MJcateg)
 # view the levels:
 cut_number(patchdata$MeanMJperDay,2) # Levels = 0.108-0.736 & 0.736-5.87.
 
-# Split into categories of equal length 
+# Split into categories of equal length
 patchdata$DFcateg <- as.numeric(cut(patchdata$DaysFedPerWeek, breaks = 2))
 table(patchdata$DFcateg) # see n observations in each category
 
@@ -419,7 +425,7 @@ scale(variable, center = TRUE, scale = TRUE)  # to create z-scores
 #==================#
 
 # Replace NAs with zeros
-replace(df, is.na(df), 0) 
+replace(df, is.na(df), 0)
 df[is.na(df)] <- 0 # better
 centrality$maincomp[is.na(centrality$maincomp)] <- 0 # using column names
 
@@ -435,7 +441,7 @@ df$sex[df$sex==''] <- NA
 
 
 # NOTE: sometimes empty cells are treated as factor levels and no matter what I can't get rid of the empty factors (converting to NA or zero doesnt work)
-# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty 
+# avoid this problem by importing data with stringsAsFactors = FALSE & then remove or rename the empty
 # cells as NA before converting the variable to a factor.
 
 #== Adjust or rename datapoints, e.g. if some rows are 'Male' and some are 'male' convert them all to 'male'
@@ -484,11 +490,33 @@ plot_colours <- c("blue","red","forestgreen", "black", "orange", "purple", "skyb
 
 
 
+
+#==============================#
+# Complete cases ####
+#==============================#
+
+DF <- data.frame(x = c(1, 2, 3), y = c(0, 10, NA), z=c(NA, 33, 22))
+
+# find incomplete cases using '!' (or complete cases without the '!')
+# vector of true and false for whether row contains NA in the specified columns
+completeVec <- !complete.cases(DF[, c("y", "z")])
+DF$imp <- completeVec
+DF$imp2 <- as.numeric(DF$imp) # code vector of true and false to 1 and 0
+
+# as a function (from https://stackoverflow.com/questions/11254524/omit-rows-containing-specific-column-of-na)
+completeFun <- function(data, desiredCols) {
+  completeVec <- complete.cases(data[, desiredCols])
+  return(data[completeVec, ])
+}
+completeFun(DF, "y")
+completeFun(DF, c("y", "z"))
+
+
 #==============================#
 # Compute confidence intervals ####
 #==============================#
 # Compute 95% CIs (takes a while to compute) # .sig01 etc are random effects
-REDUCED.nb2_cis<-confint(REDUCED.nb2) 
+REDUCED.nb2_cis<-confint(REDUCED.nb2)
 data.frame(round(REDUCED.nb2_cis, 4)) # rounded to 4 d.ps
 
 # Get 95% CI for median
@@ -513,14 +541,14 @@ mad(data$MeanMJperFeedingDay)
 # T-contrasts (vector (one line)) are between levels of the same factor e.g. spring-summer.
 # T-contrasts are directional: +/- to indicate direction of effect.
 
-# F contrasts (matrix) are between different factors, e.g. spring-neighbour vs summer-neighbour. 
+# F contrasts (matrix) are between different factors, e.g. spring-neighbour vs summer-neighbour.
 # F-contrasts are unidirectional: just indicate size of difference but not its direction.
 
 
 # Did not use contrasts for group size models: just did post hoc tests to compare all possible combinations using lsmeans
 # But could have first compared first spring+summer with aut+winter, because
-# expect diffs between these seasons (behav is centered on cub rearing in spr+sum, 
-# but instead on dispersal & mating in aut+wint). 
+# expect diffs between these seasons (behav is centered on cub rearing in spr+sum,
+# but instead on dispersal & mating in aut+wint).
 # Then use additional contrasts to separate spr+sum and aut+wint
 
 # To reset contrasts to default
@@ -584,26 +612,26 @@ read.csv("Filename.csv") # open file in R
 # For importing big datasets data.table::fread is much faster than read.csv or read_csv
 mydata <- fread(csv_name, drop = c("Acorn", "Acorn_grouped")) # exclude irrelevant cols
 
-# Can use fread to import and combine multiple CSV files 
+# Can use fread to import and combine multiple CSV files
 # (might overload R's RAM and crash it/slow it down loads):
 
 # first make a list of all the filenames in the target folder
 file_list <- list.files(path = "~/my_code_files/R_codes/gla_interview_task_011017/smart_meter_data/separate_csvs") # this particular example did not work - files too large
 # set wd to same directory as the files in file_list.
-setwd("~/my_code_files/R_codes/gla_interview_task_011017/smart_meter_data/separate_csvs") 
+setwd("~/my_code_files/R_codes/gla_interview_task_011017/smart_meter_data/separate_csvs")
 # put all the csv files in a list
-lst <- lapply(file_list, fread, sep=",") 
+lst <- lapply(file_list, fread, sep=",")
 # combine them (rbindlist is faster than rbind)
 mydata <- rbindlist(lst)
 
-# Note Fread does not modify variable names if they include spaces, e.g. KWH (per hour) 
+# Note Fread does not modify variable names if they include spaces, e.g. KWH (per hour)
 # is not changed (whereas read.csv() would change it to kwh.per.hour.)
 # so to rename variables containing spaces use quote marks:
 mydata <- rename(mydata, kwh = 'KWH/hh (per half hour)')  # changes name to kwh
 
 
 # saves data as csv file in current working directory
-write.csv(attribs.NC, file="Filename.csv", row.names = FALSE) 
+write.csv(attribs.NC, file="Filename.csv", row.names = FALSE)
 fwrite(daily_kwh_household, file = "daily_kwh_household.csv") # 30x faster!
 
 
@@ -645,11 +673,11 @@ datacsv$Date <- strptime(datacsv$DAY,format="%d/%m/%Y") # this works on 'charact
 #= Good resource for extracting different components from datetimes:
 # https://www.aridhia.com/technical-tutorials/working-with-date-times-and-time-zones-in-r/
 # http://neondataskills.org/R/time-series-convert-date-time-class-POSIX/
-  
+
 # first convert column of datetimes into POSIXct format...
-mydata$dt = as.POSIXct(paste(mydata$DateTime)) 
+mydata$dt = as.POSIXct(paste(mydata$DateTime))
 # ...then use strftime to convert the POSIXct to POSIXlt (list of dt components) and extract the year, day, time etc.
-mydata$year = strftime(mydata$dt, format = "%Y") 
+mydata$year = strftime(mydata$dt, format = "%Y")
 mydata$day = strftime(mydata$dt, format = "%D")
 mydata$t = strftime(mydata$dt, format = "%H:%M:%S")
 
@@ -659,7 +687,7 @@ mydata$t = strftime(mydata$dt, format = "%H:%M:%S")
 
 #==== Convert datetimes and durations using package lubridate
 library(lubridate)
-# Convert encounter durations to number of seconds 
+# Convert encounter durations to number of seconds
 datacsv$duration <- hms(datacsv$EncounterDuration)  # format character to 'hours:minutes:seconds'
 datacsv$duration.s <- hour(datacsv$duration)*3600 + minute(datacsv$duration)*60 + second(datacsv$duration) # extract components of the datetime and convert to N seconds
 
@@ -687,13 +715,13 @@ deg(radtimes) # package 'circular'
 save(mydata, file = "saved_data.RData") # filename doesn't rename the dataframe itself - i.e. when loaded back into R it will still be called 'mydata'
 
 # transpose data frame
-a <- t(df) 
+a <- t(df)
 
 #== wide vs long data formats
 # http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/
 
 # convert from wide to long using tidyr::gather()
-long_dat <- gather(wide_dat, weight_time, measurement_grams, Weight1:Weight3, factor_key = TRUE) 
+long_dat <- gather(wide_dat, weight_time, measurement_grams, Weight1:Weight3, factor_key = TRUE)
 # factor_key=TRUE makes the grouping variable into a factor
 
 # convert from long to wide using tidyr::spread()
@@ -703,7 +731,25 @@ wide_dat_new <- spread(long_dat, weight_time, measurement_grams)
 # or base R's functions reshape() stack() and unstack() - but these 3 are harder to use.
 
 
+#===================#
+# Datatable & DT ####
+#===================#
 
+# data.table != DT
+library(data.table)
+library(DT)
+
+# Format cell background colour in a data table to represent values in cells: DT library
+# requires data to be formatted as DT::datatable(mydata)
+churn_percentages_wide <- datatable(churn_percentages_wide, options = list(searching = FALSE, paging = FALSE, info = FALSE), rownames= FALSE)
+# select only numeric columns
+numeric_cols <- churn_percentages_wide[,sapply(churn_percentages_wide, is.numeric),with=FALSE]
+# format the background style
+churn_percentages_wide %>% formatStyle(columns = names(numeric_cols),
+                                        background = styleColorBar(range(numeric_cols), 'lightblue'),
+                                        backgroundSize = '98% 90%',
+                                        backgroundRepeat = 'no-repeat',
+                                        backgroundPosition = 'right')
 
 
 #================================#
@@ -712,14 +758,14 @@ wide_dat_new <- spread(long_dat, weight_time, measurement_grams)
 # POSIXCT data type messes with plyr so don't convert date
 
 # Recode levels of factors and save in new column ***Can't do if import dataset using 'stringsAsFactors=FALSE' as factors will be saved as characters. Need to be factors.
-library(plyr) 
+library(plyr)
 levels(attribs$Sex)
 attribs$sex2 <- revalue(attribs$Sex, c("Male"="M", "Female"="F", "Unknown" = "Usx"))
 levels(attribs$SocialStatus)
 attribs$status2 <- revalue(attribs$SocialStatus, c("Dominant"="Dom", "Subordinate"="Sub", "Unknown" = "Ust"))
 
 # Remove duplicate rows (for diff seasons) for foxes in attribute data
-library(plyr) 
+library(plyr)
 unique_attribs<- subset(attribs, !duplicated(ShortCode))
 attr <- attribs[!duplicated(attribs[1:3]),] # lists unique combinations of columns 1-3 (to remove duplicated rows for before/after midnight))
 
@@ -745,7 +791,7 @@ a <-ddply(mydata, .(AnimalID, ShortCode, SeasonID), mutate, Nterritories = lengt
 
 # dplyr
  data_between_dates <- subset(churn_data, first_order_date >= start_date & first_order_date <= end_date & first_no_product_types == 1)
- 
+
 
 # data.table
 data_between_dates[,.(n_first_time_buyers = length(unique(member_id)),
@@ -764,8 +810,29 @@ data_between_dates %>%
             n_retained = sum(churn_flag == 0),
             n_churned = sum(churn_flag == 1),
             yoy_churn_as_perc = round(100*sum(churn_flag == 1)/n(), 2))
-  
+
 #plot_data <- as.data.frame(newData()[[2]]) # churn_percentages is 2nd item in mydata ()
+
+## unique() and distinct()
+# both return unique rows, but distinct may be slightly faster
+# be careful when using with group_by():
+  # if use distinct() it considers the group_by
+  # if use distinct(col1, col2) it ignores the group_by
+# example:
+  library(dplyr)
+  data(iris)
+
+  # make duplicated rows to test
+  iris_dup <- bind_rows(iris, iris)
+
+  d <- distinct(iris_dup)
+  u <- unique(iris_dup)
+  all(d==u) # TRUE = same result
+
+  # get the distinct elements of specified columns in iris; both methods give same elements, but in different formats:
+  distinct(iris_dup, Petal.Width, Species) # distinct returns an ordered list (with consecutive row numbers)
+  unique(iris_dup[c("Petal.Width", "Species")]) # unique returns the row number of the first occurrence of each unique element.
+
 
 
 #===========================================#
@@ -781,11 +848,11 @@ table(data$variable) # view frequency of diff counts - like histogram but in num
 # Get median and median confidence interval
 library(asbio)
 ci.median(mydata$MeanPhotosPerVisit)
-          
+
 # Summary stats using ddply:
 
 # e.g. find mean group sizes in each territory
-# 
+#
 groupsizesummary <- ddply(mydata, c("SiteID"), summarise,
                           N    = length(Group.size),
                           mean = mean(Group.size),
@@ -794,10 +861,10 @@ groupsizesummary <- ddply(mydata, c("SiteID"), summarise,
                           overallmean = mean(mydata$Group.size)) # include mydata$ to calc mean across all rows ignoring grouping variables (i.e. SiteID here)
 groupsizesummary # view summary table
 plot(groupsizesummary$SeasonID, groupsizesummary$mean)
-line(groupsizesummary$mean~groupsizesummary$SeasonID, col="black") # regression line (y~x) 
-# NOTE: SD comes out as 'NA' when two variables have the same name, e.g. if calculating mean of means, can't say 
-# nfoxes=mean(nfoxes), have to rename NEWnfoxes=mean(nfoxes), otherwise when say sd(nfoxes) it calculates it from 
-# the new mean variable not the one in the original data frame. 
+line(groupsizesummary$mean~groupsizesummary$SeasonID, col="black") # regression line (y~x)
+# NOTE: SD comes out as 'NA' when two variables have the same name, e.g. if calculating mean of means, can't say
+# nfoxes=mean(nfoxes), have to rename NEWnfoxes=mean(nfoxes), otherwise when say sd(nfoxes) it calculates it from
+# the new mean variable not the one in the original data frame.
 
 # NOTE on Error in attributes(out) <- attributes(col) : 'names' attribute [11] must be the same length as the vector [10]
 # This seems to be if have a POSIXct date column in dataset. Make a new dataframe with just the required columns, excluding the POSIXct one
@@ -817,11 +884,11 @@ line(groupsizesummary$mean~groupsizesummary$SeasonID, col="black") # regression 
 
 # Plot code from thread posted in R space for lognormal poisson resid plotting https://stat.ethz.ch/pipermail/r-sig-mixed-models/2013q3/020770.html
 Fitted <- exp(log(fitted(mod)) - ranef(mod)$obs[[1]])
-Resid <- (dat$response - Fitted) / sqrt(Fitted + (Fitted^2) * c(exp(VarCorr(mod)$obs) - 1)) 
+Resid <- (dat$response - Fitted) / sqrt(Fitted + (Fitted^2) * c(exp(VarCorr(mod)$obs) - 1))
 plot(Fitted, Resid) # for model checking for overdispersed poisson models
 lines(lowess(Fitted,Resid),col="red",lwd=2) # add a lowess smoothing line - should be approx flat
 
-#Function to calculate a point estimate of overdispersion from a mixed model object 
+#Function to calculate a point estimate of overdispersion from a mixed model object
 # point estimate is just an estimate of a parameter like finding the mean, median, variance etc.
 # = from Harrison 2014 PeerJ paper
 od.point<-function(modelobject){
@@ -832,11 +899,11 @@ od.point<-function(modelobject){
 od.point(PRTmodgamma_feedingday) # get estimate of overdispersion # seems to calculate this more extremely than the other methods
 
 
-library("blmeco") 
+library("blmeco")
 dispersion_glmer(ERate_mod_FULL) # Computes the estimated scale in a binomial (and Poisson) mixed model
-# According to recommendations by D. Bates, if the scale parameter is between 
+# According to recommendations by D. Bates, if the scale parameter is between
 # 0.75 and 1.4, there may not be an overdispersion problem. However this does
-# not necessarily indicate good model fit so thorough residual analyses or 
+# not necessarily indicate good model fit so thorough residual analyses or
 # posterior predictive model checking is still needed
 
 mean(data)/var(data) # should be close to 1 if data follow a poisson distribution
@@ -847,7 +914,7 @@ deviance(finalmodel)/df.residual(finalmodel)
 library(AER) # alternative method to test for overdispersion # only for poisson GLMs
 dispersiontest(model)
 
-# ALTERNATIVE FUNCTION to test for overdispersion: (calculates Pearson resids, 
+# ALTERNATIVE FUNCTION to test for overdispersion: (calculates Pearson resids,
 #  resid df. and p-value). Works for glmmADMB models unlike 'gof' in aods3)
 # source: http://ase.tufts.edu/gsc/gradresources/guidetomixedmodelsinr/mixed%20model%20guide.html
 overdisp_fun <- function(model) {
@@ -866,7 +933,7 @@ overdisp_fun <- function(model) {
   pval <- pchisq(Pearson.chisq, df = rdf, lower.tail = FALSE)
   c(chisq = Pearson.chisq, ratio = prat, rdf = rdf, p = pval)
 }
-overdisp_fun(DFseas_mod) 
+overdisp_fun(DFseas_mod)
 
 ## FOR OVERDISPERSED BINOMIAL PROPORTION DATA
 # instead of fitting model with OLR< can fit a beta-binomial model in JAGS (or R betareg?)
@@ -912,7 +979,7 @@ expo <- fitdistr(duration_data_sub$duration.s, "exponential")
 qqp(duration_data_sub$duration.s, "exp", expo$estimate, main="exponential")
 
 # can also use:
-library(fitdistrplus) 
+library(fitdistrplus)
 plot(fitdist(residuals(ind_durmod_glmernb),"norm"))  # seems to only work with lme4 models
 
 #= POISSON distributions
@@ -940,7 +1007,7 @@ a
 
 # PLOT THE MEANS AND VARIANCES AGAINST DIFFERENT DISTRIBUTIONS TO VISUALISE SHAPE OF DATA:
 
-# We can get approximate estimates of the quasi-Poisson (linear) pattern using lm, as follows: 
+# We can get approximate estimates of the quasi-Poisson (linear) pattern using lm, as follows:
 # (The -1 in the formulas below specifies a model with the intercept set to .
 lm1 <- lm(a$var~a$mean-1) ## estimate the quasipoisson pattern
 phi.fit <- coef(lm1)
@@ -981,11 +1048,11 @@ ggplot(a,aes(x=mean,y=var))+geom_point()+
 http://stats.stackexchange.com/questions/95054/how-to-get-the-overall-effect-for-linear-mixed-model-in-lme4-in-r
 
 
-# Get effect sizes using effects() in base R (I think) 
+# Get effect sizes using effects() in base R (I think)
 effects(fit_poiss) # doesnt work for glmmaDMB models
 
 # Calculate effect sizes (? I think?) - same output as lsmeans but SE is different, think because it's estimated from a normal distribution so not reliable for GLMMs
-library(effects) 
+library(effects)
 eff <-  Effect(c("Sex","SocialStatus", "fSeason"), erateMOD_full)
 eff <-  Effect(c("DaysSeen"), erateMOD_full) # works for continuous predictors - estimates a range e.g. here it
 # does it for 10, 20, 30 and 40 days - lsmeans just does it for one random number of days!
@@ -996,7 +1063,7 @@ as.data.frame(eff) # view effects as table (way clearer)
 
 fixef(model) # show coefficients for fixed effects for each level (e.g. season)
 ranef(model) # show coefficients for random effects for each level
-# Random effects estimates are variances. Interpret a random effect parameter estimate as the magnitude of the 
+# Random effects estimates are variances. Interpret a random effect parameter estimate as the magnitude of the
 # variability of "personal" coefficients from the mean fixed effects coefficient.
 
 # Need to run this function first (From Andy Field's DSUR book:
@@ -1004,7 +1071,7 @@ rcontrast <- function(t, df){
   r <- sqrt(t^2/(t^2 + df))
   print(paste("r = ", r))
 }
-summary(lme.orimod3) # take t-values (from summary(modelname) - not t-ratio from Tukey's!!) and d.f 
+summary(lme.orimod3) # take t-values (from summary(modelname) - not t-ratio from Tukey's!!) and d.f
 rcontrast(t, df) # and enter them here to calculate effect size for comparisons
 
 
@@ -1039,6 +1106,11 @@ myfun(myvec)
 sum(myvec)/length(myvec)
 
 
+#========================#
+# Gender prediction from names ####
+#========================#
+library(gender)
+gender("Chris")
 
 
 #========================#
@@ -1062,7 +1134,7 @@ Ctrl + Shift + P
 Alt+Shift+K (Esc to return)
 
 Ctrl+/- # increase text size in Rstudio
-Ctrl_shift+1/2/3/4/5/6/7/8... # maximise panels in Rstudio (toggle to go between max/min) 
+Ctrl_shift+1/2/3/4/5/6/7/8... # maximise panels in Rstudio (toggle to go between max/min)
 
 # Organise code by putting 4 hashtags # after the line of code
 # This creates a subtitle which can be navigated to easily using the bottom ribbon
@@ -1074,10 +1146,10 @@ Ctrl + Shift + C
 Ctrl + up/down arrows # re-run previous commands in the console
 
 #=== Load in data by opening the working directory folder and manually selecting the file
-dframe1 <- read.csv(file.choose()) # Navigate to file 
+dframe1 <- read.csv(file.choose()) # Navigate to file
 
 # recreate data for stackoverflow questions
-dput(mydata) # generates R code to recreate the data. 
+dput(mydata) # generates R code to recreate the data.
 # Run this in Rstudio, copy the output and paste it into your Stackoverflow question, where you can save it as a new mydata variable using mydata <- <pasted output from dput(mydata)>
 
 #== Printing outputs
@@ -1085,9 +1157,9 @@ dput(mydata) # generates R code to recreate the data.
 
 
 #== view things you can do with the type of model
-methods(class="merMod") 
+methods(class="merMod")
 
-#== make a vector 
+#== make a vector
 perm <- 1000 # 'perm' is just the number 1000
 perm <- numeric(1000) # 'perm' is an empty vector containing 1000 spaces
 
@@ -1099,7 +1171,7 @@ datasets <- c("df1", "df2", "df3")
 
 # loop through the names of these datasets
 for (dataset in datasets){
-  
+
   # load the named object
   mydata <- get(dataset) # load the R object associated with the given name (otherwise it's just the string name)
 
@@ -1124,45 +1196,45 @@ assign(name, subset)
 
 # The Grammar of Graphics
 # You can uniquely describe any plot as a combination of 7 parameters:
-# a dataset, a geom (geometric function), a set of mappings, a stat, 
+# a dataset, a geom (geometric function), a set of mappings, a stat,
 # a position adjustment, a coordinate system and a faceting scheme (subplots).
 
 # Template code containing these 7 parameters:
-ggplot(data = <DATA>) + 
+ggplot(data = <DATA>) +
   <GEOM_FUNCTION>(
     mapping = aes(<MAPPINGS>),
-    stat = <STAT>, 
+    stat = <STAT>,
     position = <POSITION>
   ) +
   <COORDINATE_FUNCTION> +
   <FACET_FUNCTION>
-  
-# ggplot works by plotting layers 
+
+# ggplot works by plotting layers
 
 # The first argument of ggplot() is the dataset to use in the graph.
-# Then each geom_ (geometric) function makes a layer, based on this dataset. 
+# Then each geom_ (geometric) function makes a layer, based on this dataset.
 # Each geom_ function requires 'mappings': x,y coordinates and/or aesthetics.
 
 # Aesthetics (visual properties) include:
-colour = variable_name 
+colour = variable_name
 size = variable_name   # Note you should only map continuous/ordered variables to size
 alpha = variable_name  # The transparency aesthetic
 shape = variable_name  # Note ggplot2 will only use six shapes at a time
 stroke = 2             # Shape border width, not specifiable inside aes()
 
-# Specify aesthetics outside of aes() to apply them to all data, or 
+# Specify aesthetics outside of aes() to apply them to all data, or
 # within aes() to associate them with a particular variable.
 
 # Colour specified within aes() so diff manufacturers are diff colours.
 ggplot(data = mpg) +
-  geom_point(mapping = aes(x = displ, y = hwy, colour = manufacturer)) 
+  geom_point(mapping = aes(x = displ, y = hwy, colour = manufacturer))
 
 # Colour specified outside of aes() so all points are blue.
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy), colour = "blue") 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), colour = "blue")
 
 # For shapes that have a border (like shape 21), you can colour the inside and
-# outside separately. 
+# outside separately.
 # Use the stroke aesthetic to modify the width of the border.
 ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy), shape = 21, fill = "white", size = 5, stroke = 2)
@@ -1185,32 +1257,32 @@ ggplot(data = mpg) +
 facet_wrap(rows ~ columns) # replace either with a dot to inindicate there should be no faceting on this dimension
 
 # To plot by a single (DISCRETE) variable
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_wrap(~ cyl) # facet_wrap(~ cyl, nrow=1) to make it all on 1 row. Facet_grid doesnt have ncol or nrow arguments.
 
 ## Facet on the combination of two variables
 
-#     drv = drive (f/r/4), cyl = N cylinders 
+#     drv = drive (f/r/4), cyl = N cylinders
 
 # facet_GRID plots grid squares for all combinations, with empty graphs for combos with no data
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_grid(drv ~ cyl)
 
 # facet_WRAP plots grid squares for all combinations, with empty graphs for combos with no data
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_wrap(drv ~ cyl)
 
 # facet by N cylinders only, in columns (all one row)
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_grid(. ~ cyl)
 
 # facet by N cylinders only, in rows (all one column)
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_grid(cyl ~ .)
 
 
@@ -1225,7 +1297,7 @@ facet_grid(Variable ~ ., scales = "free") # must put dot after ~
 ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy))
 
-# to display data as multiple objects, set the group aesthetic to a categorical 
+# to display data as multiple objects, set the group aesthetic to a categorical
 # variable: plots each level of variable as a separate line/colour/shape depending on the geom_ type.
 ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
@@ -1242,7 +1314,7 @@ ggplot(data = mpg) +
 # ggplot2 provides over 30 geoms
 # extension packages provide even more: www.ggplot2-exts.org
 
-# Some graphs, like scatterplots, plot the raw values of your dataset. 
+# Some graphs, like scatterplots, plot the raw values of your dataset.
 # Others calculate new values to plot using statistical transformations ("stats"):
 #   - Histograms, bar charts & area charts/frequency polygons calculate & plot bins of data (labelled as 'count').
 #   - Smoothers fit a model to your data and then plot predictions from the model.
@@ -1259,67 +1331,67 @@ ggplot(data = mpg, mapping= aes(x = displ)) +
   geom_area(stat = "bin")
 
 # frequency polygon
-ggplot(data = mpg, mapping = aes(x = displ)) + 
+ggplot(data = mpg, mapping = aes(x = displ)) +
   geom_freqpoly(binwidth = 10)
 
 
-# BAR PLOTS 
+# BAR PLOTS
 
 # bar geom - takes a "stat" parameter.
 # default stat="count": bar size represents count/freq of a value in the df rather than its actual value.
 # using ggplot() + geom_bar(stat="count") is same as using ggplot() + stat_count()
-ggplot(data = diamonds) + 
+ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, group = 1))
 
-ggplot(data = diamonds) + 
+ggplot(data = diamonds) +
   stat_count(mapping = aes(x = cut, group = 1))
 
 # The stat function calculates both counts and proportions, but plots counts by default.
 # To plot proportions, specify y as ..prop.. # see computed variables section in ?geom_bar.
 # ..prop.. is a keyword
-ggplot(data = diamonds) + 
-  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))  
-# group=1 tells ggplot to plot the proportion of ALL datapoints that have each 
-# value of x. Important, as the default is to plot the proportion of datapoints 
-# for each value of x that have each value of x, so every proportion would be 1!) 
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+# group=1 tells ggplot to plot the proportion of ALL datapoints that have each
+# value of x. Important, as the default is to plot the proportion of datapoints
+# for each value of x that have each value of x, so every proportion would be 1!)
 # Can also specify <y = ..count..> but this is pointless as count is default.
 
-# Can override geom_bar's default to specify a y aesthetic & so bar height 
+# Can override geom_bar's default to specify a y aesthetic & so bar height
 # represents the raw y values.
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
-  geom_bar(stat = "identity")  
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_bar(stat = "identity")
 
 # geom_col is equivalent to geom_bar(stat="identity").
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_col()
 
 # Can also plot a statistical summary of y values for each unique/binned x.
 # ggplot2 provides >20 stats to use, e.g. min, max, median... See RStudio's ggplot2 cheatsheet.
 # https://www.rdocumentation.org/packages/ggplot2/versions/1.0.1/topics/stat_summary
-ggplot(data = diamonds) + 
+ggplot(data = diamonds) +
   stat_summary(mapping = aes(x = cut, y = depth),
                fun.ymin = min,
                fun.ymax = max,
                fun.y = median)
 
-# default geom of stat_summary is geom_pointrange() 
+# default geom of stat_summary is geom_pointrange()
 ggplot(data = diamonds)+
   geom_pointrange(mapping = aes(x = cut, y = depth),
-                  fun.ymin = min, 
-                  fun.ymax = max, 
-                  fun.y = median, 
+                  fun.ymin = min,
+                  fun.ymax = max,
+                  fun.y = median,
                   stat = "summary")
 
 # stacked bar chart
-ggplot(data = diamonds) + 
-  geom_bar(mapping = aes(x = cut, fill = clarity)) 
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity))
 
 # proportional stacked bar chart - compare proportions between groups
-ggplot(data = diamonds) + 
+ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
 
 # unstacked bar chart - compare individual values
-ggplot(data = diamonds) + 
+ggplot(data = diamonds) +
   geom_bar(mapping = aes(x = cut, fill = clarity), position=position_dodge())
 
 # line chart geom
@@ -1331,16 +1403,16 @@ ggplot(data = mpg, mapping= aes(x = displ, y = hwy, group = displ)) +
   geom_boxplot()
 
 # smooth geom, a smooth line fitted to the data
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_smooth()
 
-# violin plots 
+# violin plots
 # see http://rpackages.ianhowson.com/cran/ggplot2/man/geom_violin.html
 ggp + geom_violin(aes(x=Sex, y=strength), stat = "ydensity", scale = "count", draw_quantiles = 0.5)
 
 
 
-#== Positional adjustments 
+#== Positional adjustments
 
 # http://r4ds.had.co.nz/data-visualisation.html#position-adjustments
 
@@ -1362,7 +1434,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 # http://r4ds.had.co.nz/data-visualisation.html#coordinate-systems
 
 # swap the x and y axes (e.g. for horizontal boxplots / long labels) - coord_flip()
-ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
   geom_boxplot() +
   coord_flip()
 
@@ -1380,18 +1452,18 @@ ggplot(nz, aes(x = long, y = lat, group = group)) +
   coord_quickmap()
 
 # Note: coord_map() and coord_quickmap() differ:
-""" coord_map uses map projection to project a spherical portion of the earth 
-    onto a flat 2D plane. This requires considerable computation as map 
+""" coord_map uses map projection to project a spherical portion of the earth
+    onto a flat 2D plane. This requires considerable computation as map
     projections dont preserve straight lines.
-    
-    coord_quickmap is a quick approximation that does preserve straight lines. 
+
+    coord_quickmap is a quick approximation that does preserve straight lines.
     It works best for smaller areas closer to the equator. """
 
 # polar coordinates - coord_polar()
-bar <- ggplot(data = diamonds) + 
-  geom_bar(mapping = aes(x = cut, fill = cut), 
-           show.legend = FALSE, 
-           width = 1) + 
+bar <- ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut),
+           show.legend = FALSE,
+           width = 1) +
   theme(aspect.ratio = 1) +
   labs(x = NULL, y = NULL)
 
@@ -1401,28 +1473,28 @@ bar + coord_polar()
 
 
 
-#== Plotting multiple geoms (layers) 
-ggplot(data = mpg) + 
+#== Plotting multiple geoms (layers)
+ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy, colour = drv)) +
   geom_smooth(mapping = aes(x = displ, y = hwy, colour = drv, linetype = drv))
 # = Lots of repetition in code!
 
-# Best to pass the xy mappings to ggplot() as global mappings 
+# Best to pass the xy mappings to ggplot() as global mappings
 # Avoids repetition and reduces errors when updating code.
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
-  geom_point() + 
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
   geom_smooth(se = FALSE)
 
 # Can still specify (different) mappings in a geom_ function:
-# ggplot2 will treat them as local mappings for the layer (to extend or 
-# overwrite the global mappings for that layer only). 
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
-  geom_point(mapping = aes(colour = drv)) + 
+# ggplot2 will treat them as local mappings for the layer (to extend or
+# overwrite the global mappings for that layer only).
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(colour = drv)) +
   geom_smooth(mapping = aes(linetype=drv), se = FALSE)
 
 # Can also specify different datasets in a geom_ function:
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
-  geom_point(mapping = aes(color = class)) + 
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
   geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
 
 
@@ -1432,8 +1504,8 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 ## Reference lines
 # Useful for annotation
 # Drawn using geom_line so support the same aesthetics.
-# Do not inherit aesthetics from the plot default, because they do not 
-# understand global x and y aesthetics (unlike most other geoms). 
+# Do not inherit aesthetics from the plot default, because they do not
+# understand global x and y aesthetics (unlike most other geoms).
 # Also do not affect the x and y scales.
 
 geom_hline() # horizontal
@@ -1442,7 +1514,7 @@ geom_abline() # diagonal
 
 # e.g.
 ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
-  geom_point() + 
+  geom_point() +
   geom_abline() +
   coord_fixed()
 
@@ -1451,7 +1523,7 @@ ggp + geom_hline(yintercept=0.5, linetype="dotted", color = "gray10", size=0.3)
 
 
 ## Text annotations / labels
-ggp +  annotate("text", x = 0.8, y = 0.982, label="y = 4.191 + 1.467x\n psuedo Rsq = 0.0017", 
+ggp +  annotate("text", x = 0.8, y = 0.982, label="y = 4.191 + 1.467x\n psuedo Rsq = 0.0017",
                 size=4.5)
 
 
@@ -1464,8 +1536,8 @@ ggp + theme(strip.text.x = element_text(size = 12, face="bold"),
 theme(strip.background = element_rect(color = "black", size = 1.2))
 
 # plot on log scale or different scales
-scale_x_log10() 
-scale_y_log10() 
+scale_x_log10()
+scale_y_log10()
 scale_x_reverse()
 
 # getting lines to join points
@@ -1476,12 +1548,12 @@ ggp <- ggplot(predframe, aes(x=Season, y=pred, colour=factor(sexstat))) # need t
 ggp + geom_line(aes(group=sexstat), size=1) +  geom_point(size=3) + facet_grid(~DaysSeen))
 
 # title
-ggtitle("") 
+ggtitle("")
 # change text size of title
 theme(plot.title = element_text(size=18))
 
 # alpha = transparency: useful for fading points into the background.
-geom_boxplot(size=0.7, colour="grey50", alpha=0.3) 
+geom_boxplot(size=0.7, colour="grey50", alpha=0.3)
 
 # remove background grid
 theme_bw() + # must put theme_bw FIRST or it won't work
@@ -1500,29 +1572,29 @@ xlim(0,6) # specify limits but not breaks
 
 
 # Change colour of geom_ribbon
-ggplot(lsmDF, aes(x=DaysFedPerWeek,y=prob, group=factor(Sex), colour=factor(Sex))) + 
+ggplot(lsmDF, aes(x=DaysFedPerWeek,y=prob, group=factor(Sex), colour=factor(Sex))) +
   geom_point(size=4) +
   scale_colour_manual(values = c("royalblue3","firebrick1"), name="Sex") +
-  geom_ribbon(aes(x=DaysFedPerWeek, ymin=asymp.LCL, ymax=asymp.UCL, group=Sex, fill=Sex), 
+  geom_ribbon(aes(x=DaysFedPerWeek, ymin=asymp.LCL, ymax=asymp.UCL, group=Sex, fill=Sex),
               # (put the group and fill arguments within same brackets as ymin/ymax)
               lty=0, alpha=0.2)  +
   scale_fill_manual(values = c("royalblue3","firebrick1"), # specify fill colours or grey is default
                     name="", guide=FALSE) # means don't print legend
 
 # plot regression (lm) line with SE shown as a ribbon
-ggplot(subsetALL,aes(x=TaggedFoxes,y=PropUnidPhotos)) + 
-  geom_point(shape=1) + 
+ggplot(subsetALL,aes(x=TaggedFoxes,y=PropUnidPhotos)) +
+  geom_point(shape=1) +
   geom_smooth(method=lm, size=1, se=TRUE)  # se=true adds a ribbon for the SE
 
 # overlay raw data
-geom_point(data=patchdata, aes(fSeason, DaysFedPerWeek), colour="grey70", 
-           position=position_jitter()) 
+geom_point(data=patchdata, aes(fSeason, DaysFedPerWeek), colour="grey70",
+           position=position_jitter())
 
 # Axis text colour # see http://docs.ggplot2.org/0.9.2.1/theme.html
 theme(axis.text = element_text(colour = "black"))
 
 # geom_bar width & bar border & dodge to avoid overlapping (also need to dodge any error bars)
-geom_bar(stat="identity", width=0.8, position=position_dodge(0.9), color="black") 
+geom_bar(stat="identity", width=0.8, position=position_dodge(0.9), color="black")
 
 
 
@@ -1550,12 +1622,15 @@ theme(legend.key = element_blank())
 # remove legend title
 theme(legend.title = element_blank())
 
+# remove legend from facet plot
+theme(legend.position="none")
+
 
 
 #== Error bars
 # use ribbon to shade CIs or use ribbon border and no fill to plot lines
-geom_ribbon(data=lsmpreds, mapping=aes(x=MeanMJperDay, ymin=lower.CL, ymax=upper.CL), 
-            fill="grey40", lty=0, alpha=0.3) 
+geom_ribbon(data=lsmpreds, mapping=aes(x=MeanMJperDay, ymin=lower.CL, ymax=upper.CL),
+            fill="grey40", lty=0, alpha=0.3)
 # lty=0 removes lines from border so can use fill
 # alpha of increasing values increases fill transparency (works for boxplot too)
 # Can use diff data frame as other elements of the plot e.g. geom_line or geom_jitter
@@ -1577,12 +1652,12 @@ grid.arrange(ggp1, ggp2, nrow=2, ncol=NULL) # where ggp is ggplot2 code for each
 #======================================#
 
 # PROBLEMS WITH LOADING
-# If have trouble getting glmmADMB to work, delete all versions from R library folders (on C: drive etc), 
+# If have trouble getting glmmADMB to work, delete all versions from R library folders (on C: drive etc),
 # then run this code.
 # Might help to restart R too.
 
 install.packages("R2admb")
-install.packages("glmmADMB", 
+install.packages("glmmADMB",
                  repos=c("http://glmmadmb.r-forge.r-project.org/repos",
                          getOption("repos")),
                  type="source")
@@ -1592,12 +1667,12 @@ library(glmmADMB)
 # thread: http://lists.admb-project.org/pipermail/users/2009-April/000145.html
 
 
-### USING OFFSET TERMS 
+### USING OFFSET TERMS
 
-# OFFSET TERMS ARE FOR CALCULATING RATES, e.g. NCalls were measured for a whole nest but would depend on N chicks so offset(logBroodSize) means 
-# model estimates are calculated per chick. Similarly, if copepods are counted in water samples, N depends on volumne of water sample analysed, 
-# so offset(logVolume) means estimates are calculated per millilitre. 
-# If I include an offset for DaysSeen, this is considered per row in the dataframe, so if a fox had 3 true associations on a day but visited 
+# OFFSET TERMS ARE FOR CALCULATING RATES, e.g. NCalls were measured for a whole nest but would depend on N chicks so offset(logBroodSize) means
+# model estimates are calculated per chick. Similarly, if copepods are counted in water samples, N depends on volumne of water sample analysed,
+# so offset(logVolume) means estimates are calculated per millilitre.
+# If I include an offset for DaysSeen, this is considered per row in the dataframe, so if a fox had 3 true associations on a day but visited
 # the territory on 40 days, this is like saying 'if foxes are seen on 40 days they will make 3 visits per day'. Better to include Days seen as
 # a continuous variable and interpret as a correlation, e.g. foxes have a higher contact rate if seen in the patch more often
 # DaysSeen better than NSightings as foxes can have multiple true assocs per visit/sighting (so could end up with negative values).
@@ -1605,16 +1680,16 @@ library(glmmADMB)
 #= Offset term in glmmADMB
 mydata$logDaysSeen <-log(mydata$DaysSeen) # need log variable for glmmADMB offset terms
 ERmod_zinb1 <- glmmadmb(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded +
-                          offset(logDaysSeen) + (1|ShortCode) + (1|Place),  data=EncounterRate_noNAs, 
-                        family="nbinom1", zeroInflation=T, debug=T, verbose=T) 
+                          offset(logDaysSeen) + (1|ShortCode) + (1|Place),  data=EncounterRate_noNAs,
+                        family="nbinom1", zeroInflation=T, debug=T, verbose=T)
 # verbose=T shows model progress (so can see its running!), debug=T shows file locations where glmmADMB stores/finds things during the run.
 
 #== Offset term in lme4
 model <- glmer(NTrueAssocs ~ Sex*SocialStatus +
-                 (1|ShortCode) + (1|Place) + 
-                 data=EncounterRate_noNAs,  
-               family=poisson(link="log"), 
-               offset=log(DaysSeen), # can log within the model 
+                 (1|ShortCode) + (1|Place) +
+                 data=EncounterRate_noNAs,
+               family=poisson(link="log"),
+               offset=log(DaysSeen), # can log within the model
                verbose=T)
 
 
@@ -1641,7 +1716,7 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
 
 # ERRORS
 # Warning message: In checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :Model failed to converge with max|grad| = 0.240412 (tol = 0.05, component 1)
-# suggests some fixed effects are correlated  summary(mod, correlation=T)  shows it's the interaction. 
+# suggests some fixed effects are correlated  summary(mod, correlation=T)  shows it's the interaction.
 
 # Ideas to help models converge
 # Add these optional control parameters: admb.opts=admbControl(shess=F,noinit=F, maxfn=5000) # shess and noinit are the most useful
@@ -1661,7 +1736,7 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
 # Root folder contains...
   # the .RProj file
   # all .R scripts
-  # data directory - contains raw and processed data 
+  # data directory - contains raw and processed data
   # plot directory - contains plots
   # img directory - contains other graphics R takes as input to build the results (e.g. logos)
   # a .git, .here or .RProj file to label the project root
@@ -1672,16 +1747,16 @@ ERmod_zinb2_sumtab<-data.frame(ERmod_zinb2_coeffs,
 # Always start scripts with the packages required
 
 # 'here' package
-# Never include install.packages() or setwd() in a script that you share. 
+# Never include install.packages() or setwd() in a script that you share.
 # Better to use the here package to construct path to project files.
-# 'here()' finds your project's files by stepping up from the current wd until 
-# it finds a .git or .here file. Use here() as a drop-in replacement for 
+# 'here()' finds your project's files by stepping up from the current wd until
+# it finds a .git or .here file. Use here() as a drop-in replacement for
 # 'file.path()', it will always locate the files relative to your project root.
 
 # example usage
 library(here)
 library(ggplot2)
-df <- read.delim(here("data", "raw_foofy_data.csv")) # see 
+df <- read.delim(here("data", "raw_foofy_data.csv")) # see
 p <- ggplot(df, aes(x, y)) + geom_point()
 ggsave(here("figs", "foofy_scatterplot.png"))
 getwd()
@@ -1699,17 +1774,17 @@ attribs.NC$OneTerritory <- ifelse(attribs.NC$Nterritories >1, "0", "1") # mark a
 #===============#
 # Model parameterisation for interactions:
 
-Sex*fSeason # two-way interaction 
+Sex*fSeason # two-way interaction
 (Sex+SocialStatus)*fSeason # three way interaction (see if have enough samples: for this int. sex and status have 2 levels & season=4 levels: model matri=2*2*4=16 cells: need min 5 foxes per cell = 16*5=80 individuals)
 Sex*SocialStatus*fSeason # three-way interaction - exactly the same as above and gives exact same model fit and estimates.
 
 # If a 3-way interaction is significant be careful when interpreting the two-way interaction
 # factors may be nonsig alone or in a two-way but sig in a three-way
 
-# In factorial experiments, the dependency between factor levels and the 
-# response variable is usually represented in a contingency tabe with rows 
-# and columns related to the different levels of both treatments, and each 
-# cell contains the adjusted mean of the response for the corresponding 
+# In factorial experiments, the dependency between factor levels and the
+# response variable is usually represented in a contingency tabe with rows
+# and columns related to the different levels of both treatments, and each
+# cell contains the adjusted mean of the response for the corresponding
 # interaction of factors. When there is an interaction effect, the cell means
 # are the most straightforward way of representing this effect. Cell means
 # (Values) and their SE can be obtained from the model coefficients using function:
@@ -1736,7 +1811,7 @@ lsmip(glmm3, Origin~season, type="response") # interaction plot with backtransfo
 interaction.plot(x1, x2, y) # e.g. (model$sex, model$season, model$count)
 
 # e.g. to view interaction effect of season and sex on count: (lsmeans stores y-variable as 'response')
-interaction.plot(lsm$fSeason, lsm$Sex, 
+interaction.plot(lsm$fSeason, lsm$Sex,
                  lsm$response,
                  xaxt='n', xlab="", ylab="Predicted daily patch contact rate",
                  legend=F, bty="n",lty=c(1,2,1,2),lwd=2, col=c("red", "red", "black","black")) # plot without axes intially
@@ -1749,17 +1824,17 @@ legend("topright", c("M sub", "F sub", "M dom", "F dom"),bty="n",lty=c(2,2,1,1),
 
 # Interpreting two-way interactions
 #==================================#
-# Spring-Summer * Neighbour-PGM means 'is the difference between spring and summer simlar for 
+# Spring-Summer * Neighbour-PGM means 'is the difference between spring and summer simlar for
 # neighbours and PGMs?' So can say there were significantly more neighbours in summer than spring but not PGMs.
 
 
 library(phia) # 'POST HOC INTERACTION ANALYSIS' to get means for interactions
 # means and contrasts reported by interactionMeans and testInteractions are always in the link function domain (e.g. log)
-Anova(model)  # Anova with capital A is in 'phia' and 'car' 
-# Analysis of deviance - see which terms are signif 
+Anova(model)  # Anova with capital A is in 'phia' and 'car'
+# Analysis of deviance - see which terms are signif
 
 interactionMeans(model) # table of average scores = simple main effects
-# phia automatically back-transforms the mean ('adjusted mean') but not the SE (which 
+# phia automatically back-transforms the mean ('adjusted mean') but not the SE (which
 # shouldn't be back-transformed anyway, just the c.is) #'SE of link' = the SE of the link function used in model
 
 # Plot interactions from model:THIS COULD BE GOOD - only if there's a significant interaction though
@@ -1767,7 +1842,7 @@ phiameans <- interactionMeans(model)
 plot(phiameans, atx="season", traces="Origin") # can't seem to plot with type="response"
 plot(phiameans, atx="fSeason", traces=c("Sex", "SocialStatus")) # to plot 3-way interaction on panel - but lsnip plot looks better and can backtransform to response scale
 
-testInteractions(model) # shows you all pairwise interactions (only for models with an interaction between factors 
+testInteractions(model) # shows you all pairwise interactions (only for models with an interaction between factors
 # with two levels, otherwise there are loads of redundant tests, e.g. spring-N vs Summer-PGM makes no sense so is redundant...)
 
 # pairwise interactions:
@@ -1792,7 +1867,7 @@ testInteractions(model, custom=list(Origin=c(1,0,0)), slope="season", adjustment
 testInteractions(model, custom=list(Origin=c(0,1,0)), slope="season", adjustment="bonferroni")
 
 # view just the estimate for Origin # 3 stranger
-testInteractions(model, custom=list(Origin=c(0,0,1)), slope="season", adjustment="bonferroni") 
+testInteractions(model, custom=list(Origin=c(0,0,1)), slope="season", adjustment="bonferroni")
 
 
 
@@ -1806,7 +1881,7 @@ bbmle::ICtab(threewayint_model,twowayint_model, type="AIC") # exactly the same
 summary(threewayint_model)
 summary(twowayint_model) # exactly the same model but just summarised differently
 # also confirmed using phia::interactionMeans(model) - cell means are the same for both models
-phia::interactionMeans(threewayint_model) 
+phia::interactionMeans(threewayint_model)
 phia::interactionMeans(twowayint_model)
 
 
@@ -1816,21 +1891,21 @@ phia::interactionMeans(twowayint_model)
 lsmeans::lsmeans(finalmod, ~fSeason*probfed, type="response")
 
 # OPTION 2: specify levels of probfed (continuous variable) to compare seasons (categorical) within
-lsm <- lsmeans::lsmeans(finalmod, ~ fSeason|probfed, 
+lsm <- lsmeans::lsmeans(finalmod, ~ fSeason|probfed,
                         at = list(probfed = c(0.2, 0.4, 0.6, 0.8, 1))) # supply a few typical values of probfed
 # can also make lsmeans preds with multiple specifications:
-lsm <- lsmeans::lsmeans(nvis_mod, "MeanMJperFeedingDay", 
+lsm <- lsmeans::lsmeans(nvis_mod, "MeanMJperFeedingDay",
                         by = c("DaysFedPerWeek", "varMJperDay"),
-                        at = list(MeanMJperFeedingDay = seq(0,3,0.5), 
-                                  DaysFedPerWeek=seq(1,7,1)), # mean is used for variables not in list() 
+                        at = list(MeanMJperFeedingDay = seq(0,3,0.5),
+                                  DaysFedPerWeek=seq(1,7,1)), # mean is used for variables not in list()
                         type="response")
-print(lsm)  
+print(lsm)
 pairs(lsm)  # shows how the seasons compare at each specified value of probfed
 
 # OPTION 3. Use lstrends to compare the slopes (effects) of MeanMJperDay between seasons
 # (as not interested in differences between seasons)
-# compares the slopes of the meanMJperDay trends between seasons 
-lst <- lsmeans::lstrends(gammamod_noMJStatusInt, pairwise~SocialStatus, var="DaysFedPerWeek") 
+# compares the slopes of the meanMJperDay trends between seasons
+lst <- lsmeans::lstrends(gammamod_noMJStatusInt, pairwise~SocialStatus, var="DaysFedPerWeek")
 # alternative syntax (but the one above is best as get same output but  from one line of code)
 lst <- lsmeans::lsmeans(gammamod_noMJStatusInt, ~SocialStatus, trend="DaysFedPerWeek", type="response")
 lsmeans::cld(lst) # diff groups (1 and 2) so slopes differ between groups significantly
@@ -1854,16 +1929,16 @@ lines(lowess(mydata$UnidPhotos~mydata$FoxesTagged))
 tagmodel1 <- lm(UnidPhotos ~ FoxesTagged, data = mydata)
 
 # model checking
-plot(tagmodel1) #plots sequence of different plots: should have homogeneous variance 
+plot(tagmodel1) #plots sequence of different plots: should have homogeneous variance
 # and straight line on QQplot + no overly influential data points
 plot(gy, which = 1:4, type = "pearson") # plots pearson residual plots with clearer labels
 plot(gy, which = 5, type = "deviance", sub.caption = "") # normality plot with boundaries (a bit slow)
 
-summary(tagmodel1) 
-anova(tagmodel1) 
+summary(tagmodel1)
+anova(tagmodel1)
 # The summary(model) output shows the t-test for whether the slope is zero or not,
 # The anova(model) output shows the F-test of whether the variance 'explained' by the regression line is significant
-# t-test and F-test are equivalent so can report either - 
+# t-test and F-test are equivalent so can report either -
 # F is the t-value for the predictor squared (i.e. here it is 0.441^2 = 0.194481)
 ### for t: PropPhotosUnidentified = 0.0095 + 0.0017.PropFoxesTagged, t82=0.441, p=0.660" # see Innes' handout ANOVA, ANCOVA & GLM, pg 4
 ### for F: "F1,82=0.195, p=0.660"
@@ -1933,7 +2008,7 @@ for (row in c(1:N)) {        # loop 1 (outer loop): variable 'row' sequentially 
     }
   }
 }
-# So for every value of row and col we test whether the sex associated with row number was 
+# So for every value of row and col we test whether the sex associated with row number was
 # the same as the sex associated with col number
 sex_sim # View the populated sex-similarity matrix
 
@@ -1963,7 +2038,7 @@ get_map("London", zoom = 14) %>% ggmap()   # higher numbers mean more zoom
 #===================#
 # MATCH (plyr) - to populate new column in dataframe based on other row values ####
 #===================#
-datacsv$ShortCode<-attribs[match(datacsv$id, attribs$id),2] 
+datacsv$ShortCode<-attribs[match(datacsv$id, attribs$id),2]
 # '2' means 'use info from column 2 in unique_attribs to populate the new column in datacsv'
 ### the order matters: (put target dataframe first, then the one the info is coming from)
 
@@ -1990,9 +2065,9 @@ df[1:5] # columns 1-5
 # Understanding stacked matrix dimensions and how to refer to them
 # asnipe random networks are K*N*N so for 1000 permutations this = 1000*N*N = [1000,N,N]
 matrixstack[,,1] # view all 1000 random association strength values for animal 1
-matrixstack[,1,] # view all 1000 random association strength values for animal 1 (same values as above for symmetrical associations) 
+matrixstack[,1,] # view all 1000 random association strength values for animal 1 (same values as above for symmetrical associations)
 matrixstack[1,,] # view the N*N matrix for permuted network #1, showing all animals
-matrixstack[1,1,] # view the N*N matrix for permuted network #1, showing values for animal 1 with each other animal 
+matrixstack[1,1,] # view the N*N matrix for permuted network #1, showing values for animal 1 with each other animal
 matrixstack[1,,1] # same as above
 matrixstack[1,1,3] # view the N*N matrix for permuted network #1, showing the value for animal 1 with animal 3 only
 
@@ -2013,7 +2088,7 @@ a <- merge(x = offers_sent, y = offers_accepted, by="ApplianceID")
 a <- merge(x = offers_accepted, y = offers_sent[, c("ApplianceID", "Brand")], by="ApplianceID")
 
 
-# merge all columns from first df (x) and only certain ones from the second df (y) 
+# merge all columns from first df (x) and only certain ones from the second df (y)
 merge_rank_only <- merge(x=datacsv, y=attribs.NC[ , c("id", "SeasonID", "rank")], by = c("id", "SeasonID"), all.x=TRUE) # must also contain the 'by' variable in the c("", "") section
 a <-merge(datacsv, attribs, by="id", all.x=TRUE)
 EncounterRate <- merge(x=EncounterRate_days, y=patchdata[ , c("SeasonID", "Place", "DaysFedPerWeek")], by.x=c("SeasonID", "Place"), all.x=T, all.y=F)
@@ -2022,18 +2097,18 @@ EncounterRate <- merge(x=EncounterRate_days, y=patchdata[ , c("SeasonID", "Place
 
 
 # get particular column names from a df
-second_product_cols <- names(churn_percentages[,2:ncol(churn_percentages)]) 
+second_product_cols <- names(churn_percentages[,2:ncol(churn_percentages)])
 
 
 ### Extract valid rows:
 # remove records of foxes in territories where they were not resident in that season
-merge_all_rank1 <- merge_all[merge_all$rank==1, seq(1:38)] 
+merge_all_rank1 <- merge_all[merge_all$rank==1, seq(1:38)]
 
 # As above but only keeping columns 1-10 and column 25
-merge_all_rank1_ltd <- merge_all[merge_all$rank==1, seq(1:10,25)] 
+merge_all_rank1_ltd <- merge_all[merge_all$rank==1, seq(1:10,25)]
 
 # sort rows by day number
-merge_all_rank1_ltd<-merge_all_rank1_ltd[order(merge_all_rank1_ltd$daynum), ] 
+merge_all_rank1_ltd<-merge_all_rank1_ltd[order(merge_all_rank1_ltd$daynum), ]
 
 
 
@@ -2045,8 +2120,8 @@ merge_all_rank1_ltd<-merge_all_rank1_ltd[order(merge_all_rank1_ltd$daynum), ]
 #==============##==============##==============#
 
 # Check distribution of raw data to determine appropriate model
-library(fitdistrplus) 
-descdist(firstpatchCOREmerged$firstpatch, discrete=T, boot=500) 
+library(fitdistrplus)
+descdist(firstpatchCOREmerged$firstpatch, discrete=T, boot=500)
 
 
 # According to Innes' notes it's best to compare the maximal model with and without different random effects first
@@ -2060,7 +2135,7 @@ descdist(firstpatchCOREmerged$firstpatch, discrete=T, boot=500)
 # p-value is test of whether estimate is sig. diff from zero. Intercept p-value can be ignored.
 
 Fixed effects:
-  Estimate  Std. Error z value Pr(>|z|)    
+  Estimate  Std. Error z value Pr(>|z|)
 (Intercept)                          1.11292    0.25698   4.331 1.49e-05 *** # intercept for whole model (here=estimated value for neighbours in spring)
   # season1:OriginNeighbour is baseline so estimate and SE = zero
   season2                             -0.36289    0.32393  -1.120  0.26260     # OriginNeighbour (estimate=difference between no foxes that are Neighbour:season1 (reference factor levels) and Neighbour:season2, so here it's lower)
@@ -2068,12 +2143,12 @@ season3                              0.44806    0.26561   1.687  0.09162 .   # O
 season4                              0.39093    0.26864   1.455  0.14561     # OriginNeighbour
 OriginPrevious group member         -2.44223    0.73351  -3.330  0.00087 *** # in season1
   OriginStranger                      -0.04442    0.29674  -0.150  0.88100     # in season1
-season2:OriginPrevious group member  0.36269    1.04643   0.347  0.72890    
-season3:OriginPrevious group member -0.04274    0.94635  -0.045  0.96398    
-season4:OriginPrevious group member  0.52524    0.87475   0.600  0.54821    
-season2:OriginStranger              -1.11870    0.58987  -1.897  0.05789 .  
-season3:OriginStranger              -0.07336    0.38274  -0.192  0.84801    
-season4:OriginStranger               0.61239    0.36561   1.675  0.09394 . 
+season2:OriginPrevious group member  0.36269    1.04643   0.347  0.72890
+season3:OriginPrevious group member -0.04274    0.94635  -0.045  0.96398
+season4:OriginPrevious group member  0.52524    0.87475   0.600  0.54821
+season2:OriginStranger              -1.11870    0.58987  -1.897  0.05789 .
+season3:OriginStranger              -0.07336    0.38274  -0.192  0.84801
+season4:OriginStranger               0.61239    0.36561   1.675  0.09394 .
 
 # Random effects: these are essentially 'noise' that is controlled for in the model, so the model can't tell us
 # about specific effect sizes for each level of the ranef. Just report their covariances or define their distribution,
@@ -2084,11 +2159,11 @@ print(VarCorr(strength_mod_NULL), comp=c("Variance","Std.Dev."))
 # NOTE: GLMMs don't report or have a value for 'Residual Variance' like LMMs do # http://bit.ly/29tmtAp
 
 # Analysis of deviance table with Wald tests to show which factors were significant (but better to use likelihood-ratio tests to compare models with & without each parameter using anova(model1, model2))
-car::Anova(modelname) 
+car::Anova(modelname)
 
 # CHECK DISTRIBUTION OF RAW DATA
 mean(EncounterRate_noNAs$NTrueAssocs)/var(EncounterRate_noNAs$NTrueAssocs) # check for overdispersion: var should = mean for poisson model
-hist(EncounterRate_noNAs$NTrueAssocs)         # right skew (long tail on right side) 
+hist(EncounterRate_noNAs$NTrueAssocs)         # right skew (long tail on right side)
 # Right skew indicates overdispersion so need to account for this.
 # Options for overdispersed count data include:
 # quasipoisson (overdispersed poisson) model
@@ -2106,7 +2181,7 @@ EncounterRate_noNAs$OLR <- rownames(EncounterRate_noNAs) # use row name as obser
 # Decisions:
 # 1. Fixed: season and origin, random = territory
 # 2. Choose distribution: Count data so need Poisson (unless overdispersed - check dispersion once model fitted)
-# 3. check distribution is suitable: mean vs var, 
+# 3. check distribution is suitable: mean vs var,
 # 4. Fit GLMs (though on GLMM wikidot they say NOT to compare GLMs with GLMMs as the log-likelihoods are not commensurate (i.e., they include different additive terms))
 # 5. Fit GLMMs
 # 6. Check GLMMs: dispersion, residuals
@@ -2114,7 +2189,7 @@ EncounterRate_noNAs$OLR <- rownames(EncounterRate_noNAs) # use row name as obser
 # 8. Post hoc tests if needed.
 
 #  lmer and lme assume response has continuous gaussian(normal) distribution
-# don't need to specify REML=F in glmer as default estimation method is already max likelihood 
+# don't need to specify REML=F in glmer as default estimation method is already max likelihood
 # For LMER mods default method is REML, but need to fit using max likelihood (specify by REML=F) to do anova to compare 2 models (if ask to do anova on REML-fitted models lme4 automatically refits the models using ML)
 # REML assumes the two models being compared have the same fixed effects structure, so are good to compare models with different random effects,
 # but need ML to compare models with/without diff fixed effects.
@@ -2123,30 +2198,30 @@ EncounterRate_noNAs$OLR <- rownames(EncounterRate_noNAs) # use row name as obser
 
 # When adding complexity e.g. random slope to lmer and glmer models they sometimes fail to converge without error warnings.
 # Changing the optimiser can improve model fit.
-# Can also increase no. iterations before R gives up fitting model with 'maxfun' (default is ~50): 
+# Can also increase no. iterations before R gives up fitting model with 'maxfun' (default is ~50):
 # Syntax= "optCtrl = list(maxfun = 100000))" - add after the optimiser, e.g.:
 
 modelname<-glmer(y ~ x1 + x2 + (1|x3), data=mydata, family=poisson(link="log"),
                  control=glmerControl(optimizer="bobyqa",
-                                      optCtrl = list(maxfun=100000), 
-                                      check.conv.grad=.makeCC("warning",0.05))) 
+                                      optCtrl = list(maxfun=100000),
+                                      check.conv.grad=.makeCC("warning",0.05)))
 
 # Null model with random intercept converges without warnings as is:
-SO.glmm0<-glmer(Group.size ~ (1|T), data=SO, family=poisson(link = "log")) 
+SO.glmm0<-glmer(Group.size ~ (1|T), data=SO, family=poisson(link = "log"))
 
 # ...So does model with 1 fixed effect and a random intercept
-SO.glmm1.RI<-glmer(Group.size ~ season + (1|T), data=SO, family=poisson(link = "log")) 
+SO.glmm1.RI<-glmer(Group.size ~ season + (1|T), data=SO, family=poisson(link = "log"))
 
 # ...But not model with random slope
 SO.glmm2.RS.default<-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log")) # need to have season as fixed and random effect for random slope - specifies that the effect of season can vary among territories rather than just having different intercepts but same slope (so winter vs spring is same in all territories, when it might have a stronger effect in territory 1 than 2 etc.)
 # Random slope only appropriate if interested in the variation among levels of random variable (rather than just wanting to control for it), but make models hard to interpret. http://www.r-bloggers.com/getting-the-most-of-mix-models-with-random-slopes/
 
 # 1. Re-fit model with the optimiser 'bobyqa' and see if mod will converge
-SO.glmm2.RS.boby<-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log"), 
+SO.glmm2.RS.boby<-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log"),
                         control = glmerControl(optimizer = "bobyqa"))
 
 # 2. change optimiser to nelder-mead and see if mod will converge
-SO.glmm2.RS.NM <- update(SO.glmm2.RS.boby, control=glmerControl(optimizer="Nelder_Mead")) 
+SO.glmm2.RS.NM <- update(SO.glmm2.RS.boby, control=glmerControl(optimizer="Nelder_Mead"))
 
 # 3. change optimiser to nlminb and see if mod will converge
 library(optimx)
@@ -2161,7 +2236,7 @@ SO.glmm2.RS.LBFGSB <- update(SO.glmm2.RS.boby, control=glmerControl(optimizer="o
 library(nloptr)
 defaultControl <- list(algorithm="NLOPT_LN_BOBYQA",xtol_rel=1e-6,maxeval=1e5)
 nloptwrap2 <- function(fn,par,lower,upper,control=list(),...) {
-  for (n in names(defaultControl)) 
+  for (n in names(defaultControl))
     if (is.null(control[[n]])) control[[n]] <- defaultControl[[n]]
     res <- nloptr(x0=par,eval_f=fn,lb=lower,ub=upper,opts=control,...)
     with(res,list(par=solution,
@@ -2195,10 +2270,10 @@ ggplot(mtab,aes(x=Var2,y=value,colour=Var2))+
 # View maximum loglikelihoods: think lower is better...?
 likList <- sort(sapply(modList,logLik))
 likList  # compare log-likelihood (the model's log data likelihood, with no correction for the number
-# of parameters. Larger (i.e. closer to zero) is better. The value for log-likelihood should 
+# of parameters. Larger (i.e. closer to zero) is better. The value for log-likelihood should
 # always be negative, and AIC, BIC etc. are positive.
 round(log10(max(likList)-likList),2) # view log10 transformed to 2 decimal places - clearer differences
-# NM2 or bobyqa2 were only ones to converge and have very similar log-likelihoods 
+# NM2 or bobyqa2 were only ones to converge and have very similar log-likelihoods
 
 # 8. Check residuals are normal (though only for LMMs; normal resids are not required for GLMMs...)
 hist(resid(SO.glmm2.RS.default)) # v.skewed with default optimisation (bobyqa)
@@ -2210,7 +2285,7 @@ qqline(resid(SO.glmm2.RS.boby)) # kind of normal...?!!
 # 9. Compare fits of null, random intercept only and random intercept & slope
 SO.glmm0<-glmer(Group.size ~ (1|T), data=SO, family=poisson(link = "log")) # null
 SO.glmm1.RI<-glmer(Group.size ~ season + (1|T), data=SO, family=poisson(link = "log")) # random intercept
-SO.glmm2.RS.boby2<-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log"), 
+SO.glmm2.RS.boby2<-glmer(Group.size ~ season + (season|T), data=SO, family=poisson(link = "log"),
                          control = glmerControl(optimizer = nloptwrap2), nAGQ = 1) # random intercept & slope
 anova(SO.glmm0, SO.glmm1.RI, SO.glmm2.RS.boby2) # adding a random slope doesn't improve model fit
 
@@ -2218,21 +2293,21 @@ anova(SO.glmm0, SO.glmm1.RI, SO.glmm2.RS.boby2) # adding a random slope doesn't 
 
 # Alternative: use package AFEX to run all optimisers with one command
 
-# Attempts to re-fit a [g]lmer model with a range of optimizers. The default is to use all known optimizers 
+# Attempts to re-fit a [g]lmer model with a range of optimizers. The default is to use all known optimizers
 # for R that satisfy the requirements (do not require explicit gradients, allow box constraints), in three
-# categories; (i) built-in (minqa::bobyqa, lme4::Nelder_Mead), (ii) wrapped via optimx (most of optimx's 
-# optimizers that allow box constraints require an explicit gradient function to be specified; the two 
+# categories; (i) built-in (minqa::bobyqa, lme4::Nelder_Mead), (ii) wrapped via optimx (most of optimx's
+# optimizers that allow box constraints require an explicit gradient function to be specified; the two
 # provided here are really base R functions that can be accessed via optimx, (iii) wrapped via nloptr.
 library(afex)
 library(optimx)
 library(nloptr)
 
 # Will still use this model as the FINAL MODEL:
-finalmodel<-glmer(Count~season*Origin + (1|oriT), data=origins, family=poisson(link = "log")) 
+finalmodel<-glmer(Count~season*Origin + (1|oriT), data=origins, family=poisson(link = "log"))
 
 # FINAL MODEL:
 finalmodel<-glmer(Count~season*Origin + (1|oriT), data=origins, family=poisson(link = "log")),
-control=glmerControl(optimizer="bobyqa", check.conv.grad=.makeCC("warning",0.05))) 
+control=glmerControl(optimizer="bobyqa", check.conv.grad=.makeCC("warning",0.05)))
 
 gm_all <- allFit(f)
 t(sapply(gm_all,fixef))
@@ -2266,28 +2341,28 @@ car::Anova(finalmodel)
 # NESTED = (1|Bigger/Smaller/Smallest) - if one level is *implicitly* connected/associated with another, i.e. it is meaningless without the other level, e.g. egg/nest, dog/owner
 (1|individual/factor) or (1|nest/egg) # allows effect of site to vary between years (main effect of year plus interaction between year and site)
 (1|patch/fox) = (1|patch) + (1|patch:fox) # main effect of patch plus interaction between individual and patch, which specifies there is variation between patches and between individuals for each patch
-# if every subject was not measured at each level of the higher order factor, e.g. subject1 was measured in spring and summer but not autumn and winter. 
+# if every subject was not measured at each level of the higher order factor, e.g. subject1 was measured in spring and summer but not autumn and winter.
 # e.g. the same foxes were not seen in same territories. Nesting creates a random term for every fox/territory combination to allow diff intercepts for foxes in diff territories.
 
 # If there is random variation among INDIVIDUALS *and* random variation among PATCHES
 # '*and* there is a consistent PATCH effect across INDIVIDUALS (and vice versa), then the random effects should be treated as CROSSED.
 # If there is not a consistent PATCH effect across INDIVIDUALS and v.versa then code PATCH and INDIVIDUAL as an interaction:
-(1|Patch) + (1|ShortCode) + (1|Patch:ShortCode) 
+(1|Patch) + (1|ShortCode) + (1|Patch:ShortCode)
 # my GLMMs seem to fit better when random effects are coded in this way: there are patch-specific effects, fox-specific effects and patch-by-fox effects.
 # Using an interaction also accounts for fact that foxes were not observed in every patch
 
 
 
-# Random slopes: ALWAYS PUT lower level grouping factor at end, 
+# Random slopes: ALWAYS PUT lower level grouping factor at end,
 # e.g. blocks within sites= |site, seasons within territories= |territory, |subject, |foxID, |schoolID
 
-# Random slope for effect of season on visit duration in different territories: 
+# Random slope for effect of season on visit duration in different territories:
 lmer(visdur~season+(season|Territory), data=mydata) # the effect of season on visit duration varies between territories (random effect should be a group, not an individual measurement)
 
 (1+practice|participants) # random slope (and intercept) for the effect of practice for each participant, or effect of season for each territory
 (season|territory) # random slope (and intercept) for the effect of season for each territory (can omit "1+" as is there by default)
 
-(practice|participants:context) # random slope (and intercept) for the effect of practice for each participant and context combination (doesnt make much sense) 
+(practice|participants:context) # random slope (and intercept) for the effect of practice for each participant and context combination (doesnt make much sense)
 (practice:context|participants) # random slope (and intercept) for the interaction effect of practice by context for each participant (makes more sense)
 (season:Origin|Territory) # random slope (and intercept) for the interaction effect of season by Origin for each territory.
 
@@ -2296,14 +2371,14 @@ gsmod1<-lmer(Group.size ~ season + (1|Territory), data=mydata, REML=F) # seasonf
 # REML=F ensures estimation is done by max likelihood method (recommended)
 anova(gsmod1, gsmod0) # compare models using AIC
 # to see if season explains enough variation in group size to significantly improve model fit
-# quote this as "X2(3) = 37.27, P<0.001" (X=chi-sq value plus d.f.) x2=chi-sq and (3)=dff between 
+# quote this as "X2(3) = 37.27, P<0.001" (X=chi-sq value plus d.f.) x2=chi-sq and (3)=dff between
 # x2 is equivalent to the 'change in (triangle symbol) deviance': Emily and Zhuoyu quoted this at the advice of Innes but papers also quote chi-sq.
 # the df of the two models - because 3 seasons were added with gsmod1
 
 gsmod1                    # view the whole model output
 summary(gsmod1)           # view coefficient estimates for each season
 anova(gsmod1)             # to get F value and num+den dfs. (quote as e.g. "F(3,21) = 2.82, p = 0.06")
-lmerTest::anova(gsmod1)   # to get a p-value from an lmer model use package 'lmertest' 
+lmerTest::anova(gsmod1)   # to get a p-value from an lmer model use package 'lmertest'
 # numdf=numerator d.f. and dendf = denominator d.f.
 
 # Can have multiple random effects:
@@ -2316,7 +2391,7 @@ anova(nrmod1, nrmod0) # compare models using AIC
 orimod0<-lmer(Count ~ (1|oriT/seasfac), data=origins, REML=F) # null model with no fixed effect
 orimod1<-lmer(Count ~ Origin + (1|oriT/seasfac), data=origins, REML=F) # one fixed effect of season
 orimod2<-lmer(Count ~ seasfac + Origin + (1|oriT/seasfac), data=origins, REML=F) # two fixed effects of season and origin
-orimod3<-lmer(Count ~ seasfac * Origin + (1|oriT/seasfac), data=origins, REML=F)  # interaction between season and origin 
+orimod3<-lmer(Count ~ seasfac * Origin + (1|oriT/seasfac), data=origins, REML=F)  # interaction between season and origin
 # - plus their individual main effects
 anova(orimod0, orimod1) # sequentially compare more complex models to see if adding predictors improves fit (i.e. reduces AIC - lower/smaller is better)
 anova(orimod1, orimod2)
@@ -2329,7 +2404,7 @@ anova(orimod2, orimod3) # orimod3 has lowest AIC - indicates interaction is the 
 
 ## Speed
 # creating and updating a result vector with a loop:
-# it is faster to pre-define the object type and length with vector() and 
+# it is faster to pre-define the object type and length with vector() and
 # reference positions by index, than to add an extra digit after each loop - https://www.datacamp.com/community/tutorials/five-tips-r-code-improve
 n <- 5
 x <- vector("integer", n) # integer vector
@@ -2368,7 +2443,7 @@ print(rf) # get confusion matrix, N trees made etc
 #=================================================================================================#
 
 # lme4 glmer with observation-level ranef - doesn't need to be a factor
-model1 <- glmer(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded + (1|ShortCode) + (1|OLR), data=mydata, 
+model1 <- glmer(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded + (1|ShortCode) + (1|OLR), data=mydata,
                 family=poisson, verbose=T) # verbose=T gives more info on progress of model fitting, akin to a progress bar
 
 
@@ -2379,15 +2454,15 @@ model1 <- glmer(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded + (1|
 # http://stats.stackexchange.com/questions/185491/diagnostics-for-generalized-linear-mixed-models-specifically-residuals/187108#187108
 
 # Make sure model includes all relevant predictors (by plotting resids against all potential variables, including those not in the model)
-# CHECK RESIDUALS in full model ARE NORMAL (if relevant, i.e. LMMs, not GLMMs) 
+# CHECK RESIDUALS in full model ARE NORMAL (if relevant, i.e. LMMs, not GLMMs)
 # CHECK RESIDUALS in full model VARY HOMEOGENOUSLY BETWEEN CATEGORIES / ALONG THE SCALE OF THE Y (for LMMs and GLMMs)
 # Check fixed effects are not correlated using via. vcov(model) # 1.00 indicates correlation (I think)
 # CHECK FOR OVERDISPERSION (in count models only)
 # REPORT THE RANDOM EFFECTS' VARIANCE & SD (CIs AND P-VALUE optional)
 
-# Checking the residuals once from the full model is 
-# A) all that is required, and 
-# B) a much better thing to check. 
+# Checking the residuals once from the full model is
+# A) all that is required, and
+# B) a much better thing to check.
 
 
 
@@ -2406,13 +2481,13 @@ plot(resid(model), fitted(model)) # Poor fit indicated by nonlinearity and/or he
 lines(lowess(fitted(model),resid(model)),col="red",lwd=2) # add a lowess smoothing line - should be approx flat
 
 # UsefuL link: https://danieljhocking.wordpress.com/tag/glmmpql/
-# Useful package: 
+# Useful package:
 library(LMERConvenienceFunctions)
 
 #== Check homogeneity of residuals: plot(resid(model), fitted(model)): best way to check models
 
 # Resids from normal data should be evenly dispersed with no correlation for normally distrib data (will be slightly different for generalized models like Poisson - see below)
-# The usual output from a Poisson log-link model has datapoints arranged in 'lines' (owing to 
+# The usual output from a Poisson log-link model has datapoints arranged in 'lines' (owing to
 # discrete counts) that are curved (due to the log transformation within the model)
 # http://stats.stackexchange.com/questions/114045/validating-residual-plot-count-data-different-levels
 
@@ -2421,17 +2496,17 @@ library(LMERConvenienceFunctions)
 # PLOT RESIDUALS AGAINST FITTED VALUES
 # Plot fitted-resid in response scale (from a GLMM)
 plot(fitted(erateMOD_full), resid(erateMOD_full, type="response"), main="Response residuals")  # 'fitted' automatically plots on response scale
-lines(smooth.spline(fitted(erateMOD_full), residuals(erateMOD_full, type="response"))) 
+lines(smooth.spline(fitted(erateMOD_full), residuals(erateMOD_full, type="response")))
 
 # For a Poisson model, variance increases as mean increases so ordinary residuals should increase in variance as values of the response (fitted) increases
 # plot normal resids
 plot(fitted(erateMOD_full), resid(erateMOD_full), main="Standard (poisson in this case) residuals")
 lines(smooth.spline(fitted(erateMOD_full), residuals(erateMOD_full)))
 
-# Extract the Pearson residuals - these are divided by the square root of the variance according to 
+# Extract the Pearson residuals - these are divided by the square root of the variance according to
 # an equation appropriate for the particular model type. So these standardised resids should have constant
 # spread (variance) as y-hat (fitted aka. predicted y) increases.
-sresid <- resid(erateMOD_full, type = "pearson") 
+sresid <- resid(erateMOD_full, type = "pearson")
 plot(fitted(erateMOD_full), sresid, main="Pearson residuals")
 lines(smooth.spline(fitted(erateMOD_full), sresid))
 
@@ -2447,22 +2522,22 @@ visreg::visreg(erateMOD_full) # variance should be approx even across all levels
 # can also save visreg predictions - see model predictions section
 
 
-# Can use SIMULATIONS to compare residuals from model based on simulated data with those from model based on real data 
+# Can use SIMULATIONS to compare residuals from model based on simulated data with those from model based on real data
 # (should be similar if model fits well)
 # 1. Calculate simulated NTrueAssocs based on model and save as new column in dataset
-EncounterRate_noNAs$sim <- simulate(ERate_mod_FULL)[[1]] 
+EncounterRate_noNAs$sim <- simulate(ERate_mod_FULL)[[1]]
 # 2. Refit original model to simulated data
 ERate_mod_FULL_SIM <- lmer(sim ~ Sex*SocialStatus*fSeason (1|ShortCode) + (1|Place), data=EncounterRate_noNAs, family=poisson, verbose = T) # verbose=T shows progress
 # 3. Make residuals x fitted plot for model run on simulated data and plot against the simulated y-variable
 Fitted <- exp(log(fitted(ERate_mod_FULL_SIM)) - ranef(ERate_mod_FULL_SIM)$OLR[[1]])
-Resid <- (EncounterRate_noNAs$sim - Fitted) / sqrt(Fitted + (Fitted^2) * c(exp(VarCorr(ERate_mod_FULL_SIM)$OLR) - 1)) 
-plot(Fitted, Resid) 
+Resid <- (EncounterRate_noNAs$sim - Fitted) / sqrt(Fitted + (Fitted^2) * c(exp(VarCorr(ERate_mod_FULL_SIM)$OLR) - 1))
+plot(Fitted, Resid)
 # 4. Plot both the simulated and real data against the covariates and hope that they look similar
-plot(EncounterRate_noNAs$NTrueAssocs, EncounterRate_noNAs$fSeason) 
+plot(EncounterRate_noNAs$NTrueAssocs, EncounterRate_noNAs$fSeason)
 plot(EncounterRate_noNAs$sim,         EncounterRate_noNAs$fSeason) # they do look similar, just with diff xlim
 
 
-# Plot distrib of residuals # need not be normal depending on the distribution, e.g. negbinom hists will be right-skewed 
+# Plot distrib of residuals # need not be normal depending on the distribution, e.g. negbinom hists will be right-skewed
 hist(resid(glmm3a)) # seems to not work for lme at random! Restart R and retry if it buggers about
 hist(resid(glmm3a, type="response")) # resids on response scale
 qqnorm(resid(glmm3a))  # plot standardised residuals vs. normal values: should be a straightish line
@@ -2475,12 +2550,12 @@ plot(fitdist(resid(glmm3),"norm"))  # seems to only work with lme4 models
 plot(model, col=spatialoverlap$fSeason)  # plot seasons as different colours to help ID outliers
 
 
-### Distribution of studentized residuals (=same properties as standardised resids but provide a more precise estimate 
+### Distribution of studentized residuals (=same properties as standardised resids but provide a more precise estimate
 # of the error variance of a specific case/datapoint)
 sresid <- studres(model1) # can only do this with lme() models, not lmer
 hist(sresid, freq=FALSE, main="Distribution of Studentized Residuals")
-xfit<-seq(min(sresid),max(sresid),length=40) 
-yfit<-dnorm(xfit) 
+xfit<-seq(min(sresid),max(sresid),length=40)
+yfit<-dnorm(xfit)
 lines(xfit, yfit)
 
 
@@ -2496,18 +2571,18 @@ library(DHARMa)
 # Dharma: Simulate residuals standardised between 0-1 (most DHARMA functions only work on standardised simulated resids)
 simgam <- simulateResiduals(dailyPRTmod_comb_FULLgamma)
 
-# Dharma: residual plots 
+# Dharma: residual plots
 # Website with examples of how 'perfect' Gamma model resids should look: https://github.com/florianhartig/DHARMa/blob/master/Code/Examples/GammaProblems.md
 plotSimulatedResiduals(simgam, quantreg=T) # takes a while if quantreg=T
-# QQ-plot should be straight line, RHS plot should be uniform in y direction (but 
+# QQ-plot should be straight line, RHS plot should be uniform in y direction (but
 # density of points depends on distrib of data so doesnt matter, e.g. i have lots of low values)
 
-# Dharma: plot residuals against the predictors in the model (or potentially predictors that were not in 
-# the model) to detect possible misspecifications (highly recommended) 
+# Dharma: plot residuals against the predictors in the model (or potentially predictors that were not in
+# the model) to detect possible misspecifications (highly recommended)
 # See: https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html
-# Resids in 'simulationOutput$scaledResiduals' are scaled between 0-1 
+# Resids in 'simulationOutput$scaledResiduals' are scaled between 0-1
 plotResiduals(mydata$Sex, simulationOutput$scaledResiduals)
-# Should show no patterns or correlations (autocorrelation), as with a fitted-resid plot, 
+# Should show no patterns or correlations (autocorrelation), as with a fitted-resid plot,
 # otherwise the relationship could be non-linear / some predictors might be missing.
 
 # Dharma: Kolmogorov-Smirnov goodness-of-fit test (=One-Sample Kologorov-Smirnov test)
@@ -2524,7 +2599,7 @@ testOverdispersion(simgam2) # gives dispersion parameter and a p-value
 # because having a perfectly fitting model is very unlikely. That doesn't neccessarily mean you need
 # to change your model. The p-values confirm that there is a deviation from your null hypothesis, but
 # it is your discretion whether this deviation is worth worrying about. A dispersion parameter of 1.01
-# is not a problem, even if the test is significant, but a significant value of 5 is clearly a reason 
+# is not a problem, even if the test is significant, but a significant value of 5 is clearly a reason
 # to move to a model that accounts for overdispersion.
 
 
@@ -2532,20 +2607,20 @@ testOverdispersion(simgam2) # gives dispersion parameter and a p-value
 
 
 ### Goodness-of-fit tests ####
-# goodness of fit test for the overall model: calculates the residual deviance (=the difference 
+# goodness of fit test for the overall model: calculates the residual deviance (=the difference
 # between the model deviance and the max deciance of the ideal model where the predicted values
 # are identical to the observed). If test is significant, difference is signif so model fit is poor.
 with(model, cbind(res.deviance = deviance, df = df.residual,
                   p = pchisq(deviance, df.residual, lower.tail=FALSE)))
 
 # goodness-of-fit test FOR COUNT DATA ONLY:
-library(aods3) 
+library(aods3)
 gof(glm1)
 
 # OR calculate Omega?_0 -  coefficient of determination to represent goodness of model fit, similar to R^2 (r-squared)
 # recommended by http://onlinelibrary.wiley.com/doi/10.1002/sim.1572/abstract
-1-var(residuals(model))/(var(model.response(model.frame(model)))) 
-# not sure how to interpret this, presume nearer to 1 is better as means model explains higher % 
+1-var(residuals(model))/(var(model.response(model.frame(model))))
+# not sure how to interpret this, presume nearer to 1 is better as means model explains higher %
 # variance in Y?
 
 
@@ -2567,7 +2642,7 @@ r.squaredGLMM(dailyPRTmod_comb_FULL) # R2m = marginal r2, fixefs only; R2c = con
 # But R2 is irrelevant when simply looking at relationships
 # R2 is more relevant when predicting values (particularly when predicting values for specific individuals, e.g. PRT at particular patches)
 #    - a higher R2 means more precise predictions (smaller confidence interval)
-#    - see this blog: http://bit.ly/2n4522K 
+#    - see this blog: http://bit.ly/2n4522K
 
 
 
@@ -2580,8 +2655,8 @@ r.squaredGLMM(dailyPRTmod_comb_FULL) # R2m = marginal r2, fixefs only; R2c = con
 
 # can use Cullen & Frey plot, but influence.ME package below is more useful
 # Cullen & Frey plots do sometimes indicate influential datapoints that may be outliers (but not in my limited experience)
-library(fitdistrplus) 
-descdist(residuals(PRTmodgamma_feedingdayno16WD), boot = 1000) 
+library(fitdistrplus)
+descdist(residuals(PRTmodgamma_feedingdayno16WD), boot = 1000)
 
 library(influence.ME)
 inf <- influence(model=PRTmodgamma_feedingday, count=TRUE, group="StationCode")
@@ -2594,20 +2669,20 @@ plot(inf,
      which="dfbetas", # what to plot
      parameters=c(2,3,4), # which model parameters to plot
      xlab="DFbetaS", ylab="StationCode",
-     cutoff=2/sqrt(35)) # 2/vn where N=no.grouping levels (patches) 
+     cutoff=2/sqrt(35)) # 2/vn where N=no.grouping levels (patches)
 # recommended rule of thumb from Belsley et al., 1980.
 
 # Cooks distance
 # As a rule of thumb, cases are regarded as too influential if the associated value for Cook's Distance
-# exceeds the cut-off value of 4/n (Van der Meer et al., 2010) 
+# exceeds the cut-off value of 4/n (Van der Meer et al., 2010)
 cooks.distance(inf, parameter=c(1,2,3,4), sort=TRUE) # print values of Cook's distance
-plot(inf, 
+plot(inf,
      which="cook", # plot cooks distance
      cutoff=4/35, # 2/vn where N=no.grouping levels (patches) - (Van der Meer et al., 2010)
      sort=TRUE, # sort in order of most-least influential
-     xlab="Cook?s Distance", ylab="StationCode") 
+     xlab="Cook?s Distance", ylab="StationCode")
 
-# See whether exclusion of each patch in turn affects each model coefficient by changing the 
+# See whether exclusion of each patch in turn affects each model coefficient by changing the
 # t-value or z-value by >1.96, which would alter the significance of the coefficient
 ### (NOTE: z-value can be calculated in model tables by dividing the beta coefficient (estimate) by its standard error).
 # Altered.sig = significance of coeff in the new model without the patch (true=sig, false=not sig)
@@ -2639,10 +2714,10 @@ newdata <- expand.grid(DaysSeen=c(10,20,30,40), # here want to make predictions 
                        fSeason=unique(EncounterRate_noNAs$fSeason),
                        DaysFedPW_rounded=mean(EncounterRate_noNAs$DaysFedPW_rounded))
 # write fixed effects in same way as model formula. Have to include all variables in pred.data
-modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, newdata) 
+modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, newdata)
 
 # alternative: using function getME in lme4 - for lmer-type models
-newmm<- getME(erateMOD_full,"X") 
+newmm<- getME(erateMOD_full,"X")
 # "X" means get fixed-effects model matrix
 # "Z" means get random-effects model matrix
 
@@ -2652,13 +2727,13 @@ newmm<- getME(erateMOD_full,"X")
 
 # AICc is the 'second-order' or 'small sample' AIC - Burnham & Anderson 2002 recommend its use when N/K < 40. N=sample size, K= number of estimated parameters
 # better for small samples: to calculate AICc can use either 'MuMIn' or 'AICcmodavg':
-library(MuMIn) 
+library(MuMIn)
 AICc(defcomp.mod1,  k = 2, REML = NULL)
 
 # QAIC: for overdispersed count data in poisson models # bbmle works for glmmADMB models
 bbmle::ICtab(fm_nb, fm_nb_os, fm_zinb, fm_zinb_os, fm_pois, fm_pois_os, fm_zipois, fm_zipois_os, type="qAIC") # can change type to AIC, BIC, AICc etc
 
-library(AICcmodavg) 
+library(AICcmodavg)
 ## S3 method for class 'lme' - for other templates see http://finzi.psych.upenn.edu/library/AICcmodavg/html/AICc.html
 AICc(mod, return.K = FALSE, second.ord = TRUE, nobs = NULL, ...)
 AICc(defc, return.K = TRUE) # return.K shows number of estimated parameters from the model
@@ -2730,6 +2805,17 @@ na.action = na.exclude # Does not use the missing values, but maintains their po
 
 # Also see Rob Thomas's book on R Statistics for Biologists
 
+# Select complete rows (have no missing values)
+complete.cases(x,y) # returns a logical vector indicating which cases are complete, i.e., have no missing values.
+# e.g.
+complete.cases(df$x, df$y)
+# use as mask
+field_with_nulls[complete.cases(df),]
+
+# NVL
+# convenience function that returns the first argument that is not NULL, or 0 if all arguments are NULL. Like COALESCE() in SQL
+nvl(revenue_gbp_isev, 0)
+
 
 #=============================#
 # Network centrality measures # - see Excel file with graph to see how diff measures calc in diff packages/methods compare "Testing diff centrality measures in R for correlations and normalisation 020616.xlsx" ####
@@ -2745,8 +2831,8 @@ T1sprB4_attr$eig.ig <- eigen_centrality(T1sprB4_net_igraph, scale=FALSE)$vector 
 T1sprB4_attr$cc <- transitivity(T1sprB4_net_igraph, type = "local") # unweighted local CC (I NEED WEIGHTED SO DONT USE THIS)
 T1sprB4_attr$cc.weighted <- transitivity(T1sprB4_net_igraph, type = "barrat") # weighted clustering coefficient using the Barratt 2004 method - same results as given by R package tnet - will use tnet not igraph (easier as don't need to convert network into an igraph object)
 T1sprB4_attr$btw <- betweenness(T1winB4_net_graph, directed=F, normalized = T) # DONT USE as I'm not going to use betweenness
-T1sprB4_attr$closeness <-igraph::closeness(T1sprB4_net_igraph, normalized = FALSE) # NB DONT USE!! - igraph expects weights that represent 'costs' instead of 'strength'. 
-# So edge weights with higher values represent greater distance/cost rather than a closer bond in igraph. Better to use tnet, which uses the same algorithm as 
+T1sprB4_attr$closeness <-igraph::closeness(T1sprB4_net_igraph, normalized = FALSE) # NB DONT USE!! - igraph expects weights that represent 'costs' instead of 'strength'.
+# So edge weights with higher values represent greater distance/cost rather than a closer bond in igraph. Better to use tnet, which uses the same algorithm as
 # igraph (Dijkstra's algorithm) but on the inverse of edge weights.
 # igraph also computes closeness across whole network and doesnt ignore isolates/infinite distances
 
@@ -2754,7 +2840,7 @@ T1sprB4_attr$closeness <-igraph::closeness(T1sprB4_net_igraph, normalized = FALS
 # convert network to igraph object
 T1_spr_net_graph <- graph_from_adjacency_matrix(T1spr_net,mode="undirected",weighted=T,diag=F)
 # Detect communities using the Newman method (same as in SOCPROG)
-a <-cluster_leading_eigen(T1_spr_net_graph) 
+a <-cluster_leading_eigen(T1_spr_net_graph)
 modularity(a) # get modularity of the community division
 max(membership(a)) # number of groups/communities
 plot(a, T1_spr_net_graph) # plot clusters
@@ -2818,14 +2904,14 @@ evcent(T1sprB4_net, gmode="graph", use.eigen=T) # eigenvector centrality - same 
 (a<- abs(evcent(T1sumB4_net, gmode="graph", use.eigen = T)))/(length(a)-1) # standardise by dividing score/(n-1)
 evcent(T1sprB4_net, gmode="graph", use.eigen=T, rescale=T) # standardise by score/sum(scores) - best
 
-betweenness(T1winB4_net, gmode = "graph", cmode="undirected", ignore.eval = T) # DONT USE as I'm not going to use betweenness 
+betweenness(T1winB4_net, gmode = "graph", cmode="undirected", ignore.eval = T) # DONT USE as I'm not going to use betweenness
 closeness(T1spr_net, gmode="graph", ignore.eval = FALSE, rescale=F, cmode = "suminvundir") ## For undirected networks with disconnected components set cmode = "suminvundir" (as other cmodes won't work for disconnected components)
 
 # or clustering coefficient (only calculates global CC, not local i.e. one per fox)
-T1sprB4_rand_cc <- gtrans(T1sprB4_rand, g=c(1:1000), mode="graph")   # clustering coef (transitivity) 
+T1sprB4_rand_cc <- gtrans(T1sprB4_rand, g=c(1:1000), mode="graph")   # clustering coef (transitivity)
 
 # Network density (weighted)
-gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE) 
+gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE)
 
 # Get main component only (library sna)
 component.largest(T1spr_net, result = "graph") # returns the network without isolates and pairs (i.e. the largest component)
@@ -2853,15 +2939,15 @@ T4spr_tnet <- as.tnet(T4spr_EL, type="weighted one-mode tnet") # convert edgelis
 # calculated as sum of inverse of distances (edge weights) so takes inverse of edge weight (=1/edge weight) and sum of this is 'farness' and inverse of this as 'closeness'
 T1winB4_attr$tnet.closeness <- data.frame(closeness_w(T1winB4_net))$closeness # normal closeness
 T1winB4_attr$tnet.normcloseness <- data.frame(closeness_w(T1winB4_net))$n.closeness # normalised closeness scores (i.e., divided by N-1).
-# n.closeness is calculated by normalised edge weights (normalised by the average weight in the network) recommended by Tore Opsahl to help interpretation: 
+# n.closeness is calculated by normalised edge weights (normalised by the average weight in the network) recommended by Tore Opsahl to help interpretation:
 # so a unit of distance will refer to one step with the average weight in the network, e.g. "The mean closeness of the matrix suggests that on average nodes are
-# 2.29 steps with average edge weight away from each other. This measure would be comparable across networks with different ranges of tie weights. 
+# 2.29 steps with average edge weight away from each other. This measure would be comparable across networks with different ranges of tie weights.
 data.frame(closeness_w(T1winB4_net, gconly=F))
 #gconly=F means don't just calc closeness within the main component: isolates have zero closeness (default=gconly=TRUE to calc only within largest component =BEST)
 
 # NOTE: tnet won't calculate a closeness score for the last fox in a matrix (in last col + last row)
-# If its column contains only zeros - because it never associated. 
-T6aut_net # check by viewing the network matrix 
+# If its column contains only zeros - because it never associated.
+T6aut_net # check by viewing the network matrix
 # correct by adding a zero at the end of list of closeness scores:
 c((data.frame(closeness_w(T6aut_net, gconly=F))$closeness), "0")
 
@@ -2870,8 +2956,8 @@ c((data.frame(closeness_w(T6aut_net, gconly=F))$closeness), "0")
 # If I set alpha > 1, a low closeness is favourable (so edge weight is positive and edge number is negative)
 
 # NOTE: tnet won't calculate a closeness score for the last fox in a matrix (in last col + last row)
-# If its column contains only zeros - because it never associated. 
-T6aut_net # check by viewing the network matrix 
+# If its column contains only zeros - because it never associated.
+T6aut_net # check by viewing the network matrix
 # correct by adding a zero at the end of list of closeness scores:
 c((data.frame(closeness_w(T6aut_net, gconly=F))$closeness), "0")
 
@@ -2901,7 +2987,7 @@ mrc1sp <- data.frame(id=rownames(net), mrc) # view results
 
 #==========================================#
 # MODELLING NETWORK CENTRALITY MEASURES ####
-#==========================================# 
+#==========================================#
 # PROCEDURE
 # 1. Make sampling period arrays
 # 2. Make networks (association matrices)
@@ -2917,7 +3003,7 @@ mrc1sp <- data.frame(id=rownames(net), mrc) # view results
 ## e) calculate p-value as proportion of coefficients from random matrices that were greater or less than the observed coefficient.
 
 
-# Example of plotting differences and correlations in centrality measures 
+# Example of plotting differences and correlations in centrality measures
 T1sprB4_attr_CORE <-subset(T1sprB4_attr, Core==1) # Select core foxes only
 par(mfrow=c(1,3))
 boxplot(bindeg~Sex,data=na.omit(T1sprB4_attr_CORE), col=c("red","blue")) # na.omit excludes foxes of unknown sex
@@ -2936,7 +3022,7 @@ T1sprAf_net_graph <- igraph::graph.adjacency(T1sprAf_net, weighted=T, diag=F, mo
 mean(E(T1sprAf_net_graph)$weight) # mean edge weight
 
 #== Calculate network density (weighted) using package sna
-gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE) 
+gden(T1sprB4_net, g=NULL, diag=FALSE, mode="graph", ignore.eval=FALSE)
 
 #==============================================#
 # Normalisation, normalising, standardising ####
@@ -2966,11 +3052,11 @@ shapiro.test(mydata$Number.of.transient.visitors)
 & is “and”, | is “or”, and ! is “not”.
 
 # De Morgan’s law
-!x | !y # is the same as: 
-!(x & y) 
+!x | !y # is the same as:
+!(x & y)
 
 !x & !y # is the same as:
-!(x | y) 
+!(x | y)
 
 # Floats
 1/49 * 49 == 1 # returns FALSE despite being true, because the division returns a float that is not exactly 1.
@@ -3011,8 +3097,8 @@ outlierSummary<-function(variable, digits = 2){
   cat("N absolute z-scores >3.29 =", percent999, "%", "   #Should be zero in a normal distrib", "\n","\n")
   cat("Percentage of cases that are significant outliers =", percent999, "%", "\n")
 }
-outlierSummary(dailyPRT$totalPRT) # if there are any >3SD from the mean these are significant 
-# outliers and need dealing with, wither by removal or changing to another value (removal or 
+outlierSummary(dailyPRT$totalPRT) # if there are any >3SD from the mean these are significant
+# outliers and need dealing with, wither by removal or changing to another value (removal or
 # transformation of whole dataset is best)
 
 
@@ -3028,8 +3114,8 @@ outliersZ <- function(data, zCutOff = 1.96, replace = NA, values = FALSE, digits
   absZ <- abs(data - mean(data, na.rm = T)) / stdev
   #subset data that has absZ greater than the zCutOff and replace them with replace
   #can also replace with other values (such as max/mean of data)
-  data[absZ > zCutOff] <- replace 
-  
+  data[absZ > zCutOff] <- replace
+
   if (values == TRUE) {
     return(round(absZ, digits)) #if values == TRUE, return z score for each value
   } else {
@@ -3040,7 +3126,7 @@ outliersZ <- function(data, zCutOff = 1.96, replace = NA, values = FALSE, digits
 # zCutOff: the z value you deem as an outlier (default is 1.96 since 95% of values fall within ? 1.96 in a normal distribution)
 # replace: replace any outliers with this value (default is NA)
 # values: default is FALSE; if TRUE, returns the absolute z-scores for each value
-# digits: number of decimal places to return 
+# digits: number of decimal places to return
 
 # Create new variable with NAs for scores more than 3 standard deviations from the mean (removes fewer values than the default cutoff 1.96).
 dailyPRT$totalPRT_z <- outliersZ(dailyPRT$totalPRT, zCutOff=3.0)
@@ -3056,21 +3142,21 @@ dailyPRT$totalPRT_z <- outliersZ(dailyPRT$totalPRT, zCutOff=3.0, replace=mean(da
 #===========================================#
 
 # install packages with dependencies
-# install.packages('installr', dependencies = TRUE) 
-# see if you need to update R and if so do it, and installr also installs 
+# install.packages('installr', dependencies = TRUE)
+# see if you need to update R and if so do it, and installr also installs
 # all the packages you had in the earlier version of R.
 library(installr)
-updateR() 
+updateR()
 
 # view current working directory
-getwd() 
+getwd()
 
 # set working directory
 setwd("G:/Statistics 2016/Social network analysis") # use forward slashes or double-backslashes
 # not good practice to use absolute paths ("C:/") in scripts, especially for shared projects. See http://r4ds.had.co.nz/workflow-projects.html
 
 # Better to use R projects
-""" R Projects in RStudio keep all files associated with a project together — 
+""" R Projects in RStudio keep all files associated with a project together —
     input data, R scripts, analytical results, figures. """
 
 # loading packages in Jupyter
@@ -3083,12 +3169,12 @@ save.image() # saves it as ".Rdata"
 save.image("myworkspace.Rdata") # be patient - R will crash if you cancel it!
 
 # loads the saved workspace with objects and any modifications to data frames, variable names etc
-load("myworkspace.RData") 
+load("myworkspace.RData")
 
 # clear and restart the R session (to ensure code is reproducible)
 Ctrl+Shift+Fn+F10
 # or:
-rs.restartR() 
+rs.restartR()
 
 # cite R itself
 citation()
@@ -3106,12 +3192,20 @@ detach("package:lme4")
 # check for package updates and optionally install them
 packagename_update()
 
-# see the order in which R looks for attached packages/enviros 
+# see the order in which R looks for attached packages/enviros
 """ (it will use the first one it finds)
-    because having multiple packages loaded at once can cause conflicts if they 
+    because having multiple packages loaded at once can cause conflicts if they
     contain functions with the same name """
-search() 
+search()
 
+
+===========================================#
+# Percentages ####
+#===========================================#
+# format number as percentage
+library(scales)
+percent(mynumber/100)
+percent(44/100)
 
 
 #======================#
@@ -3130,9 +3224,9 @@ library(tidyverse)  # uses pipes
 df %>% count(factor)
 # gives the counts in a new df that you can save and use in more computations.
 
-# Compute daily consumption per household  
-daily_kwh_per_household <- mydata %>%  
-  # use households on standard tariff only 
+# Compute daily consumption per household
+daily_kwh_per_household <- mydata %>%
+  # use households on standard tariff only
   filter(stdorToU=="Std") %>%
   # rename variables for ease of reference
   rename(kwh = 'KWH/hh (per half hour)') %>%
@@ -3155,8 +3249,8 @@ daily_kwh_per_household <- mydata %>%
 # turn off the graphics device
 dev.off()
 
-# basic plot() template: 
-plot(x, y, main=heading) 
+# basic plot() template:
+plot(x, y, main=heading)
 
 pairs(mydata) #to view possible correlations and interactions
 
@@ -3170,7 +3264,7 @@ cex.axis=1.2 # axis text
 
 #== customise plot MARGINS
 par()$mar # retrieve current margin settings
-# mar = a vector of bottom/left/top/right for no. lines of margin on each side of plot. 
+# mar = a vector of bottom/left/top/right for no. lines of margin on each side of plot.
 # Default is c(1,3,5.1,2)
 par(mar=c(5.1,4.1,4.1,2.1)) # default R margins - bottom/left/top/right
 par(mar=c(6,4,5,1)) # new ones  # mar = in number of lines
@@ -3186,7 +3280,7 @@ densityPlot(autdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", 
 densityPlot(wintdata, cex.main=1.2, cex.lab=1.2, cex.axis=1.2, xlab="", ylab="", xcenter = "midnight", rug=T, add=F, col="blue", main="Winter", cex=1.5)
 # add exis labels
 mtext("Density", side = 2, outer = TRUE, cex = 1, line = 2, col = "black")
-mtext("Time of day", side = 1, outer = TRUE, cex = 1., line = 0, col = "black") 
+mtext("Time of day", side = 1, outer = TRUE, cex = 1., line = 0, col = "black")
 
 
 # make text italic or bold in labels
@@ -3221,8 +3315,8 @@ plot(density(mydata$value))
 
 # Density plot with vertical line at highest density and get the x value
 sp.d <- density(sp$ti.threshold.s)
-plot(sp.d, main = "Spring") 
-abline(v=sp.d$x[which.max(sp.d$y)]) 
+plot(sp.d, main = "Spring")
+abline(v=sp.d$x[which.max(sp.d$y)])
 sp.v <- sp.d$x[which.max(sp.d$y)] # x value at highest density (= the mode?)
 
 #=== Export plots in high resolution for publications:
@@ -3237,17 +3331,17 @@ sp.v <- sp.d$x[which.max(sp.d$y)] # x value at highest density (= the mode?)
 #=== To save ggplot2 plots as emf file types for circus report graphic designer
 library(devEMF) # Though I'm not sure if this library was actually needed or whether ggsave is just in the ggplot2 library
 # First save the desired plot with formatting as an object called 'plot'
-plot<-myplot.beh + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-                         panel.background = element_blank(), 
+plot<-myplot.beh + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                         panel.background = element_blank(),
                          axis.line = element_line(colour = "black")) #to make axes darker
 # Then save the plot as an emf file:
 ggsave("behav.emf", plot=plot, device=emf, path = NULL, scale = 1, width = 10, height = 6, units = 'in', dpi = 1000, limitsize = TRUE)
-# Should be able to open emf files in paint to check it saved OK but I cant on my lenovo. G.designer could 
+# Should be able to open emf files in paint to check it saved OK but I cant on my lenovo. G.designer could
 # open the emfs though so this code does seem to work.
 
 #=================#
 # Plot regression estimates
-library(coefplot2) 
+library(coefplot2)
 install.packages("coefplot2",repos="http://www.math.mcmaster.ca/bolker/R",
                  type="source") # not on CRAN & might need to install 'reshape' and 'Rcpp' for the install to work!
 
@@ -3264,7 +3358,7 @@ coefplot2(model1, intercept=T, add=TRUE) # add=true to compare models on same pl
 
 coefplot2(lme.SO.gsmod1, main= "Regression estimates\n\n",    # plot regression estimates
           cex.var=1.1, cex.pts=1, varnames=longnames,
-          intercept=TRUE, mar=c(1,6,5,1))   
+          intercept=TRUE, mar=c(1,6,5,1))
 
 # To customise the names of the factors:
 snames<-c("Summer", "Autumn", "Winter") # create vector for season names (or factor names)
@@ -3279,7 +3373,7 @@ coefplot2(list(glmer.P=defcomp.mod1,
                glmmADMB_NB1=fit_nb1, # nb1 = quasipoisson distrib (overdispersed poisson)
                glmmADMB_NB2=fit_nb), # nb2 = neg binomial distrib
           merge.names=FALSE,intercept=TRUE,
-          legend.x="right",legend=TRUE) 
+          legend.x="right",legend=TRUE)
 
 
 # alternative plotting tool for regression estimates
@@ -3299,8 +3393,8 @@ plot(a, main="Tukey's test\n\n\n\n\n",  xaxt='n', xlab="")  # plot without axes 
 xtick<-seq(1, 4, by=1)                                      # specify where to put tick marks
 seasonlabels<-c("Spring", "Summer", "Autumn", "Winter")     # list of labels for the x-axis
 axis(side=1, at=xtick, labels = seasonlabels)               # draw the x axis and add labels
-# letters at top of graph show similar (grouped) and different levels, 
-# i.e. two levels labelled 'a' were not sig. diff. from each 
+# letters at top of graph show similar (grouped) and different levels,
+# i.e. two levels labelled 'a' were not sig. diff. from each
 # other but were diff from 'b' or 'c'
 
 ###==== Plot points as shapes in ggplot
@@ -3328,20 +3422,20 @@ library(multcomp) # for glht method: just for models with no interaction (or int
 library(lsmeans) # for lsmeans method
 # Least squares mean: mean adjusted to account for differences in other factors e.g. mean orange sales per day adjusted to account
 # for daily variation in orange price. More robust than a normal mean.
-# for lmer models lsmeans uses the pbkrtest package, which implements the Kenward & Rogers method 
-# for the df of the "t" statistic - this method intends to provide better p-values and CIs than the asymptotic one 
+# for lmer models lsmeans uses the pbkrtest package, which implements the Kenward & Rogers method
+# for the df of the "t" statistic - this method intends to provide better p-values and CIs than the asymptotic one
 # (but there's no diff between the asymptotic (asymp.LCL/asymp.UCL) and Kenward (lower.CL/upper.CL) methods when df is large).
 
-library(phia) 
+library(phia)
 # PHIA = 'POST HOC INTERACTION ANALYSIS' to get means for interactions
-# Phia is for the analysis of the expected values and other terms of in linear, 
-# generalized, and mixed linear models, on the basis of multiple comparisons of 
+# Phia is for the analysis of the expected values and other terms of in linear,
+# generalized, and mixed linear models, on the basis of multiple comparisons of
 # factor contrasts. Specially suited for the analysis of interaction effect
 # testFactors: flexible user interface for defining combinations of factor levels and covariates
-# to evaluate and test the model, using the function linearHypothesis from package car. 
+# to evaluate and test the model, using the function linearHypothesis from package car.
 # testInteractions uses this function for multiple comparisons of simple effects, interaction
-# residuals, interaction contrasts, or user-defined contrasts. 
-# interactionMeans may be used to explore the 'cell means' of factorial designs, and plot main 
+# residuals, interaction contrasts, or user-defined contrasts.
+# interactionMeans may be used to explore the 'cell means' of factorial designs, and plot main
 # effects or first-order interactions.
 # phia automatically back-transforms effects if the model was on the log scale (e.g. log-link GLMMs)
 
@@ -3352,14 +3446,14 @@ TukeyHSD(anova.model.name)
 ####  Post hoc tests for significant interactions:
 
 # ##To use glht method, need to make a column in dataset for the interaction and rerun the model with this column as predictor (fixed effect):
-origins$oriseas.int<-interaction(origins$season,origins$Origin) 
+origins$oriseas.int<-interaction(origins$season,origins$Origin)
 
 # rerun model on interaction column - otherwise posthoc tests wont work (if using glht)
-lme.orimod4<-lme(Count ~ oriseas.int, random= ~1|oriT/season, data=origins, method="ML") 
+lme.orimod4<-lme(Count ~ oriseas.int, random= ~1|oriT/season, data=origins, method="ML")
 
 # Actually model is different from the season*Origin one when use a column for the interaction...
 # posthoc tukeys test for all possible pairwise comparisons using glht function
-lme.orimod.posthocs<-glht(lme.orimod4,linfct=mcp(oriseas.int = "Tukey")) 
+lme.orimod.posthocs<-glht(lme.orimod4,linfct=mcp(oriseas.int = "Tukey"))
 summary(lme.orimod.posthocs) # lots of comparisons so correct for multiple testing:
 summary(lme.orimod.posthocs, test = adjusted("bonferroni")) # no more errors now (though P values are lower...!)
 confint(lme.orimod.posthocs, correction = ("bonferroni")) # to show confidence intervals: if they contain zero the mean could be zero and effect is non. sig.
@@ -3376,8 +3470,8 @@ lsmeans(lme.orimod3, pairwise~Origin|seasfac, adjust="tukey")
 lsmeans(lme.orimod3, ~Origin|seasfac, adjust="tukey") # doesnt do contrasts if 'pairwise' is not specified in the code
 # df are displayed as NA in lsmeans- this is simply lsmeans's way of noting that the tests and confidence intervals are asymptotic, based on zz statistics rather than tt statistics.
 lsmip(glmm3, Origin~season) # basic interaction plot of model - drawn using the lsmeans package
-lsmip(glmm3, Origin~season, type="response") # add type=response to backtransform if used GLMM with 
-# log-link or used log10(y) - need to do manual transformations within the model for lsmeans to 
+lsmip(glmm3, Origin~season, type="response") # add type=response to backtransform if used GLMM with
+# log-link or used log10(y) - need to do manual transformations within the model for lsmeans to
 # recognise it.
 
 # TO GET MEANS FOR EACH LEVEL in the UNITS OF THE RESPONSE: use lsmeans or phia package (for interactions)
@@ -3419,7 +3513,7 @@ all3defs$defcomp.pred <- predict(defcomp.mod1, type="response", se.fit=TRUE) # s
 all3defs <- all3defs[with(all3defs, order(season)), ]
 
 ## order by ID
-mydata <- datacsv[with(mydata, order(AnimalID)), ] 
+mydata <- datacsv[with(mydata, order(AnimalID)), ]
 
 ## Plot predicted group sizes by each method in each season
 ggplot(defcomp.mod1, aes(x = season, y =defcomp.pred, colour = Definition)) +
@@ -3427,12 +3521,12 @@ ggplot(defcomp.mod1, aes(x = season, y =defcomp.pred, colour = Definition)) +
 
 
 ## Predictions using visreg
-# Plotting predictions using visreg (combi core model, sex*season) #### 
+# Plotting predictions using visreg (combi core model, sex*season) ####
 
 ### To save partial residuals from visreg:
 library(visreg)
-v <- visreg(dailyPRTmod_comb_FULL, "fSeason", by="Sex", scale="response", partial=T) 
-# NOT SURE THIS CODE WORKS - data frame contains lots of rows of the same combinations of 
+v <- visreg(dailyPRTmod_comb_FULL, "fSeason", by="Sex", scale="response", partial=T)
+# NOT SURE THIS CODE WORKS - data frame contains lots of rows of the same combinations of
 # fixefs and ranefs but different predictions...?!
 
 plot(v) # blue lines are preds, grey shading is CI, dots are raw resids/raw data? (doesnt seem to backtransform...)
@@ -3441,7 +3535,7 @@ model.fit$visregFit # = column of predicted values
 model.fit$visregUpr # = column of upper CI
 model.fit$visregLwr # = column of lower CI
 # lineplot of the 8 sex*season preds in v$fit (have to backtransform from log10 using 10^ as "response" doesnt seem to work...)
-ggplot(model.fit, aes(x=fSeason, y=10^(visregFit), colour=factor(Sex))) + 
+ggplot(model.fit, aes(x=fSeason, y=10^(visregFit), colour=factor(Sex))) +
   geom_point(aes(group=Sex)) +
   geom_line(aes(group=Sex)) +
   geom_errorbar(aes(ymin=10^(visregLwr), ymax=10^(visregUpr)))
@@ -3450,15 +3544,15 @@ v <- visreg(dailyPRTmod_comb_FULL, "fSeason", by="Sex", scale="response", partia
 model.res <- v$res
 model.res$visregRes # preds
 # boxplot visreg preds in v$res (have to backtransform from log10 using 10^ as "response" doesnt seem to work...)
-ggplot(model.res, aes(x=fSeason, y=10^(visregRes), fill=factor(Sex))) + 
-  geom_boxplot() 
+ggplot(model.res, aes(x=fSeason, y=10^(visregRes), fill=factor(Sex))) +
+  geom_boxplot()
 
 
 
 # Predictions from model built in glmmADMB - dont need to specify random effects in pred.data (but do in lme4)
 #=============================================#
 # 1. Create a 'newdata' object containing values of DaysSeen to predict contact rate for foxes at increasing numbers of days seen
-# expand.grid makes data frame with all combinations of the listed values: 
+# expand.grid makes data frame with all combinations of the listed values:
 # (has to have all model coefficients in, with same names, e.g. 'DaysFedPW_rounded', not shortened to 'DaysFed')
 pred.data <- expand.grid(DaysSeen=seq(0,40,1), # 0,40,2 = make sequence from 0-40 at intervals of 2
                          SexStatus=mean(EncounterRate_noNAs$SexStatus),
@@ -3468,7 +3562,7 @@ pred.data <- expand.grid(DaysSeen=seq(0,40,1), # 0,40,2 = make sequence from 0-4
 # 2. Make predictions for each number of DaysSeen specified in object 'pdat'
 # with 95% confidence intervals (think this code only works for glmmADMB models, not lmer or glmer...)
 pred <- predict(sexstatfullnestmod_ziNB1, newdata=pred.data, na.rm=T, type="response",  # need "response" for GLMM or get negative values!
-                interval = "confidence", level = 0.95) 
+                interval = "confidence", level = 0.95)
 # OR with 95% prediction intervals (usually wider than CIs) (ditto above for model types)
 pred <- predict(sexstatfullnestmod_ziNB1, newdata=pred.data, na.rm=T, type="response",  interval = "prediction", level = 0.95)
 
@@ -3488,7 +3582,7 @@ lines(predframe$upr~predframe$DaysSeen, col="black", lwd=1, lty=2)
 
 # 4b. Or PLOT JUST THE PREDICTED VALUES WITHOUT OBSERVED DATA: FROM glmmADMB.predict helpfile by Ben Bolker
 # Code doesn't have 'pdat' so predictions are made for all data points (i.e. 415 observations)
-allpred <- predict(REDUCED.nb2,interval="confidence",type="response") 
+allpred <- predict(REDUCED.nb2,interval="confidence",type="response")
 head(allpred) # 415 rows, so one per observation
 allpredframe <- data.frame(obs=summary_attribs$DaysSeen,pred) # names DaysSeen as "observation number"
 with(allpredframe,plot(obs,fit, cex.lab=1.2, xlab="Number of days observed", ylab="Predicted true associations")) # Days seen on X and predicted N true assocs on Y
@@ -3503,13 +3597,13 @@ predframe$Season <- ordered(predframe$fSeason, levels = c(1,2,3,4), # rename sea
 EncounterRate_noNAs$Season <- ordered(EncounterRate_noNAs$fSeason, levels = c(1,2,3,4), # same in original data table so they match
                                       labels=c("Spring", "Summer", "Autumn", "Winter"))
 
-ggplot() + geom_point(data=EncounterRate_noNAs, aes(DaysSeen, NTrueAssocs, colour=factor(SexStatus)), 
-                      position=position_jitter()) + 
-  facet_wrap(~Season) + 
+ggplot() + geom_point(data=EncounterRate_noNAs, aes(DaysSeen, NTrueAssocs, colour=factor(SexStatus)),
+                      position=position_jitter()) +
+  facet_wrap(~Season) +
   scale_y_continuous(limits=c(0,5)) +
   geom_line(data=predframe, size=1, aes(DaysSeen, fit, colour=factor(SexStatus))) +
   labs(x = "Days seen", y = "Mean encounters per patch per day\n") + # axis labels
-  geom_errorbar(data=predframe, mapping=aes(x=DaysSeen, ymin=lwr, ymax=upr), 
+  geom_errorbar(data=predframe, mapping=aes(x=DaysSeen, ymin=lwr, ymax=upr),
                 width=0.2, size=0.5, color="black") +
   theme_bw(base_size = 18, base_family = "") + theme(legend.title=element_blank())+ # remove legend title
   scale_colour_manual(values = c("red", "blue", "green", "black"))
@@ -3530,7 +3624,7 @@ pred.data <- expand.grid(DaysSeen=seq(0,40,1), # 0,40,2 = make sequence from 0-4
                          ShortCode=unique(EncounterRate_noNAs$ShortCode), # MUST SPECIFY RANDOM EFFECTS TO PREDICT FROM LMER AND GLMER MODELS
                          Place=unique(EncounterRate_noNAs$Place))
 # Cant specify to compute confidence intervals for lme4 models
-pred <- predict(sexstatfullnestmod_ziNB1, newdata=pred.data, na.action=na.pass, type="response", re.form=NULL) 
+pred <- predict(sexstatfullnestmod_ziNB1, newdata=pred.data, na.action=na.pass, type="response", re.form=NULL)
 # na.pass (default na action) returns the object unchanged
 # re.form=NULL means include all random effects. Otherwise set to re.form=NA or re.form=~0 to exclude all random effects,
 # or re.form=~(1|ShortCode) to explicitly specify random effects
@@ -3547,11 +3641,11 @@ pred.data <- expand.grid(DaysSeen=c(10,20,30,40),
                          DaysFedPW_rounded=mean(EncounterRate_noNAs$DaysFedPW_rounded))
 
 # 2. Get model matrix: write fixed effects in same way as model formula. Have to include all variables in pred.data
-modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, pred.data) 
+modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, pred.data)
 head(modelmatrix) # check all columns contain data
 
 # 3. Calculate predictions (on link scale, so same values as get via predict(reateMOD_full, newdata=pred.data, re.form=NA, type="link")
-y <-modelmatrix%*%fixef(erateMOD_full) 
+y <-modelmatrix%*%fixef(erateMOD_full)
 
 # 4. Save variance due to fixed effects (i think)
 pvar1 <- diag(modelmatrix %*% tcrossprod(vcov(erateMOD_full),modelmatrix))
@@ -3591,7 +3685,7 @@ pred.data <- expand.grid(DaysSeen=c(10,20,30,40),
                          DaysFedPW_rounded=mean(EncounterRate_noNAs$DaysFedPW_rounded))
 
 # 2. Get model matrix: write fixed effects in same way as model formula. Have to include all variables in pred.data
-modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, pred.data) 
+modelmatrix <-model.matrix(~DaysSeen+Sex*SocialStatus*fSeason+DaysFedPW_rounded, pred.data)
 
 # 3. Define a function that will be applied to the nsim simulations: means 'get a merMod object and return the fitted values' nsim times
 predFun<-function(.) exp(modelmatrix%*%fixef(.)) # (.) means 'refer to earlier named object'
@@ -3605,19 +3699,19 @@ pred.data$bootlwr <- bb_se[1,] # bootstrap lower CI
 pred.data$bootupr <- bb_se[2,] # bootstrap upper CI
 
 # 6. DONT DELETE THE ESTIMATES!! Save as a new dataframe before accidentally overwrite all the work!
-predsWithBOOTSTRAPcis <- pred.data  
+predsWithBOOTSTRAPcis <- pred.data
 
 
 
-#=== Predictions using lsmeans: one line of code to obtain same predictions and slightly wider CIs (as think lsmeans accounts for random effect variation) 
+#=== Predictions using lsmeans: one line of code to obtain same predictions and slightly wider CIs (as think lsmeans accounts for random effect variation)
 # lsmeans CIs are reliable - they're comparable to effects package and other methods of getting CIs: see http://bit.ly/2aiXpim
 # automatically backtransforms from log10, log, sqrt etc when use type="response"
 library(lsmeans)
 lsm_preds <- lsmeans::lsmeans(finalmodel, "MeanMJperDay", # when have continuous variable need to specify a few key values to predict values for, or it'll just use the mean
                               by = c("Core", "PatchDaysFedPW"), # use by= to add more variables
                               at = list(MeanMJperDay = seq(0,6,0.5),  # to specify values to predict response for
-                                        Core=c("0","1"), 
-                                        PatchDaysFedPW = seq(1,7,2)), 
+                                        Core=c("0","1"),
+                                        PatchDaysFedPW = seq(1,7,2)),
                               type="response")
 # use by= and at= to specify the reference grid (like pred.data or newdata)
 lsmpreds <- data.frame(summary(lsm_preds))
@@ -3629,7 +3723,7 @@ lsmpreds <- data.frame(summary(lsm_preds))
 # Following Rob Thomas stats book p.119: to combine >1 variable into a single variable
 
 # combine DF & MJ into 1 variable for first patch selection model
-pr1 <- prcomp(~DaysFedPerWeek + MeankJperDay, data=patchdata$, scale=T) 
+pr1 <- prcomp(~DaysFedPerWeek + MeankJperDay, data=patchdata$, scale=T)
 # scale=T rescales each variable to have mean=0 and variance=1, in case the variables have v. dissimilar variances
 
 names(pr1) # see what info is contained in the new object
@@ -3640,14 +3734,14 @@ summary(pr1) # report this (I think)
 # plot the PCs
 plot(pr1, type="lines")
 
-# view eigenvalues of each PC - if eig<1 then PC is pretty useless 
+# view eigenvalues of each PC - if eig<1 then PC is pretty useless
 pr1$sdev^2
 
 # plot PC1 vs PC2 scores for each observation (takes a while...)
 biplot(pr1, cex=0.5)
 
 # Save PC1 scores as a new variable
-patchdata$PC1 <- predict(pr1)[,1] 
+patchdata$PC1 <- predict(pr1)[,1]
 summary(patchdata$PC1)
 
 #=================================================#
@@ -3664,10 +3758,10 @@ setTxtProgressBar(pb, i)
 #~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Model proportion data using binomial GLMM but include the weights= argument:
-# weights= is the number of trials used to generate each proportion, e.g. here I 
+# weights= is the number of trials used to generate each proportion, e.g. here I
 # used the min of DaysSeen (for sighting history) and DaysActive (for cameras)
-FPmodDF_FULL <- glmer(propdaysfirst ~ DaysFedPerWeek +(1|fTerritory) + (1|ShortCode), 
-                      data=NDFP, family=binomial, weights=minDSDA) 
+FPmodDF_FULL <- glmer(propdaysfirst ~ DaysFedPerWeek +(1|fTerritory) + (1|ShortCode),
+                      data=NDFP, family=binomial, weights=minDSDA)
 
 
 
@@ -3678,12 +3772,12 @@ FPmodDF_FULL <- glmer(propdaysfirst ~ DaysFedPerWeek +(1|fTerritory) + (1|ShortC
 # Rank within groups
 #~~~~~~~~~~~~~~
 # Rank patches by food availability (PC1adj) in each territory and season, where 1=highest
-patchdata$PC1rank <- ave(patchdata$PC1adj, interaction(patchdata$Territory,patchdata$SeasonID), FUN=rank) 
+patchdata$PC1rank <- ave(patchdata$PC1adj, interaction(patchdata$Territory,patchdata$SeasonID), FUN=rank)
 
 
 # Ranking rows
 #~~~~~~~~~~~~~~
-library(dplyr) 
+library(dplyr)
 a<- attribs.NC %>%                    # data frame
   group_by(ShortCode, SeasonID) %>%   # groups within which to rank the values - here want to rank within seasons for each fox
   mutate(rank = rank(-Nrecs,
@@ -3697,7 +3791,7 @@ ties.method=c("First", "max", "min", "average") # optional argument to define ho
 ### REARRANGE DATA FRAMES ####
 # stack rows into columns using gather in 'tidyr'
 # syntax: gather(dataframe, "new col name1", "new col name2", which columns to stack into rows) - 1:4 means columns 1 to 4 - but stacks all columns by default.
-fpreds <- gather(f, "Dist", "pred", 1:4) 
+fpreds <- gather(f, "Dist", "pred", 1:4)
 
 library(reshape) # http://rspatial.org/intr/rst/11-dataprep.html
 # function 'reshape' reshapes a data frame between 'wide' format with repeated measurements in sep columns
@@ -3740,7 +3834,7 @@ PRTsexstatcore$fFeedingDay <- relevel(PRTsexstatcore$fFeedingDay, ref="1")
 # summer and the reference season (spring by default)
 
 # Get values of parameters and (Wald) SEs (crude estimates of p-values)
-mod<-coef(summary(fit_poiss)) 
+mod<-coef(summary(fit_poiss))
 
 # get more accurate, profile C.Is
 mod.confint <- confint(fit_poiss,method="Wald")
@@ -3757,14 +3851,14 @@ lsmeans(defcomp.mod.defseas, pairwise~season|Definition, adjust="tukey", type="r
 #### Repeated measures data ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Using multilevel linear model (linear mixed model) to model repeated measures data
-# ML models are linear models that consider dependency in the data - 
+# ML models are linear models that consider dependency in the data -
 # Repeated measures are likely correlated, e.g. seasonal measures on same territory likely to be similar
 # Normal linear regression assumes independence of data points: repeated measures violate this assumption
 # So best to use multilevel model such as lme() or lmer() to control for non-independence between repeated measures
 
-# ANOVA assumes independence of data points: I have repeated measures so must use multilevel models to control for 
+# ANOVA assumes independence of data points: I have repeated measures so must use multilevel models to control for
 # non-independence between seasons in same territory.
-# If I were to use ANOVA it would be much more complex coding and I'd have to test/control for the assumption of 
+# If I were to use ANOVA it would be much more complex coding and I'd have to test/control for the assumption of
 # sphericity (see Andy Field book 'Discovering stats with R')
 
 
@@ -3777,7 +3871,7 @@ lsmeans(defcomp.mod.defseas, pairwise~season|Definition, adjust="tukey", type="r
 # MUST FIT MODEL USING REML=TRUE
 strength_mod_NULL <- lmer(strength ~ 1 + (1|ShortCode) + (1|Territory), data=data)
 a<-data.frame(print(VarCorr(strength_mod_NULL), comp=c("Variance","Std.Dev.")))
-# ICC = variance explained by shortcode (individual ID) 
+# ICC = variance explained by shortcode (individual ID)
 a[1,4,]/sum(a$vcov) # ShortCode variance divided by total variance
 # 0.1851544
 
@@ -3800,11 +3894,11 @@ ICC1.CI(strength, ShortCode, centrality_core) # fits an ANOVA and calculates 95%
 # mixed model approach: more similar value to that calculated manually from lmer output & more appropriate for unbalanced data:
 ICC1.lme(strength, ShortCode, centrality_core) # fits a mixed model in lme using package nlme
 # To compute 95% CIs for the correlation coefficient (r) from ICC1.lme
-CIr(r=0.1851545, n=51, level = 0.95) 
+CIr(r=0.1851545, n=51, level = 0.95)
 # not sure about this method to calc CIs! Seems to simple and wider interval than calc in package ICC.
 
 ### Method 4: Package ICC # BEST METHOD AS OF 03/07/16: proper CRAN package with vignette, and have seen it cited
-library(ICC) 
+library(ICC)
 # calculates ICC via an ANOVA - v.similar values to ICC.lme so use this as narrower CIs
 ICCbare(ShortCode, strength, centrality_core) # just the ICC
 s<-ICCest(ShortCode, strength, centrality_core) # ICC with CIs
@@ -3812,7 +3906,7 @@ s<-ICCest(ShortCode, strength, centrality_core) # ICC with CIs
 # N = n foxes
 # varw = within individual or group variance
 # vara = among individual or group variance
-e<-ICCest(ShortCode, eig, centrality_core) 
+e<-ICCest(ShortCode, eig, centrality_core)
 c<-ICCest(ShortCode, cc, centrality_core) # removes NAs automatically
 iccs<-rbind(s,e,c) # save in df
 data.frame(s)$ICC
@@ -3834,10 +3928,10 @@ data.frame(s)$ICC
 
 # Calculate adjusted (robust) means and SEs
 library(sandwich)
-# Cameron and Trivedi (2009) recommended using robust standard errors for the parameter estimates 
-# to control for mild violation of the distribution assumption that the variance equals the mean. 
-# We use R package sandwich below to obtain the robust standard errors and calculated the p-values 
-# accordingly. Together with the p-values, we have also calculated the 95% confidence interval 
+# Cameron and Trivedi (2009) recommended using robust standard errors for the parameter estimates
+# to control for mild violation of the distribution assumption that the variance equals the mean.
+# We use R package sandwich below to obtain the robust standard errors and calculated the p-values
+# accordingly. Together with the p-values, we have also calculated the 95% confidence interval
 # using the parameter estimates and their robust standard errors.
 cov.glm1 <- vcovHC(glm1, type="HC0")
 std.err <- sqrt(diag(cov.glm1))
@@ -3855,7 +3949,7 @@ summary(glm1) # see normal output
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # most logical - rounds up and down
-data.frame(round(object_name)) # rounds 0.5 UP to 1 and 0.49 DOWN to 0. 
+data.frame(round(object_name)) # rounds 0.5 UP to 1 and 0.49 DOWN to 0.
 
 # Round UP (dont like this either)
 ceiling(variable) # rounds 0.5 UP to 1 and 0.49 UP to 1.
@@ -3884,26 +3978,26 @@ r.squaredGLMM(fvmod_final)  # R2m = marginal r-squared (% variance in Y explaine
 
 # set up toolchain by running (copied from website above)
 dotR <- file.path(Sys.getenv("HOME"), ".R")
-if (!file.exists(dotR)) 
+if (!file.exists(dotR))
   dir.create(dotR)
 M <- file.path(dotR, "Makevars")
-if (!file.exists(M)) 
+if (!file.exists(M))
   file.create(M)
-cat("\nCXXFLAGS=-O3 -Wno-unused-variable -Wno-unused-function", 
+cat("\nCXXFLAGS=-O3 -Wno-unused-variable -Wno-unused-function",
     file = M, sep = "\n", append = TRUE)
 
 # modify path in this section to match your local setup:
 # cat('Sys.setenv(BINPREF = "<File path for ...mingw_32/bin from running <Sys.getenv('PATH')>")',
-#     file = file.path(Sys.getenv("HOME"), ".Rprofile"), 
+#     file = file.path(Sys.getenv("HOME"), ".Rprofile"),
 #     sep = "\n", append = TRUE)
 
 # i.e. on my Lenovo...
 cat('Sys.setenv(BINPREF = "C:\\RBuildTools\\3.4\\bin")',
-    file = file.path(Sys.getenv("HOME"), ".Rprofile"), 
+    file = file.path(Sys.getenv("HOME"), ".Rprofile"),
     sep = "\n", append = TRUE)
 
 # turn off irrelevant verbose warnings
-cat("\nCXXFLAGS += -Wno-ignored-attributes -Wno-deprecated-declarations", 
+cat("\nCXXFLAGS += -Wno-ignored-attributes -Wno-deprecated-declarations",
     file = M, sep = "\n", append = TRUE)
 
 # verify configuration
@@ -3918,7 +4012,7 @@ cat(M)
 # Sort a data frame by a column ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # e.g. by column called PropFoxesTagged
-mydataAllVisSORTED <- mydataAllVis[order(mydataAllVis$PropFoxesTagged),] 
+mydataAllVisSORTED <- mydataAllVis[order(mydataAllVis$PropFoxesTagged),]
 
 
 
@@ -3926,12 +4020,12 @@ mydataAllVisSORTED <- mydataAllVis[order(mydataAllVis$PropFoxesTagged),]
 # STRINGS                                          ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# SPLIT CHARACTER VARIABLE NAMES using strsplit() 
+# SPLIT CHARACTER VARIABLE NAMES using strsplit()
 # Need to split into territories using strsplit (this function only works with character vectors):
 a<-strsplit(rownames(spring_y1_SP), "_")
 b<-subset(a, "4")
-               
-               
+
+
 # Detect The Presence Or Absence Of A Pattern In A String
 str_detect(string, pattern)
 # e.g. to  search for words containing 'p'
@@ -3944,7 +4038,13 @@ str_detect("abc", letters) # returns 3 TRUEs for a, b and c and the rest FALSEs
 a = which(str_detect(fruit, "u"))
 a
 which(str_detect(fruit, "p"))
-               
+
+## gsub()
+# replaces all matches of a string
+gsub(pattern, replacement, x, ignore.case = FALSE, perl = FALSE,
+    fixed = FALSE, useBytes = FALSE)
+# e.g. replace all occurences of "_2016" with "_2017" in the string called 'sql'
+sql <- gsub("_2016", "_2017", sql)
 
 
 #~~~~~~~~~~~~~~~~
@@ -3990,24 +4090,24 @@ time.taken
 
 #== 1. Calculate mean (non-zero) edge weights for each sex (core foxes only)
 B4network_M <- T1sprB4_net[which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1), which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1)] # select rows & cols where individual is male & core
-B4network_F <- T1sprB4_net[which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1), which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1)] 
+B4network_F <- T1sprB4_net[which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1), which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1)]
 
-Afnetwork_M <- T1sprAf_net[which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1)] 
-Afnetwork_F <- T1sprAf_net[which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1)] 
+Afnetwork_M <- T1sprAf_net[which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1)]
+Afnetwork_F <- T1sprAf_net[which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1)]
 
 #== 2. Calculate and store the t-statistic from the real (observed) network
 T1sprB4_t <- t.test(B4network_F[B4network_F>0], B4network_M[B4network_M>0])$statistic
 T1sprAf_t <- t.test(Afnetwork_F[Afnetwork_F>0], Afnetwork_M[Afnetwork_M>0])$statistic # Can't do t-test for after midnight as not enough observations
 
 #== 3. Get 1000 networks from data-stream permutations
-T1sprB4_rand <- network_permutation(association_data=T1sprB4_SP, 
+T1sprB4_rand <- network_permutation(association_data=T1sprB4_SP,
                                     data_format="SP",
                                     association_matrix=T1sprB4_net,
                                     days=rownames(T1sprB4_SP),
                                     within_day=TRUE,
                                     permutations=1000)
 
-T1sprAf_rand <- network_permutation(association_data=T1sprAf_SP, 
+T1sprAf_rand <- network_permutation(association_data=T1sprAf_SP,
                                     data_format="SP",
                                     association_matrix=T1sprAf_net,
                                     days=rownames(T1sprAf_SP),
@@ -4023,7 +4123,7 @@ for (i in c(1:1000)) {
   B4net_M_rand <- T1sprB4_rand[i,which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1), which(T1sprB4_attr$Sex=="M" & T1sprB4_attr$Core==1)]
   B4net_F_rand <- T1sprB4_rand[i,which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1), which(T1sprB4_attr$Sex=="F" & T1sprB4_attr$Core==1)]
   # specify matrix to store results in:
-  T1sprB4_rand_t[i] <- t.test(B4net_F_rand[B4net_F_rand>0],             
+  T1sprB4_rand_t[i] <- t.test(B4net_F_rand[B4net_F_rand>0],
                               B4net_M_rand[B4net_M_rand>0])$statistic
 }
 
@@ -4032,7 +4132,7 @@ for (i in c(1:1000)) {
   Afnet_M_rand <- T1sprAf_rand[i,which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="M" & T1sprAf_attr$Core==1)]
   Afnet_F_rand <- T1sprAf_rand[i,which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1), which(T1sprAf_attr$Sex=="F" & T1sprAf_attr$Core==1)]
   # specify matrix to store results in:
-  T1sprAf_rand_t[i] <- t.test(Afnet_F_rand[Afnet_F_rand>0],             
+  T1sprAf_rand_t[i] <- t.test(Afnet_F_rand[Afnet_F_rand>0],
                               Afnet_M_rand[Afnet_M_rand>0])$statistic
 }
 
@@ -4045,7 +4145,7 @@ abline(v=T1sprB4_t, col="red") # If significant it should be outside or on very 
 #== 7. Get a P value of whether real t-statistic (t_obs) is sig. diff from random (t_rand)
 # Count number of random t-values that were greater or less than t_obs
 # AND THEN divide this by the number of permutations to get the p-value:
-# interpret using the histogram: if red line is to LHS of distrib p will be low and 
+# interpret using the histogram: if red line is to LHS of distrib p will be low and
 # if red line is to RHS of distrib it'll be high
 # significant if p<0.025 OR p>0.975
 sum(abs(T1sprB4_t) < abs(T1sprB4_rand_t))/1000 # abs(x) computes the absolute value of x (regardless of sign)
@@ -4058,25 +4158,25 @@ sum(abs(T1sprB4_t) < abs(T1sprB4_rand_t))/1000 # abs(x) computes the absolute va
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PI.time <- system.time(...actions...) # shows time at the end (seconds)
 
-# e.g. 
+# e.g.
 PI.time <- system.time(model<- lm(y~x))
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # variance inflation factor (VIF)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# High VIF (>5) indicates collinearity that may inflate standard errors in models and cause 
+# High VIF (>5) indicates collinearity that may inflate standard errors in models and cause
 # type 2 errors (false negatives)
 # Categorical variables can't be collinear because they're not linear measures in Euclidean space
-# i.e. their order is not meaningful. Core=1 and not core=0 could be core=10 and not core=67 and still have same meaning. 
+# i.e. their order is not meaningful. Core=1 and not core=0 could be core=10 and not core=67 and still have same meaning.
 # so high VIF is only concern for continuous variables (and interactions between continuous variables, not interactions between a categorical and a continuous)
-# for predictors with high VIF, model predictions will still be OK but SEs are inflated so the 
+# for predictors with high VIF, model predictions will still be OK but SEs are inflated so the
 # significance (p-value) of the predictor should be interpreted with caution:
 # http://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables
 
 #### FOR LINEAR MODELS (not mixed):
 library(car)
-vif(dailyPRTmod_FINAL) # variance inflation factors 
+vif(dailyPRTmod_FINAL) # variance inflation factors
 sqrt(vif(dailyPRTmod_FINAL)) > 2
 
 #### FOR MIXED MODELS:
@@ -4130,7 +4230,7 @@ rFromWilcox <- function(wilcoxModel, N){ # N is no. observations across both gro
   r <- z/sqrt(N)
   cat(wilcoxModel$data.name, "Effect size, r = ", r)
 }
-rFromWilcox(WTspr, N=14) # -0.4000661 
+rFromWilcox(WTspr, N=14) # -0.4000661
 
 # Report as V=1.5, p=0.134, r=-0.4.
 
@@ -4148,14 +4248,10 @@ fm_zinb   <- zeroinfl(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded
 fm_zipois <- zeroinfl(NTrueAssocs ~ Sex*SocialStatus*fSeason + DaysFedPW_rounded + DaysSeen|1, data = EncounterRate_noNAs, dist = "poisson")
 
 library(bbmle)
-bbmle::ICtab(fm_nb, fm_zinb, fm_pois, fm_zipois, type="AIC") 
+bbmle::ICtab(fm_nb, fm_zinb, fm_pois, fm_zipois, type="AIC")
 # NEG BINOM fits best by AIC or qAIC - DONT NEED ZERO INFLATION
 # Though neg binom also fit better than poisson...
 
 # see how much variance ZI causes (proportion between 0-1)
 zi.logodds <- coef(fm_zinb)["zero_(Intercept)"]
 plogis(zi.logodds) # get distribution function = the estimated ZI proportion, i.e. the contribution of ZI to the model
-
-
-
-

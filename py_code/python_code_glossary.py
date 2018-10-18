@@ -38,6 +38,7 @@
 # python 2 vs python 3
 # randomising or finding all combinations of things
 # raw input
+# regex
 # saving files as csv etc
 # saving python objects
 # scipy (for hypothesis testing in python)
@@ -46,6 +47,7 @@
 # SQLite DATABASES
 # strings
 # subsetting dfs
+# tensorflow
 # text processing
 # timing code
 # tuples
@@ -1056,6 +1058,14 @@ for file in os.listdir('propensity_scores/'):
     if fnmatch.fnmatch(file, ("*" + yesterday_date + "*")):
         print(file
 
+
+# read file from path starting from root directory
+from os.path import expanduser
+home = expanduser("~")
+p = open(home + '/Documents/credentials/jd_redshift_credentials_dwh.txt', 'r').read()
+
+# (because ~ wont work in open(), e.g. below)
+p = open('~/Documents/credentials/jd_redshift_credentials_dwh.txt', 'r').read()
 
 
 # =============================================================================
@@ -2689,6 +2699,9 @@ df = pd.DataFrame([])
 # one series per row) and label the rows as A, B and C
 df = pd.DataFrame([s1, s2, s3], index=['A', 'B', 'C'])
 
+# make a df from a Dictionary (will also work without .from_dict() but good practice to be specific)
+df = pd.DataFrame.from_dict({'a': [1,2,3], 'b': ['red', 'blue', 'red']})
+
 # import a csv file as a pandas dataframe
 views_sun = pd.read_csv('file.csv', index_col=0) # tells pandas which column to index by
 
@@ -3263,6 +3276,30 @@ is_even(7)                  # 7 is not an even number so False is returned.
 
 
 # =============================================================================
+###  """ REGULAR EXPRESSIONS """
+# =============================================================================
+
+#https://docs.python.org/3/howto/regex.html
+#https://www.tutorialspoint.com/python/python_reg_expressions.htm
+
+# regular expressions regex: mini programming language to manipulate strings
+import re
+
+# to escape a backslash to set a string as '\test', prefix backslashes with another backslash, '\\test'
+# \t in python is a tab, so add 2 more backslashes to ensure the escape character is shown: '\\\\test'
+a = '\\\\test'
+print(a) # = '\\test'
+
+# use regex to split logfile string into data frame
+regex = re.compile('[a]')
+print(regex)
+
+# THIS DOESNT WORK
+a = regex.match('hellofdgsjgks')
+print(a)
+
+
+# =============================================================================
 ###  """ SAVING FILES - AS CSV OR TXT """
 # =============================================================================
 
@@ -3606,6 +3643,47 @@ views_GBR = views_sun_by_location[views_sun_by_location['location'] == "GBR"]
 emailed_18th = emailed.loc[emailed.date == datetime.date(datetime.strptime('2018-04-17', "%Y-%m-%d"))]
 
 
+
+
+# =============================================================================
+###  """  TENSORFLOW """
+# =============================================================================
+
+# DNNRegressor = deep neural network regressor
+# https://www.tensorflow.org/api_docs/python/tf/contrib/learn/DNNRegressor
+# Also have LinearRegressor
+
+# Note TensorFlow usually gives lots of errors as it's constantly under development!
+
+# Note on performance: notebooks are OK for running TensorFlow up to a point,
+# but Google Cloud ML Engine is better fpr large scale training and serving models
+# as APIs (APIs are trained ML models, e.g. Google Vision API for object detection
+# and facial recognition, Google Translate API...)
+
+# Can take Google pretrained models and continue to train them with
+# your own data to improve them/make them more specific, e.g. Translate, Vision...
+
+# Train a model (havent tested this so read documentation...)
+import tensorflow as tf
+X_train = predictors
+Y_train = targets
+
+model = tf.contrib.learn.DNNRegressor(hidden_units = [5], feature_columns = [10])
+#model = tf.contrib.learn.LinearRegressor(X_train, y_train)
+model.fit(X_train, y_train, steps = 100)
+
+# Open a pretrained model
+model = tf.contrib.learn.DNNRegressor(model_dir = 'path_to_my_trained_model', hidden_units = [5])
+
+# Make predictions
+preds = model.predict(X_test)
+print(preds)
+
+# Evaluate, e.g. root-mean-square error (RMSE), a frequenctly used measure that
+# measures differences between actual and predicted values
+rmse = np.sqrt(np.mean((predictions-targets)**2))
+# or:
+rmse = rmse(np.array([2,2,3]), np.array([0,2,6]))
 
 
 
