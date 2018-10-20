@@ -67,6 +67,8 @@
 ## Interpretation
 ## Effect sizes of contrasts
 
+# Email
+
 # Errors in R scripts/packages
 
 # For loops
@@ -1073,6 +1075,37 @@ rcontrast <- function(t, df){
 }
 summary(lme.orimod3) # take t-values (from summary(modelname) - not t-ratio from Tukey's!!) and d.f
 rcontrast(t, df) # and enter them here to calculate effect size for comparisons
+
+
+#===============================#
+# Emails from R ####
+#===============================#
+
+#install.packages("devtools", dep = T)
+library(devtools)
+#install.packages("mailR") # had to install via devtools
+library(mailR)
+
+# no authentication required to send emails from within pbx server...!
+
+# compose, save and send in one command: send=TRUE
+email <- send.mail(from = "my_email_address",
+          to = "destination_email_address",
+          subject = "CRM Dashboard Update",
+          body = "CRM dashboard update successful",
+          smtp = list(host.name = "aspmx.l.google.com", port = 25),
+          send = TRUE)
+
+# compose,save and send later: send=FALSE
+email <- send.mail(from = "my_email_address",
+                   to = "destination_email_address",
+                   subject = "CRM Dashboard Update",
+                   body = "CRM dashboard update successful",
+                   smtp = list(host.name = "aspmx.l.google.com", port = 25),
+                   send = FALSE)
+email$send() # execute to send email
+
+
 
 
 #===============================#
