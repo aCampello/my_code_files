@@ -424,6 +424,9 @@ delta = dt.timedelta(days = 100) # create a timedelta of 100 days
 today - delta # subtract delta from today: the date 100 days ago
 today > today-delta # compare dates (returns True / False)
 
+# change float epoch time (seconds since 1970-01-01) to timestamp
+import time
+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(1482493110.0))
 
 
 ### Date Functionality in pandas
@@ -2812,8 +2815,8 @@ y = X.pop('ConditionScore')
 # shifts the rows (or columns) up or down by x amount
 # get date from next/last 'period' in sequence (assumes df is in order), for each customer
 # can integrate with time module, e.g. to use timedelta
-t['next_order_date'] = t.groupby('cust')['date'].shift(periods = -1)
-t['last_order_date'] = t.groupby('cust')['date'].shift(periods = 1)
+df['NEXT_TIMESTAMP'] = df.groupby('USER_ID')['TIMESTAMP'].shift(periods = -1)
+df['PREVIOUS_TIMESTAMP'] = df.groupby('USER_ID')['TIMESTAMP'].shift(periods = 1)
 
 
 
@@ -3593,6 +3596,9 @@ sentence.split()[0]  # view the first word in sentence
 # e.g. to join elements of list a
 a=['Hello', 'World']
 ' '.join(a) # returns 'Hello World'
+
+# convert list to string, and insert characters between the items in a list
+" <3 ".join(["Jo", "Antonio", "Flowers"]) # Jo <3 Antonio <3 Flowers'
 
 
 ### Strip whitespaces from strings
