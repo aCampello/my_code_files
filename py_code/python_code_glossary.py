@@ -880,23 +880,24 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 
-def mail(to, subject, text, attach):
+def mail(to, subject, text, attach=None):
     """
     From https://stackoverflow.com/questions/26582811/gmail-python-multiple-attachments
-    to: recipients as a string or list
+    to: recipients as a string or list.
     subject: subject text
-    text: body text
-    attach: filenames to attach as a string or list. Can attach txt/csv and image files
+    attach: (optional) filenames to attach as a string or list. Can attach txt/csv and image files.
     """
     # allow either one recipient as string, or multiple as list
     if not isinstance(to,list):
         to = [to]
-    # allow either one attachment as string, or multiple as list
-    if not isinstance(attach,list):
-        attach = [attach]
+        
+    # allow either no attachments, one attachment as string, or multiple as list
+    if attach:
+        if not isinstance(attach,list):
+            attach = [attach]
 
     # Login credentials: gmail_pwd is an App password generated here: https://myaccount.google.com/apppasswords)
-    gmail_user= YOUR_EMAIL_ADDRESS
+    gmail_user = YOUR_EMAIL_ADDRESS
     gmail_pwd = YOUR_APP_PASSWORD
     
     # set the msg object
@@ -907,14 +908,15 @@ def mail(to, subject, text, attach):
 
     msg.attach(MIMEText(text))
 
-    #get all the attachments
-    for file in attach:
-        print(file)
-        part = MIMEBase('application', 'octet-stream')
-        part.set_payload(open(file, 'rb').read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(file))
-        msg.attach(part)
+    #get all the attachments(if any)
+    if attach:
+        for file in attach:
+            print(file)
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(open(file, 'rb').read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(file))
+            msg.attach(part)
         
     # set up Gmail server
     mailServer = smtplib.SMTP("smtp.gmail.com", 587)
