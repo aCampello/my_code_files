@@ -15,6 +15,7 @@
 # dates and times
 # dictionaries
 # distributions (numpy)
+# email from Python
 # environments
 # errors and bugs
 # feature scaling
@@ -864,6 +865,69 @@ plt.legend(loc='upper right')
 
 
 
+# ===============================================================
+### """ EMAIL WITH ATTACHMENTS FROM PYTHON """
+# ===============================================================
+
+import os
+import smtplib
+import mimetypes
+from email.mime.multipart import MIMEMultipart
+from email import encoders
+from email.message import Message
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.text import MIMEText
+
+def mail(to, subject, text, attach):
+    """
+    From https://stackoverflow.com/questions/26582811/gmail-python-multiple-attachments
+    to: recipients as a string or list
+    subject: subject text
+    text: body text
+    attach: filenames to attach as a string or list. Can attach txt/csv and image files
+    """
+    # allow either one recipient as string, or multiple as list
+    if not isinstance(to,list):
+        to = [to]
+    # allow either one attachment as string, or multiple as list
+    if not isinstance(attach,list):
+        attach = [attach]
+
+    # Login credentials: gmail_pwd is an App password generated here: https://myaccount.google.com/apppasswords)
+    gmail_user= YOUR_EMAIL_ADDRESS
+    gmail_pwd = YOUR_APP_PASSWORD
+    
+    # set the msg object
+    msg = MIMEMultipart()
+    msg['From'] = gmail_user
+    msg['To'] = ", ".join(to)
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(text))
+
+    #get all the attachments
+    for file in attach:
+        print(file)
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(open(file, 'rb').read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(file))
+        msg.attach(part)
+        
+    # set up Gmail server
+    mailServer = smtplib.SMTP("smtp.gmail.com", 587)
+    mailServer.ehlo()
+    # Open the connection
+    mailServer.starttls()
+    mailServer.ehlo()
+    mailServer.login(gmail_user, gmail_pwd)
+    mailServer.sendmail(gmail_user, to, msg.as_string())
+    mailServer.quit()
+
+#to execute:
+#mail(to=['recipient1', 'recipient2'], subject='subject text', text='body text', attach=['attachment1.csv', 'attachment2.png'])
 
 
 # ===============================================================
