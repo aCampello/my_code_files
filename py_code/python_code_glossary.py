@@ -122,8 +122,12 @@ query = """
     SELECT * FROM [table_name] ......
         TIMESTAMP('{}'),
         TIMESTAMP('{}'))
-        GROUP BY activity_date """.format(start_date, end_date)
-# and see S2DS codes
+        GROUP BY activity_date """.format(start_date, end_date) # and see S2DS codes
+
+# alternatively, name the vars:
+my_string = '{state}_{table_name}_log.csv'.format(state=state, table_name=table_name)
+
+
 
 
 # Can't group by timestamp() functions so give them an alias:
