@@ -463,6 +463,20 @@ df = pd.DataFrame({'Count1': np.random.randint(0,50,10),
 # get info about dates
 df.index.weekday_name    # monday, tuesday etc
 
+# get last friday
+from datetime import datetime
+from dateutil.relativedelta import relativedelta, FR
+last_friday = datetime.now() + relativedelta(weekday=FR(-1))
+last_friday = last_friday.strftime('%Y%m%d') # string date
+
+# get last/next monday (datetime assumes week starts on monday so less explicit coding is required)
+import datetime
+today = datetime.date.today()
+# next monday
+today + datetime.timedelta(days= -today.weekday(), weeks=1)
+# last monday
+today - datetime.timedelta(days=today.weekday())
+
 # diff between count 1 and 2 for each date (as there are only 2 cols)
 df.diff()
 
@@ -1129,7 +1143,22 @@ yesterday_date = yesterday.strftime("%Y%m%d")
 # path = 'propensity_scores/'
 for file in os.listdir('propensity_scores/'):
     if fnmatch.fnmatch(file, ("*" + yesterday_date + "*")):
-        print(file
+        print(file)
+
+	
+# Get list of files containing 'machine_feeding' and ending in '.txt'
+import glob
+import os
+# method 1. change directory
+machine_feeding_queries=[]
+os.chdir('/home/supriya/01_recengine_SQL/01_SQL_stepwise_main_pipeline/')
+for file in glob.glob('*machine_feeding*.txt'):
+  machine_feeding_queries.append(file)
+# method 2. read from path
+machine_feeding_queries=[]
+for file in glob.glob('/home/supriya/01_recengine_SQL/01_SQL_stepwise_main_pipeline/*machine_feeding*.txt'):
+file = file.split('/')[-1]
+machine_feeding_queries.append(file)
 
 
 # read file from path starting from root directory
