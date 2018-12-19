@@ -153,3 +153,21 @@ db.int.insertBatch <- function(table_name,data,size) {
 db.int.shQuoteNull <- function(value) {
   return(ifelse(is.na(value), 'NULL', shQuote(value)))
 }
+
+# Select which libraries are needed for the program
+packages <- c("odbc", "DBI", "data.table", "arules", "reshape", "parallel", "stringr", "tidyr", "bit64")
+
+# Install required libraries if necessary
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+  install.packages(setdiff(packages, rownames(installed.packages())))  
+}
+# Load the libraries
+lapply(packages, require, character.only = TRUE)
+
+# save data as table in Redshift
+save_to_db <- function(results, dest){
+  db.sendQuery(paste0("DROP TABLE IF EXISTS ", dest))
+  db.int.createEmptyTable(dest,results);
+  db.grantAccess(dest)
+  db.int.insertBatch(dest,results, 200000L);
+}
