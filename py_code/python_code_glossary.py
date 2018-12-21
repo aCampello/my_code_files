@@ -40,6 +40,7 @@
 # randomising or finding all combinations of things
 # raw input
 # regex
+# s3
 # saving files as csv etc
 # saving python objects
 # scipy (for hypothesis testing in python)
@@ -3400,7 +3401,35 @@ print(regex)
 a = regex.match('hellofdgsjgks')
 print(a)
 
+		  
+		  
+# =============================================================================
+###  """ S3 """
+# =============================================================================
 
+### see if an object exists in s3 bucket
+import boto3
+
+s3 = boto3.resource('s3')
+bucket = s3.Bucket('bi-photobox-analytics-eu')
+key = 'Jo/crm/recommendation_engine/weekly_recommendations/product_recommendations/year=2018/month=12/day=21/'
+
+objs = list(bucket.objects.filter(Prefix=key))
+
+# does it exist
+if len(objs) > 0:# and objs[0].key == key:
+    print("Exists!")
+else:
+    print("Doesn't exist")
+
+# make list of objects without bucket prefixes
+objects = []
+for item in objs:
+    objects.append(item.key)
+print(objects)
+		  
+		  
+		  
 # =============================================================================
 ###  """ SAVING FILES - AS CSV OR TXT """
 # =============================================================================
