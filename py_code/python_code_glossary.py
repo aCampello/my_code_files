@@ -14,6 +14,7 @@
 # data cleaning
 # dates and times
 # dictionaries
+# display
 # distributions (numpy)
 # email from Python
 # environments
@@ -135,7 +136,7 @@ my_string = '{state}_{table_name}_log.csv'.format(state=state, table_name=table_
 # Can't group by timestamp() functions so give them an alias:
 SELECT HOUR(datetime) AS hour
 FROM tablename
-GROUP BY hour
+GROUP BY hour;
 
 # =============================================================================
 ###  """ CLASSES """
@@ -815,6 +816,15 @@ e = OrderedDict(sorted(d.items(), key=lambda t: t[0]))
 print[i for i in d]  # prints in order
 
 
+# ===============================================================
+### """ DISPLAY - to display more columns in Pycharm """
+# ===============================================================
+
+#adjust printing widths to show more columns of output
+desired_width=320
+pd.set_option('display.width', desired_width)
+pd.set_option('display.max_columns', 10)
+
 
 # ===============================================================
 ### """ DISTRIBUTIONS (Numpy) """
@@ -992,6 +1002,9 @@ C:\Users\User\Anaconda3\envs
 
 # Anaconda will create a shortcut to all it's files/programs (Jupyter Notebook, IPython, Navigator...) for each environment.
 # So there will be a shortcut to "IPython" AND one to "IPython (py27)".
+
+# virtual environments
+# to allow different package versions for different projects
 
 
 # ===============================================================
