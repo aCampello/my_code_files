@@ -26,6 +26,7 @@
 # get name of python objects
 # HTML & BeautifulSoup
 # Inspecting objects defined in the console
+# Installing / loading packages libraries
 # jupyter notebook
 # linear regression
 # lists
@@ -915,7 +916,7 @@ def mail(to, subject, text, attach=None):
     # allow either one recipient as string, or multiple as list
     if not isinstance(to,list):
         to = [to]
-        
+
     # allow either no attachments, one attachment as string, or multiple as list
     if attach:
         if not isinstance(attach,list):
@@ -924,7 +925,7 @@ def mail(to, subject, text, attach=None):
     # Login credentials: gmail_pwd is an App password generated here: https://myaccount.google.com/apppasswords)
     gmail_user = YOUR_EMAIL_ADDRESS
     gmail_pwd = YOUR_APP_PASSWORD
-    
+
     # set the msg object
     msg = MIMEMultipart()
     msg['From'] = gmail_user
@@ -942,7 +943,7 @@ def mail(to, subject, text, attach=None):
             encoders.encode_base64(part)
             part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(file))
             msg.attach(part)
-        
+
     # set up Gmail server
     mailServer = smtplib.SMTP("smtp.gmail.com", 587)
     mailServer.ehlo()
@@ -1159,7 +1160,7 @@ for file in os.listdir('propensity_scores/'):
     if fnmatch.fnmatch(file, ("*" + yesterday_date + "*")):
         print(file)
 
-	
+
 # Get list of files containing 'machine_feeding' and ending in '.txt'
 import glob
 import os
@@ -1423,8 +1424,15 @@ def hello():
 # Clear the name space
 %reset
 
+# ====================================================
+#### Installing / loading packages libraries in Jupyter
+# ====================================================
+# useful link: http://jakevdp.github.io/blog/2017/12/05/installing-python-packages-from-jupyter/index.html
+import sys
+!{sys.executable} -m pip install numpy
 
 
+# ================================
 ### Jupyter Notebook
 # ================================
 
@@ -3414,8 +3422,8 @@ print(regex)
 a = regex.match('hellofdgsjgks')
 print(a)
 
-		  
-		  
+
+
 # =============================================================================
 ###  """ S3 """
 # =============================================================================
@@ -3440,9 +3448,9 @@ objects = []
 for item in objs:
     objects.append(item.key)
 print(objects)
-		  
-		  
-		  
+
+
+
 # =============================================================================
 ###  """ SAVING FILES - AS CSV OR TXT """
 # =============================================================================
