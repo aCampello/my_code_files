@@ -42,6 +42,7 @@
 # randomising or finding all combinations of things
 # raw input
 # regex
+# rounding / reducing d.p. without rounding
 # s3
 # saving files as csv etc
 # saving python objects
@@ -1631,6 +1632,8 @@ for i, j in zip(list_a, list_b):
             counter += 1
 print counter  # print the total.
 
+# list comprehension to make a list of lists from a DataFrame containing
+list_of_latlongs = [[row['lat'],row['long']] for index, row in df.iterrows()]
 
 
 
@@ -3422,6 +3425,20 @@ print(regex)
 a = regex.match('hellofdgsjgks')
 print(a)
 
+
+# =============================================================================
+###  """ Rounding / reducing d.p. without rounding """
+# =============================================================================
+
+# to reduce a float to 4 d.p.
+# this lambda function takes the decimal part of the coordinate,
+# converts it to a str to take the first 4 numbers after the decimal point,
+# then converts the str back to float and adds the whole number back on to the truncated decimal.
+
+m = 31.56200027
+int(m) + float(str(m - int(m))[1:6])
+
+# returns 31.5620
 
 
 # =============================================================================
