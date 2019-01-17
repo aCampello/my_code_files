@@ -1,0 +1,68 @@
+GIT COMMANDS
+-------------
+
+git branch branch_name —> create a new branch
+git checkout branch_name —> switch branch
+git add file_name —> add a file in staging
+git commit -m “message” —> add the file file_name to your local repo
+git push origin_branch new_branch —> add new branch to origin
+git push —> if we are in the master branch
+git merge other_branch —> merge other_branch with the master one (must be in master)
+git fetch —> download updates/added files but not merge (git fetch + git merge)
+git pull https://repo master —> download update/added files and merge
+git branch -d branch-name —> delete branch
+git checkout filename —> revert filename
+git reset HEAD -- <file> —> remove file from staging (wrongly added)
+
+
+HOW TO MERGE DOWN
+1. git checkout master
+2. git pull
+3. git checkout feature-branch
+4. git merge master
+5. if conflict:
+    1. modify files with conflicts
+    2. git add files that had conflicts
+    3. git commit
+    4. git push (or git push -f)
+    5. merge from git (rebase from there)
+6. else:
+    1. merge from git (rebase from there)
+
+CHECKOUT REMOTE BRANCH
+git fetch origin
+git checkout group
+
+REBASE SOMEONE ELSE BRANCH ON THE BRANCH YOUR WORKING
+your branch: dev-se-2158
+his branch: dev-se-2153
+
+1. git checkout dev-se-2158
+2. git rebase dev-se-2153
+
+REBASE SOMEONE ELSE BRANCH (i.e: master) ON THE BRANCH YOUR WORKING (WITH CONFLICT)
+1. git checkout master
+2. git pull
+3. git checkout feature
+4. git rebase master
+5. ..conflict message…
+6. update all the files with conflict
+7. git add
+8. git commit
+9. git push -f
+10. .. at this point your feature branch will be able to be merge with master in case you want to merge..
+
+REVERT FILE TO PREVIOUS VERSION
+git log —> give you the commit id
+git checkout bd7e6a8 sky-graph-processor/conf/sky-mapping-output.conf
+
+REVERT PUBLIC COMMIT
+git revert --no-edit HEAD
+git push
+
+
+How to start a new branch rebasing on an already development branch:
+Dev branch: dev-data-log
+Git checkout master
+Git checkout -b dev-new-branch
+Git rebase dev-data-log
