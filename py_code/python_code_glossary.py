@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
                     ## -------------------------------- ##
-                    """ Python - useful bits of code """
+                         """ Python code glossary """
                     ## -------------------------------- ##
 
 # CONTENTS
