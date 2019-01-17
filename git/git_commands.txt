@@ -61,8 +61,8 @@ git revert --no-edit HEAD
 git push
 
 
-How to start a new branch rebasing on an already development branch:
+START A NEW BRANCH REBASING ON AN EXISTING DEVELOPMENT BRANCH
 Dev branch: dev-data-log
-Git checkout master
-Git checkout -b dev-new-branch
-Git rebase dev-data-log
+git checkout master
+git checkout -b dev-new-branch
+git rebase dev-data-log
