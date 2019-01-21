@@ -3699,6 +3699,9 @@ x = 5
 my_string = "My number is {}".format(x)
 print(my_string) # >>> My number is 5
 
+# format number of d.p. in strings using %
+%.6f % (ratio) # returns to 6 decimal places
+
 
 # convert to upper and lower case
 s.upper()
