@@ -634,6 +634,10 @@ for key, val in menu.items():
     print(key)
     print(val)
 
+# view random key-value pair from a dictionary
+print(dict.popitem())
+
+
 ### lists of dicts
 
 # load csv file as a list of dicts: one dict per row (vehicle), with colnames as keys
